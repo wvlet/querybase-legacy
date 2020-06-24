@@ -12,7 +12,7 @@ trait ServiceApi {
 
   import ServiceApi._
   def serviceInfo: ServiceInfo = {
-    ServiceInfo(serviceRunningTime = ElapsedTime.succinctMillis(System.currentTimeMillis() - serviceStartTimeMillis))
+    ServiceInfo(upTime = ElapsedTime.succinctMillis(System.currentTimeMillis() - serviceStartTimeMillis))
   }
 }
 
@@ -20,6 +20,6 @@ object ServiceApi {
   case class ServiceInfo(
       name: String = "querybase",
       version: String = BuildInfo.version,
-      serviceRunningTime: ElapsedTime
+      upTime: ElapsedTime
   )
 }
