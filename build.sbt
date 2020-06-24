@@ -64,7 +64,7 @@ lazy val querybase =
     .settings(name := "querybase")
     .settings(buildSettings)
     .settings(noPublish)
-    .aggregate(apiJVM, apiJS, uiJS, server)
+    .aggregate(apiJVM, apiJS, ui, server)
 
 lazy val api =
   crossProject(JVMPlatform, JSPlatform)
@@ -89,27 +89,26 @@ lazy val apiJVM = api.jvm
 lazy val apiJS  = api.js
 
 lazy val ui =
-  crossProject(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("querybase-ui"))
-    .enablePlugins(ScalaJSBundlerPlugin, AirframeHttpPlugin)
+    .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin, AirframeHttpPlugin)
     .settings(buildSettings)
+    .settings(jsBuildSettings)
     .settings(
       name := "querybase-ui",
       description := "UI for Querybase",
-      airframeHttpClients := Seq("wvlet.querybase.api:scalajs")
-    )
-    .jsSettings(
-      jsBuildSettings,
-      jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
+      airframeHttpClients := Seq("wvlet.querybase.api:scalajs"),
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %%% "airframe-http-rx" % AIRFRAME_VERSION,
       ),
-      npmDependencies in Test += "node" -> "12.14.1"
+      scalaJSUseMainModuleInitializer := true,
+      jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
+      npmDependencies in Test += "node" -> "14.4.0",
+      useYarn := true,
+      //webpackEmitSourceMaps := false,
+      webpackBundlingMode := BundlingMode.LibraryOnly()
     )
-    .dependsOn(api)
-
-val uiJS = ui.js
+    .dependsOn(apiJS)
 
 lazy val server =
   project
