@@ -1,2 +1,4 @@
 # querybase
-Database for Queries
+
+Database for queries
+
