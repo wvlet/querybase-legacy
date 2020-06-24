@@ -30,5 +30,6 @@ website/node_modules
 website/i18n/*
 
 log/*
+querybase-server/log/*
 .vscode/launch.json
 project/metals.sbt

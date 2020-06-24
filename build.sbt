@@ -1,5 +1,5 @@
-val SCALA_2_12 = "2.12.11"
-val SCALA_2_13 = "2.13.2"
+val SCALA_2_12          = "2.12.11"
+val SCALA_2_13          = "2.13.2"
 val targetScalaVersions = SCALA_2_12 :: Nil
 
 val AIRFRAME_VERSION = "20.6.1"
@@ -36,12 +36,12 @@ val buildSettings = Seq[Setting[_]](
   publishMavenStyle := true,
   // Support JDK8 for Spark
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
-  scalacOptions ++= Seq("-feature", "-deprecation"), 
+  scalacOptions ++= Seq("-feature", "-deprecation"),
   // Use AirSpec for testing
   testFrameworks += new TestFramework("wvlet.airspec.Framework"),
   libraryDependencies ++= Seq(
     "org.scala-lang.modules" %%% "scala-collection-compat" % "2.1.6",
-    "org.wvlet.airframe" % "airspec" % AIRFRAME_VERSION % Test
+    "org.wvlet.airframe"     %%% "airspec"                 % AIRFRAME_VERSION % Test
   )
 )
 
@@ -65,38 +65,47 @@ lazy val querybase =
     .settings(buildSettings)
     .settings(noPublish)
     .aggregate(apiJVM, apiJS, uiJS, server)
-    
-lazy val api = 
+
+lazy val api =
   crossProject(JVMPlatform, JSPlatform)
     .crossType(CrossType.Pure)
     .in(file("querybase-api"))
+    .enablePlugins(BuildInfoPlugin)
     .settings(buildSettings)
     .settings(
       name := "querybase-api",
       description := "Querybase API",
       libraryDependencies ++= Seq(
-        "org.scala-lang" % "scala-reflect" % scalaVersion.value
-      )
+        "org.wvlet.airframe" %%% "airframe-http"    % AIRFRAME_VERSION,
+        "org.wvlet.airframe" %%% "airframe-metrics" % AIRFRAME_VERSION,
+        "org.scala-lang"     % "scala-reflect"      % scalaVersion.value
+      ),
+      buildInfoPackage := "wvlet.querybase.api",
+      buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, scalaBinaryVersion, sbtVersion),
     )
     .jsSettings(jsBuildSettings)
 
 lazy val apiJVM = api.jvm
-lazy val apiJS = api.js
+lazy val apiJS  = api.js
 
 lazy val ui =
   crossProject(JSPlatform)
     .crossType(CrossType.Pure)
     .in(file("querybase-ui"))
-    .enablePlugins(ScalaJSBundlerPlugin)
+    .enablePlugins(ScalaJSBundlerPlugin, AirframeHttpPlugin)
     .settings(buildSettings)
     .settings(
       name := "querybase-ui",
-      description := "UI for Querybase"
+      description := "UI for Querybase",
+      airframeHttpClients := Seq("wvlet.querybase.api:scalajs")
     )
     .jsSettings(
       jsBuildSettings,
-      jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
-//      npmDependencies in Test += "node" -> "12.14.1"
+      jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
+      libraryDependencies ++= Seq(
+        "org.wvlet.airframe" %%% "airframe-http-rx" % AIRFRAME_VERSION,
+      ),
+      npmDependencies in Test += "node" -> "12.14.1"
     )
     .dependsOn(api)
 
@@ -105,16 +114,15 @@ val uiJS = ui.js
 lazy val server =
   project
     .in(file("querybase-server"))
-    .enablePlugins(BuildInfoPlugin)
     .settings(buildSettings)
     .settings(
       name := "querybase-server",
       libraryDependencies ++= Seq(
-        "org.wvlet.airframe"           %% "airframe"              % AIRFRAME_VERSION,
-        "org.wvlet.airframe"           %% "airframe-config"       % AIRFRAME_VERSION,
-        "org.wvlet.airframe"           %% "airframe-launcher"     % AIRFRAME_VERSION,
-        "org.wvlet.airframe"           %% "airframe-http-finagle" % AIRFRAME_VERSION,
-        "org.xerial"                   % "sqlite-jdbc"            % "3.32.3"
+        "org.wvlet.airframe" %% "airframe"              % AIRFRAME_VERSION,
+        "org.wvlet.airframe" %% "airframe-config"       % AIRFRAME_VERSION,
+        "org.wvlet.airframe" %% "airframe-launcher"     % AIRFRAME_VERSION,
+        "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION,
+        "org.xerial"         % "sqlite-jdbc"            % "3.32.3"
       )
     )
     .dependsOn(apiJVM)
