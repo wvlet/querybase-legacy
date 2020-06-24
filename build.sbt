@@ -2,8 +2,9 @@ val SCALA_2_12          = "2.12.11"
 val SCALA_2_13          = "2.13.2"
 val targetScalaVersions = SCALA_2_12 :: Nil
 
-val AIRFRAME_VERSION = "20.6.1"
+val AIRFRAME_VERSION    = "20.6.1"
 val SCALAJS_DOM_VERSION = "1.0.0"
+val SPARK_VERSION       = "3.0.0"
 
 // Reload build.sbt on changes
 Global / onChangedBuildSource := ReloadOnSourceChanges
@@ -59,16 +60,19 @@ val noPublish = Seq(
   publishLocal := {}
 )
 
+lazy val jvmProjects = Seq[ProjectReference](apiJVM, server, sql)
+lazy val jsProjects  = Seq[ProjectReference](apiJS, ui)
+
+lazy val projectJVM = project.aggregate(jvmProjects: _*)
+lazy val projectJS  = project.aggregate(jsProjects: _*)
+
 lazy val querybase =
   project
     .in(file("."))
     .settings(name := "querybase")
     .settings(buildSettings)
     .settings(noPublish)
-    .aggregate(apiJVM, apiJS, ui, server)
-
-lazy val projectJVM = project.aggregate(apiJVM, server)
-lazy val projectJS  = project.aggregate(apiJS, ui)
+    .aggregate((jvmProjects ++ jsProjects): _*)
 
 lazy val api =
   crossProject(JVMPlatform, JSPlatform)
@@ -127,7 +131,35 @@ lazy val server =
         "org.wvlet.airframe" %% "airframe-config"       % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-launcher"     % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION,
-        "org.xerial"         % "sqlite-jdbc"            % "3.32.3"
+      )
+    )
+    .dependsOn(apiJVM, sql, store)
+
+lazy val sql =
+  project
+    .in(file("querybase-sql"))
+    .settings(buildSettings)
+    .settings(
+      name := "querybase-sql",
+      libraryDependencies ++= Seq(
+        "org.wvlet.airframe" %% "airframe"      % AIRFRAME_VERSION,
+        "org.wvlet.airframe" %% "airframe-sql"  % AIRFRAME_VERSION,
+        "org.wvlet.airframe" %% "airframe-jdbc" % AIRFRAME_VERSION,
+      )
+    )
+    .dependsOn(apiJVM)
+
+lazy val store =
+  project
+    .in(file("querybase-store"))
+    .settings(buildSettings)
+    .settings(
+      name := "querybase-store",
+      description := "querybase storage engine",
+      libraryDependencies ++= Seq(
+        "org.wvlet.airframe" %% "airframe"      % AIRFRAME_VERSION,
+        "org.wvlet.airframe" %% "airframe-jdbc" % AIRFRAME_VERSION,
+        "org.xerial"         % "sqlite-jdbc"    % "3.32.3"
       )
     )
     .dependsOn(apiJVM)

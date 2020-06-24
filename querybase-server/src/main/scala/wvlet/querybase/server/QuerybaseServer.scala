@@ -7,7 +7,8 @@ import wvlet.log.LogSupport
 import wvlet.log.io.IOUtil
 import wvlet.querybase.api.v1.ServiceApi
 import wvlet.querybase.api.v1.ServiceApi.ServiceInfo
-import wvlet.querybase.server.api.{QueryApiImpl, StaticContentApi}
+import wvlet.querybase.server.api.{QueryLogApiImpl, StaticContentApi}
+import wvlet.querybase.store.{QueryStorage, SQLiteQueryStorage}
 
 /**
   */
@@ -17,7 +18,7 @@ object QuerybaseServer extends LogSupport {
     Router
       .add[StaticContentApi]
       .add[ServiceApi]
-      .add[QueryApiImpl]
+      .add[QueryLogApiImpl]
 
   def design(config: QuerybaseServerConfig): Design =
     Design.newDesign
@@ -30,6 +31,7 @@ object QuerybaseServer extends LogSupport {
           .design
       )
       .bind[QuerybaseServer].toEagerSingleton
+      .bind[QueryStorage].to[SQLiteQueryStorage]
 
   private[querybase] def testDesign = {
     val port = IOUtil.randomPort
