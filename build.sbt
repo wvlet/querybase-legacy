@@ -2,7 +2,7 @@ val SCALA_2_12 = "2.12.11"
 val SCALA_2_13 = "2.13.2"
 val targetScalaVersions = SCALA_2_12 :: Nil
 
-val AIRFRAME_VRESION = "20.6.1"
+val AIRFRAME_VERSION = "20.6.1"
 
 // Reload build.sbt on changes
 Global / onChangedBuildSource := ReloadOnSourceChanges
@@ -105,7 +105,7 @@ val uiJS = ui.js
 lazy val server =
   project
     .in(file("querybase-server"))
-    .enablePlugins(BuildInfoPlugin, SbtSQLTreasureData)
+    .enablePlugins(BuildInfoPlugin)
     .settings(buildSettings)
     .settings(
       name := "querybase-server",
@@ -117,4 +117,4 @@ lazy val server =
         "org.xerial"                   % "sqlite-jdbc"            % "3.32.3"
       )
     )
-    .dependsOn(api)
+    .dependsOn(apiJVM)
