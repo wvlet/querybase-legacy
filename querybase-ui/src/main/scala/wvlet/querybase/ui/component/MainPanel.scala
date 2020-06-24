@@ -7,7 +7,6 @@ import wvlet.querybase.api.v1.ServiceApi.ServiceInfo
 import wvlet.querybase.ui.RPCService
 
 /**
-  *
   */
 class MainPanel extends RxElement with RPCService {
 

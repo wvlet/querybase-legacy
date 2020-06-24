@@ -3,6 +3,7 @@ val SCALA_2_13          = "2.13.2"
 val targetScalaVersions = SCALA_2_12 :: Nil
 
 val AIRFRAME_VERSION = "20.6.1"
+val SCALAJS_DOM_VERSION = "1.0.0"
 
 // Reload build.sbt on changes
 Global / onChangedBuildSource := ReloadOnSourceChanges
@@ -66,6 +67,9 @@ lazy val querybase =
     .settings(noPublish)
     .aggregate(apiJVM, apiJS, ui, server)
 
+lazy val projectJVM = project.aggregate(apiJVM, server)
+lazy val projectJS  = project.aggregate(apiJS, ui)
+
 lazy val api =
   crossProject(JVMPlatform, JSPlatform)
     .crossType(CrossType.Pure)
@@ -100,9 +104,11 @@ lazy val ui =
       airframeHttpClients := Seq("wvlet.querybase.api:scalajs"),
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %%% "airframe-http-rx" % AIRFRAME_VERSION,
+        "org.scala-js"       %%% "scalajs-dom"      % SCALAJS_DOM_VERSION
       ),
       scalaJSUseMainModuleInitializer := true,
       jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
+      requireJsDomEnv in Test := true,
       npmDependencies in Test += "node" -> "14.4.0",
       useYarn := true,
       //webpackEmitSourceMaps := false,

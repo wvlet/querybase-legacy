@@ -5,7 +5,6 @@ import wvlet.airframe.metrics.ElapsedTime
 import wvlet.querybase.api.BuildInfo
 
 /**
-  *
   */
 @RPC
 trait ServiceApi {
@@ -18,7 +17,9 @@ trait ServiceApi {
 }
 
 object ServiceApi {
-  case class ServiceInfo(name: String = "querybase",
-                         version: String = BuildInfo.version,
-                         serviceRunningTime: ElapsedTime)
+  case class ServiceInfo(
+      name: String = "querybase",
+      version: String = BuildInfo.version,
+      serviceRunningTime: ElapsedTime
+  )
 }

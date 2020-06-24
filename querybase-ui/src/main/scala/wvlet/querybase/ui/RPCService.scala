@@ -11,7 +11,6 @@ import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
 /**
-  *
   */
 trait RPCService extends LogSupport {
   implicit val queue = scala.scalajs.concurrent.JSExecutionContext.Implicits.queue

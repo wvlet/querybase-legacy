@@ -9,7 +9,6 @@ import wvlet.airframe.http.rx.html.DOMRenderer
 import wvlet.querybase.ui.component.MainPanel
 
 /**
-  *
   */
 object QuerybaseUI extends LogSupport {
   def design = Design.newDesign

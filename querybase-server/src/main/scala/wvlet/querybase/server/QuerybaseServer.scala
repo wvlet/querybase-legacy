@@ -2,14 +2,14 @@ package wvlet.querybase.server
 
 import wvlet.airframe.Design
 import wvlet.airframe.http.Router
-import wvlet.airframe.http.finagle.{Finagle, FinagleServer}
+import wvlet.airframe.http.finagle.{Finagle, FinagleServer, FinagleSyncClient}
 import wvlet.log.LogSupport
+import wvlet.log.io.IOUtil
 import wvlet.querybase.api.v1.ServiceApi
 import wvlet.querybase.api.v1.ServiceApi.ServiceInfo
 import wvlet.querybase.server.api.{QueryApiImpl, StaticContentApi}
 
 /**
-  *
   */
 object QuerybaseServer extends LogSupport {
 
@@ -24,18 +24,18 @@ object QuerybaseServer extends LogSupport {
       .bind[QuerybaseServerConfig].toInstance(config)
       .add(
         Finagle.server
-          .withName("querybase-server")
+          .withName("querybase")
           .withRouter(router)
           .withPort(config.port)
           .design
       )
-      .bind[QuerybaseServer].toSingleton
-      .onStart { x =>
-        info(s"Starting Querybase Server")
-      }
-      .onShutdown { x =>
-        info(s"Stopping Querybase Server")
-      }
+      .bind[QuerybaseServer].toEagerSingleton
+
+  private[querybase] def testDesign = {
+    val port = IOUtil.randomPort
+    design(QuerybaseServerConfig(port = port))
+      .bind[FinagleSyncClient].toInstance(Finagle.client.newSyncClient(s"localhost:${port}"))
+  }
 }
 
 case class QuerybaseServerConfig(port: Int = 8080)

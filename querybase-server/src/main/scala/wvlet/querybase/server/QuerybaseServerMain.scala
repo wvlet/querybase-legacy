@@ -4,7 +4,6 @@ import wvlet.airframe.launcher.{Launcher, command, option}
 import wvlet.log.Logger
 
 /**
-  *
   */
 object QuerybaseServerMain {
   def main(args: Array[String]): Unit = {

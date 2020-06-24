@@ -3,7 +3,6 @@ package wvlet.querybase.api.v1.query
 import wvlet.airframe.http.RPC
 
 /**
-  *
   */
 @RPC
 trait QueryApi {

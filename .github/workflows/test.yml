@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  pull_request:
+    paths:
+      - '**.scala'
+      - '**.java'
+      - '**.sbt'
+      - '.github/workflows/*.yml'
+  push:
+    branches:
+      - master
+    paths:
+      - '**.scala'
+      - '**.java'
+      - '**.sbt'
+      - '.github/workflows/*.yml'
+
+jobs:
+  code_format:
+    name: Code format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: scalafmt test
+        run: ./sbt scalafmtCheckAll
+  test_2_12:
+    name: Scala 2.12
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: olafurpg/setup-scala@v7
+        with:
+          java-version: adopt@1.11
+      - uses: actions/cache@v1
+        with:
+          path: ~/.cache
+          key: ${{ runner.os }}-scala-2.12-${{ hashFiles('**/*.sbt') }}
+          restore-keys: ${{ runner.os }}-scala-2.12-
+      - name: Scala 2.12 test
+        run: ./sbt projectJVM/test
+  test_js:
+    name: Scala.js
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: olafurpg/setup-scala@v7
+        with:
+          java-version: adopt@1.11
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+      - name: Node.js setup
+        run: npm install jsdom@16.0.0
+      - uses: actions/cache@v1
+        with:
+          path: ~/.cache
+          key: ${{ runner.os }}-scala-js-${{ hashFiles('**/*.sbt') }}
+          restore-keys: ${{ runner.os }}-scala-js-
+      - name: Scala.js test
+        run: ./sbt ui/fastOptJS::webpack
