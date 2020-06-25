@@ -7,7 +7,7 @@ import wvlet.airframe.http.RPC
 import wvlet.airframe.metrics.{DataSize, ElapsedTime}
 
 /**
-  * API for managing query logs
+  * API for collecting query logs
   */
 @RPC
 trait QueryLogApi {
@@ -20,10 +20,12 @@ object QueryLogApi {
   case class QueryUser(
       // user group id, such as organization id, account id, etc.
       groupId: String,
+      // system-specific user id
       userId: String
   )
   case class QueryEngine(name: String, version: String)
   case class QueryError(errorCode: String, errorMessage: String)
+  case class QueryTarget(catalog: String, database: String)
 
   /**
     * Mandatory data for indexing queries
@@ -53,13 +55,20 @@ object QueryLogApi {
     */
   case class QueryLog(
       queryIndex: QueryIndex,
-      // Target database (or schema) of the query
-      database: String,
+      // Target catalog and database (or schema) of the query
+      queryTarget: QueryTarget,
+      // Input query info
       query: Query,
+      // Generic query status
       status: QueryStatus,
+      // Any error if exists
       error: Option[QueryError] = None,
+      // Time when the query was created, but not yet started (i.e., queued state)
+      // Note: We use Instant for time representation because ZonedDateTime is not supported in Scala.js
       createdAt: Instant,
+      // Time when the query started running
       startedAt: Instant,
+      // Time when the query finished
       endedAt: Instant
   ) {
     def wallTime: ElapsedTime   = ElapsedTime.succinctMillis(endedAt.toEpochMilli - createdAt.toEpochMilli)
@@ -67,25 +76,18 @@ object QueryLogApi {
   }
 
   /**
-    * Engine-agonistic table scan log format
+    * Table scan range for time-series data
     */
-  case class TableScanLog(
-      queryIndex: QueryIndex,
-      database: String,
-      table: String,
-      columns: Seq[String],
-      predicates: Option[String],
-      timeRangeStart: Option[Instant],
-      timeRangeEnd: Option[Instant],
-      inputRows: Long,
-      outputRows: Long,
-      inputBytes: Long,
-      outputBytes: Long
-  ) {
-    def rowSkipRatio: Double  = 1.0 - (outputRows.toDouble / inputRows)
-    def byteSkipRatio: Double = 1.0 - (outputBytes.toDouble / inputBytes)
+  case class TableScanRange(start: Option[Instant] = None, end: Option[Instant] = None) {
+    (start, end) match {
+      case (Some(s), Some(e)) =>
+        require(s.compareTo(e) <= 0, s"Table scan range must be start <= end: ${this}")
+      case _ =>
+      // Ok
+    }
+
     def timeWindowSize: Option[ElapsedTime] = {
-      (timeRangeStart, timeRangeEnd) match {
+      (start, end) match {
         case (Some(s), Some(e)) =>
           Some(ElapsedTime.succinctMillis(e.toEpochMilli - s.toEpochMilli))
         case _ =>
@@ -95,25 +97,102 @@ object QueryLogApi {
   }
 
   /**
+    * Input and output amount of data in a query stage
+    */
+  case class InOut(input: Long, processed: Long, output: Long) {
+    def skipRatio: Double = 1.0 - (output.toDouble / input)
+  }
+
+  /**
+    * Engine-agonistic table scan log format
+    */
+  case class TableScanLog(
+      queryIndex: QueryIndex,
+      // Target catalog and database (or schema) of the query
+      queryTarget: QueryTarget,
+      // Scanned table name
+      table: String,
+      // Internal table id (e.g., dataset_id)
+      tableId: String,
+      // The list of columns scanned (projected columns)
+      columns: Seq[String],
+      // Predicate for the columns (e.g., where condition or predicate used for push-down optimization)
+      predicates: Option[String],
+      // Table scan range for time-series data
+      scanRange: TableScanRange = TableScanRange(None, None),
+      // The number of partition files scanned
+      numPartitions: Long,
+      // The number of tasks used for scanning the table
+      numTasks: Long,
+      // The number of input/output rows
+      inOutRows: InOut,
+      // The number of input/output bytes
+      inOutBytes: InOut,
+      // CPU time used for scanning the table
+      cpuTimeMillis: Long,
+      // User clock time used for scanning the table
+      userTimeMillis: Long,
+      // Waiting time while scanning the table
+      blockedTimeMillis: Long,
+      // Extra table scan parameters
+      tableScanParams: Map[String, Any] = Map.empty
+  ) {
+    def rowSkipRatio: Double                = inOutRows.skipRatio
+    def byteSkipRatio: Double               = inOutBytes.skipRatio
+    def timeWindowSize: Option[ElapsedTime] = scanRange.timeWindowSize
+  }
+
+  /**
     * Presto-specific query stats
     */
-  case class PrestoQueryStats(
-      queryIndex: QueryIndex,
-      wallTimeMillis: Double,
-      splitWallTimeMillis: Double,
-      splitBlockedTimeMillis: Double,
-      cpuTimeMillis: Double,
-      peakMemory: DataSize,
-      cumulativeMemoryGBSec: Double,
-      processedRows: Long,
-      processedBytes: DataSize,
-      outputRows: Long,
-      outputBytes: DataSize
-  ) {
-    def wallTime = ElapsedTime.succinctMillis(wallTimeMillis.toLong)
+  object presto {
+    case class PrestoPerfStats(
+        wallTimeMillis: Long,
+        analysisTimeMillis: Double,
+        planningTimeMillis: Double,
+        queuedTimeMillis: Long,
+        scheduledTimeMillis: Long,
+        cpuTimeMillis: Long,
+        blockedTimeMillis: Long,
+        processedRows: Long,
+        processedBytes: Long
+    )
+
+    case class PrestoQueryStats(
+        queryIndex: QueryIndex,
+        performanceStats: PrestoPerfStats,
+        peakMemory: DataSize,
+        cumulativeMemoryGBSec: Double,
+        numSplits: Long
+    ) {
+      def wallTime = ElapsedTime.succinctMillis(performanceStats.wallTimeMillis)
+    }
+
+    case class Percentiles(distribution: Seq[Double])
+
+    case class PartitionAccessStats(
+        numReadPartitions: Long,
+        numReadRequestCount: Long,
+        numReadRequestRetryCount: Long,
+        headerReadTimeMillis: Long,
+        columnBlockReadTimeMillis: Long,
+        numWritePartitions: Long,
+    )
+
+    case class PrestoQueryStageStats(
+        queryIndex: QueryIndex,
+        stageId: String,
+        numSplits: String,
+        performanceStats: PrestoPerfStats,
+        processedRowsPercentiles: Percentiles,
+        processedBytesPercentiles: Percentiles,
+        rowsPerSecPercentiles: Percentiles,
+        bytesPerSecPercentiles: Percentiles,
+        peakMemory: DataSize,
+        partitionAccessStats: Option[PartitionAccessStats] = None
+    )
   }
 
   case class AddQueryLogRequest(logs: Seq[QueryLog], uuid: UUID = UUID.randomUUID())
   case class AddQueryLogResponse(uuid: UUID)
-
 }
