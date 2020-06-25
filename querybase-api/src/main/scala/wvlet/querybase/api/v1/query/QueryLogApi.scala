@@ -36,7 +36,7 @@ object QueryLogApi {
       // service cluster name
       cluster: String,
       // Extra tags for categorizing queries
-      tags: Seq[String] = Seq.empty
+      queryTags: Seq[String] = Seq.empty
   )
 
   case class Query(
