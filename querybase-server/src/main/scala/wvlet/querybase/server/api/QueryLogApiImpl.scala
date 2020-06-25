@@ -15,6 +15,10 @@ trait QueryLogApiImpl extends QueryLogApi {
     AddQueryLogResponse(request.uuid)
   }
 
+  override def addTableScanLog(request: AddTableScanLogRequest): AddTableScanLogResponse = {
+    AddTableScanLogResponse(request.uuid)
+  }
+
   override def addPrestoQueryStats(request: AddPrestoQueryStatsRequest): AddPrestoQueryStatsResponse = {
     AddPrestoQueryStatsResponse(request.uuid)
   }

@@ -14,6 +14,7 @@ import wvlet.querybase.api.v1.query.QueryLogApi.presto.{PrestoQueryStageStats, P
 trait QueryLogApi {
   import QueryLogApi._
   def addQueryLog(request: AddQueryLogRequest): AddQueryLogResponse
+  def addTableScanLog(request: AddTableScanLogRequest): AddTableScanLogResponse
   def addPrestoQueryStats(request: AddPrestoQueryStatsRequest): AddPrestoQueryStatsResponse
   def addPrestoQueryStageStats(request: AddPrestoQueryStageStatsRequest): AddPrestoQueryStageStatsResponse
 }
@@ -198,6 +199,9 @@ object QueryLogApi {
 
   case class AddQueryLogRequest(logs: Seq[QueryLog], uuid: UUID = UUID.randomUUID())
   case class AddQueryLogResponse(uuid: UUID)
+
+  case class AddTableScanLogRequest(logs: Seq[TableScanLog], uuid: UUID = UUID.randomUUID())
+  case class AddTableScanLogResponse(uuid: UUID)
 
   case class AddPrestoQueryStatsRequest(logs: Seq[PrestoQueryStats], uuid: UUID = UUID.randomUUID())
   case class AddPrestoQueryStatsResponse(uuid: UUID)

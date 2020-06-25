@@ -1,10 +1,12 @@
 package wvlet.querybase.server
 
+import com.twitter.finagle.http.{Request, Response}
 import wvlet.airframe.Design
 import wvlet.airframe.http.Router
 import wvlet.airframe.http.finagle.{Finagle, FinagleServer, FinagleSyncClient}
 import wvlet.log.LogSupport
 import wvlet.log.io.IOUtil
+import wvlet.querybase.api.ServiceSyncClient
 import wvlet.querybase.api.v1.ServiceApi
 import wvlet.querybase.api.v1.ServiceApi.ServiceInfo
 import wvlet.querybase.server.api.{QueryLogApiImpl, StaticContentApi}
@@ -19,6 +21,8 @@ object QuerybaseServer extends LogSupport {
       .add[StaticContentApi]
       .add[ServiceApi]
       .add[QueryLogApiImpl]
+
+  type QuerybaseSyncClient = ServiceSyncClient[Request, Response]
 
   def design(config: QuerybaseServerConfig): Design =
     Design.newDesign
@@ -37,7 +41,11 @@ object QuerybaseServer extends LogSupport {
     val port = IOUtil.randomPort
     design(QuerybaseServerConfig(port = port))
       .bind[FinagleSyncClient].toInstance(Finagle.client.newSyncClient(s"localhost:${port}"))
+      .bind[QuerybaseSyncClient].toProvider { syncClient: FinagleSyncClient =>
+        new ServiceSyncClient(syncClient)
+      }
   }
+
 }
 
 case class QuerybaseServerConfig(port: Int = 8080)

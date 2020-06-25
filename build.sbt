@@ -60,7 +60,7 @@ val noPublish = Seq(
   publishLocal := {}
 )
 
-lazy val jvmProjects = Seq[ProjectReference](apiJVM, server, sql)
+lazy val jvmProjects = Seq[ProjectReference](apiJVM, server, client, sql)
 lazy val jsProjects  = Seq[ProjectReference](apiJS, ui)
 
 lazy val projectJVM = project.aggregate(jvmProjects: _*)
@@ -135,7 +135,21 @@ lazy val server =
         "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION,
       )
     )
-    .dependsOn(apiJVM, sql, store)
+    .dependsOn(apiJVM, sql, store, client)
+
+lazy val client =
+  project
+    .in(file("querybase-client"))
+    .enablePlugins(AirframeHttpPlugin)
+    .settings(buildSettings)
+    .settings(
+      name := "querybase-client",
+      airframeHttpClients := Seq("wvlet.querybase.api:sync"),
+      libraryDependencies ++= Seq(
+        "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION,
+      )
+    )
+    .dependsOn(apiJVM)
 
 lazy val sql =
   project
