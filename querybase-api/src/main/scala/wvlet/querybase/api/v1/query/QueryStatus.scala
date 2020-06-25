@@ -3,7 +3,6 @@ package wvlet.querybase.api.v1.query
 import java.util.Locale
 
 /**
-  *
   */
 sealed trait QueryStatus
 

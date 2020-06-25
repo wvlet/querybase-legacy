@@ -19,18 +19,20 @@ trait QueryLogApi {
 
 object QueryLogApi {
 
-  case class QueryLog(engine: String,
-                      groupId: Option[String],
-                      userId: Option[String],
-                      queryId: String,
-                      query: String,
-                      database: String,
-                      status: QueryStatus,
-                      errorCode: Option[String],
-                      createdAt: Instant,
-                      startedAt: Instant,
-                      endedAt: Instant,
-                      queryParams: Option[Json]) {
+  case class QueryLog(
+      engine: String,
+      groupId: Option[String],
+      userId: Option[String],
+      queryId: String,
+      query: String,
+      database: String,
+      status: QueryStatus,
+      errorCode: Option[String],
+      createdAt: Instant,
+      startedAt: Instant,
+      endedAt: Instant,
+      queryParams: Option[Json]
+  ) {
     def wallTime: ElapsedTime   = ElapsedTime.succinctMillis(endedAt.toEpochMilli - createdAt.toEpochMilli)
     def queuedTime: ElapsedTime = ElapsedTime.succinctMillis(startedAt.toEpochMilli - createdAt.toEpochMilli)
   }
