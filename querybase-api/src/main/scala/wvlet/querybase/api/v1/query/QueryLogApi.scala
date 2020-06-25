@@ -5,6 +5,7 @@ import java.util.UUID
 
 import wvlet.airframe.http.RPC
 import wvlet.airframe.metrics.{DataSize, ElapsedTime}
+import wvlet.querybase.api.v1.query.QueryLogApi.presto.{PrestoQueryStageStats, PrestoQueryStats}
 
 /**
   * API for collecting query logs
@@ -12,7 +13,9 @@ import wvlet.airframe.metrics.{DataSize, ElapsedTime}
 @RPC
 trait QueryLogApi {
   import QueryLogApi._
-  def add(request: AddQueryLogRequest): AddQueryLogResponse
+  def addQueryLog(request: AddQueryLogRequest): AddQueryLogResponse
+  def addPrestoQueryStats(request: AddPrestoQueryStatsRequest): AddPrestoQueryStatsResponse
+  def addPrestoQueryStageStats(request: AddPrestoQueryStageStatsRequest): AddPrestoQueryStageStatsResponse
 }
 
 object QueryLogApi {
@@ -195,4 +198,11 @@ object QueryLogApi {
 
   case class AddQueryLogRequest(logs: Seq[QueryLog], uuid: UUID = UUID.randomUUID())
   case class AddQueryLogResponse(uuid: UUID)
+
+  case class AddPrestoQueryStatsRequest(logs: Seq[PrestoQueryStats], uuid: UUID = UUID.randomUUID())
+  case class AddPrestoQueryStatsResponse(uuid: UUID)
+
+  case class AddPrestoQueryStageStatsRequest(logs: Seq[PrestoQueryStageStats], uuid: UUID = UUID.randomUUID())
+  case class AddPrestoQueryStageStatsResponse(uuid: UUID)
+
 }
