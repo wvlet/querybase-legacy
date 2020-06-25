@@ -126,6 +126,8 @@ lazy val server =
     .settings(buildSettings)
     .settings(
       name := "querybase-server",
+      // For using project root as a working folder
+      reStart / baseDirectory := (ThisBuild / baseDirectory).value,
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %% "airframe"              % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-config"       % AIRFRAME_VERSION,
