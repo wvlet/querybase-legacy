@@ -8,7 +8,6 @@ import wvlet.log.LogSupport
 import wvlet.log.io.IOUtil
 import wvlet.querybase.api.ServiceSyncClient
 import wvlet.querybase.api.v1.ServiceApi
-import wvlet.querybase.api.v1.ServiceApi.ServiceInfo
 import wvlet.querybase.server.api.{QueryLogApiImpl, StaticContentApi}
 import wvlet.querybase.store.{QueryStorage, SQLiteQueryStorage}
 

@@ -180,7 +180,7 @@ object QueryLogApi {
         numReadRequestRetryCount: Long,
         headerReadTimeMillis: Long,
         columnBlockReadTimeMillis: Long,
-        numWritePartitions: Long,
+        numWritePartitions: Long
     )
 
     case class PrestoQueryStageStats(
