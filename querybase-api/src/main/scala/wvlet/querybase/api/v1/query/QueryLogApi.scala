@@ -35,8 +35,8 @@ object QueryLogApi {
       queryEngine: QueryEngine,
       // service cluster name
       cluster: String,
-      // Extra tags for categorizing queries
-      queryTags: Seq[String] = Seq.empty
+      // Extra tags for categorizing query execution (e.g., benchmark_id, simulation_id, etc.)
+      executionParams: Map[String, Any] = Map.empty
   )
 
   case class Query(
@@ -44,7 +44,7 @@ object QueryLogApi {
       database: String,
       // Raw SQL text
       queryText: String,
-      // Additional query parameters
+      // Additional query parameters (e.g., job_id, resource_group_name, workflow_id, session_id, session parameters, etc.)
       queryParams: Map[String, Any] = Map.empty
   )
 
