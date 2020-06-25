@@ -2,13 +2,12 @@ package wvlet.querybase.api.v1.query
 
 import java.time.Instant
 import java.util.UUID
-import java.util.concurrent.TimeUnit
 
 import wvlet.airframe.http.RPC
-import wvlet.airframe.json.Json
 import wvlet.airframe.metrics.{DataSize, ElapsedTime}
 
 /**
+  * API for managing query logs
   */
 @RPC
 trait QueryLogApi {
@@ -18,55 +17,58 @@ trait QueryLogApi {
 
 object QueryLogApi {
 
+  case class QueryUser(
+      // user group id, such as organization id, account id, etc.
+      groupId: String,
+      userId: String
+  )
   case class QueryEngine(name: String, version: String)
-  case class QueryUser(groupId: String, userId: String)
   case class QueryError(errorCode: String, errorMessage: String)
 
   /**
     * Mandatory data for indexing queries
     */
   case class QueryIndex(
-      queryEngine: QueryEngine,
+      // engine-specific query id
+      queryId: String,
       queryUser: QueryUser,
+      queryEngine: QueryEngine,
       // service cluster name
       cluster: String,
-      // engine-specific query id
-      queryId: String
+      // Extra tags for categorizing queries
+      tags: Seq[String] = Seq.empty
   )
 
+  case class Query(
+      // Context database name
+      database: String,
+      // Raw SQL text
+      queryText: String,
+      // Additional query parameters
+      queryParams: Map[String, Any] = Map.empty
+  )
+
+  /**
+    * Engine-agonistic query log format
+    */
   case class QueryLog(
       queryIndex: QueryIndex,
       // Target database (or schema) of the query
       database: String,
-      // Raw SQL query text
-      query: String,
+      query: Query,
       status: QueryStatus,
       error: Option[QueryError] = None,
       createdAt: Instant,
       startedAt: Instant,
-      endedAt: Instant,
-      queryParams: Option[Json] = None
+      endedAt: Instant
   ) {
     def wallTime: ElapsedTime   = ElapsedTime.succinctMillis(endedAt.toEpochMilli - createdAt.toEpochMilli)
     def queuedTime: ElapsedTime = ElapsedTime.succinctMillis(startedAt.toEpochMilli - createdAt.toEpochMilli)
   }
 
-  case class PrestoQueryStats(
-      queryIndex: QueryIndex,
-      wallTimeMillis: Double,
-      splitWallTimeMillis: Double,
-      splitBlockedTimeMillis: Double,
-      cpuTimeMillis: Double,
-      peakMemory: DataSize,
-      cumulativeMemoryGBSec: Double,
-      processedRows: Long,
-      processedBytes: DataSize,
-      outputRows: Long,
-      outputBytes: DataSize
-  ) {
-    def wallTime = ElapsedTime.succinctMillis(wallTimeMillis.toLong)
-  }
-
+  /**
+    * Engine-agonistic table scan log format
+    */
   case class TableScanLog(
       queryIndex: QueryIndex,
       database: String,
@@ -90,6 +92,25 @@ object QueryLogApi {
           None
       }
     }
+  }
+
+  /**
+    * Presto-specific query stats
+    */
+  case class PrestoQueryStats(
+      queryIndex: QueryIndex,
+      wallTimeMillis: Double,
+      splitWallTimeMillis: Double,
+      splitBlockedTimeMillis: Double,
+      cpuTimeMillis: Double,
+      peakMemory: DataSize,
+      cumulativeMemoryGBSec: Double,
+      processedRows: Long,
+      processedBytes: DataSize,
+      outputRows: Long,
+      outputBytes: DataSize
+  ) {
+    def wallTime = ElapsedTime.succinctMillis(wallTimeMillis.toLong)
   }
 
   case class AddQueryLogRequest(logs: Seq[QueryLog], uuid: UUID = UUID.randomUUID())
