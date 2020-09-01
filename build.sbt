@@ -2,8 +2,8 @@ val SCALA_2_12          = "2.12.11"
 val SCALA_2_13          = "2.13.2"
 val targetScalaVersions = SCALA_2_12 :: Nil
 
-val AIRFRAME_VERSION    = "20.6.1"
-val SCALAJS_DOM_VERSION = "1.0.0"
+val AIRFRAME_VERSION    = "20.8.0"
+val SCALAJS_DOM_VERSION = "1.1.0"
 val SPARK_VERSION       = "3.0.0"
 
 // Reload build.sbt on changes
@@ -179,3 +179,14 @@ lazy val store =
       )
     )
     .dependsOn(apiJVM)
+
+lazy val td =
+  project
+    .in(file("querybase-td"))
+    .enablePlugins(SbtSQLTreasureData)
+    .settings(buildSettings)
+    .settings(
+      name := "querybase-td",
+      description := "querybase log collector for Arm Treasure Data",
+    )
+    .dependsOn(apiJVM, store)
