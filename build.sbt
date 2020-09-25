@@ -2,7 +2,7 @@ val SCALA_2_12          = "2.12.11"
 val SCALA_2_13          = "2.13.2"
 val targetScalaVersions = SCALA_2_12 :: Nil
 
-val AIRFRAME_VERSION    = "20.8.0"
+val AIRFRAME_VERSION    = "20.9.2"
 val SCALAJS_DOM_VERSION = "1.1.0"
 val SPARK_VERSION       = "3.0.0"
 
@@ -107,7 +107,7 @@ lazy val ui =
       description := "UI for Querybase",
       airframeHttpClients := Seq("wvlet.querybase.api:scalajs"),
       libraryDependencies ++= Seq(
-        "org.wvlet.airframe" %%% "airframe-http-rx" % AIRFRAME_VERSION,
+        "org.wvlet.airframe" %%% "airframe-rx-html" % AIRFRAME_VERSION,
         "org.scala-js"       %%% "scalajs-dom"      % SCALAJS_DOM_VERSION
       ),
       scalaJSUseMainModuleInitializer := true,
