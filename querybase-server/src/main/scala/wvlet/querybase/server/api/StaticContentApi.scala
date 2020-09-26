@@ -1,6 +1,6 @@
 package wvlet.querybase.server.api
 
-import wvlet.airframe.http.{Endpoint, StaticContent}
+import wvlet.airframe.http.{Endpoint, Http, HttpStatus, StaticContent}
 import wvlet.log.LogSupport
 import wvlet.querybase.api.BuildInfo
 
@@ -26,8 +26,17 @@ class StaticContentApi extends LogSupport {
     }
   }
 
+  @Endpoint(path = "/")
+  def index: Unit = {
+    throw Http.redirectException("/ui/")
+  }
+
   @Endpoint(path = "/ui/*path")
   def ui(path: String) = {
-    staticContent(if (path.isEmpty) "index.html" else path)
+    staticContent(if (path.isEmpty) {
+      "index.html"
+    } else {
+      path
+    })
   }
 }
