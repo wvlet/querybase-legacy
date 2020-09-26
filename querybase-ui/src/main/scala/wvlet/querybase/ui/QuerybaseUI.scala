@@ -5,7 +5,7 @@ import wvlet.log.{LogLevel, LogSupport, Logger}
 
 import scala.scalajs.js.annotation.JSExport
 import org.scalajs.dom
-import wvlet.airframe.http.rx.html.DOMRenderer
+import wvlet.airframe.rx.html.DOMRenderer
 import wvlet.querybase.ui.component.MainPanel
 
 /**
