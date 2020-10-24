@@ -4,11 +4,7 @@ name: Scala Steward
 on:
   schedule:
     - cron: '0 0 * * 0'
-  push:
-    branches:
-      - master
-    paths:
-      - '.github/workflows/scala-steward.yml'
+  workflow_dispatch:
 
 jobs:
   scala-steward:
