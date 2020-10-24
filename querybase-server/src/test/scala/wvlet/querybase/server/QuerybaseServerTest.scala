@@ -17,7 +17,7 @@ class QuerybaseServerTest extends AirSpec {
   }
 
   test("rpc service info") { client: QuerybaseSyncClient =>
-    val serviceInfo = client.serviceApi.serviceInfo()
+    val serviceInfo = client.ServiceApi.serviceInfo()
     serviceInfo.name shouldBe "querybase"
   }
 }
