@@ -14,7 +14,7 @@ libraryDependencies += "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.1.0"
 
 addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.1")
 
-addSbtPlugin("org.xerial.sbt" % "sbt-pack" % "0.12")
+addSbtPlugin("org.xerial.sbt" % "sbt-pack" % "0.13")
 
 // For accessing TD
 addSbtPlugin("org.xerial.sbt" % "sbt-sql-td" % "0.11")
