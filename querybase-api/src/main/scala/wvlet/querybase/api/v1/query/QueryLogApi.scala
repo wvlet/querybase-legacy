@@ -7,8 +7,7 @@ import wvlet.airframe.http.RPC
 import wvlet.airframe.metrics.{DataSize, ElapsedTime}
 import wvlet.querybase.api.v1.query.QueryLogApi.presto.{PrestoQueryStageStats, PrestoQueryStats}
 
-/**
-  * API for collecting query logs
+/** API for collecting query logs
   */
 @RPC
 trait QueryLogApi {
@@ -31,8 +30,7 @@ object QueryLogApi {
   case class QueryError(errorCode: String, errorMessage: String)
   case class QueryTarget(catalog: String, database: String)
 
-  /**
-    * Mandatory data for indexing queries
+  /** Mandatory data for indexing queries
     */
   case class QueryIndex(
       // engine-specific query id
@@ -54,8 +52,7 @@ object QueryLogApi {
       queryParams: Map[String, Any] = Map.empty
   )
 
-  /**
-    * Engine-agonistic query log format
+  /** Engine-agonistic query log format
     */
   case class QueryLog(
       queryIndex: QueryIndex,
@@ -79,8 +76,7 @@ object QueryLogApi {
     def queuedTime: ElapsedTime = ElapsedTime.succinctMillis(startedAt.toEpochMilli - createdAt.toEpochMilli)
   }
 
-  /**
-    * Table scan range for time-series data
+  /** Table scan range for time-series data
     */
   case class TableScanRange(start: Option[Instant] = None, end: Option[Instant] = None) {
     (start, end) match {
@@ -100,15 +96,13 @@ object QueryLogApi {
     }
   }
 
-  /**
-    * Input and output amount of data in a query stage
+  /** Input and output amount of data in a query stage
     */
   case class InOut(input: Long, processed: Long, output: Long) {
     def skipRatio: Double = 1.0 - (output.toDouble / input)
   }
 
-  /**
-    * Engine-agonistic table scan log format
+  /** Engine-agonistic table scan log format
     */
   case class TableScanLog(
       queryIndex: QueryIndex,
@@ -146,8 +140,7 @@ object QueryLogApi {
     def timeWindowSize: Option[ElapsedTime] = scanRange.timeWindowSize
   }
 
-  /**
-    * Presto-specific query stats
+  /** Presto-specific query stats
     */
   object presto {
     case class PrestoPerfStats(

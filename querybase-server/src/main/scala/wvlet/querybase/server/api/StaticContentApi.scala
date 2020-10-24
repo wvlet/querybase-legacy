@@ -4,8 +4,7 @@ import wvlet.airframe.http.{Endpoint, Http, HttpStatus, StaticContent}
 import wvlet.log.LogSupport
 import wvlet.querybase.api.BuildInfo
 
-/**
-  * API for hosting static contents
+/** API for hosting static contents
   */
 class StaticContentApi extends LogSupport {
 
