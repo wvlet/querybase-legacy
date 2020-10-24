@@ -5,22 +5,18 @@ import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.querybase.api.v1.ServiceApi.ServiceInfo
 import wvlet.querybase.ui.RPCService
+import wvlet.airframe._
 
 /**
   */
-class MainPanel extends RxElement with RPCService {
+trait MainPanel extends RxElement {
 
-  private val serviceInfo = Rx.optionVariable[ServiceInfo](None)
+  private val navbar = bind[NavBar]
+  LoginProfile.init
 
-  rpc(_.ServiceApi.serviceInfo().map { x =>
-    serviceInfo.set(Some(x))
-  })
-
-  override def render: RxElement = {
-    serviceInfo.map { x =>
-      div(
-        s"Hello Querybase: ${x}"
-      )
-    }
+  override def render = {
+    div(
+      navbar
+    )
   }
 }

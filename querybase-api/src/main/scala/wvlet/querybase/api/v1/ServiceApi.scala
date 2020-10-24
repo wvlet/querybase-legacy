@@ -20,6 +20,7 @@ object ServiceApi {
   case class ServiceInfo(
       name: String = "querybase",
       version: String = BuildInfo.version,
+      oauthClientId: Option[String] = None,
       upTime: ElapsedTime
   )
 }

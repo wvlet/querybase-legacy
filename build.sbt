@@ -115,13 +115,13 @@ lazy val ui =
       webpackConfigFile := Some(baseDirectory.value / "webpack.config.js"),
       npmDependencies in Compile += "monaco-editor" -> "0.21.1",
       npmDevDependencies in Compile ++= Seq(
-        "import-loader"                -> "1.0.1",
-        "expose-loader"                -> "0.7.5",
-        "style-loader"                 -> "1.1.3",
-        "file-loader"                  -> "5.1.0",
-        "css-loader"                   -> "3.4.2",
+        "import-loader" -> "1.0.1",
+        "expose-loader" -> "1.0.0",
+        "style-loader" -> "^1.2.1",
+        "file-loader" -> "^6.1.0",
+        "css-loader" -> "^4.3.0",
         "monaco-editor-webpack-plugin" -> "2.0.0",
-        "webpack-merge"                -> "4.2.2"
+        "webpack-merge" -> "4.2.2"
       ),
       useYarn := true,
       webpackEmitSourceMaps := false,

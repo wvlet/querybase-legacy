@@ -16,6 +16,12 @@ object QuerybaseServerMain {
 class QuerybaseServerMain(
     @option(prefix = "-h,--help", description = "Show help messages", isHelp = true) help: Boolean
 ) extends LogSupport {
+
+  @command(isDefault = true)
+  def default = {
+    info("Type --help to see the list of commands")
+  }
+
   @command(description = "Start Querybase server")
   def server(
       @option(prefix = "-p,--port", description = "port number (default: 8080)")

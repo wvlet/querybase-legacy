@@ -6,7 +6,7 @@ import wvlet.log.{LogLevel, LogSupport, Logger}
 import scala.scalajs.js.annotation.JSExport
 import org.scalajs.dom
 import wvlet.airframe.rx.html.DOMRenderer
-import wvlet.querybase.ui.component.MainPanel
+import wvlet.querybase.ui.component.{LoginProfile, MainPanel}
 
 /**
   */
@@ -18,12 +18,12 @@ object QuerybaseUI extends LogSupport {
     Logger.setDefaultLogLevel(LogLevel.INFO)
     Logger("wvlet.querybase.ui").setLogLevel(LogLevel.DEBUG)
     //Logger("wvlet.airframe.http").setLogLevel(LogLevel.DEBUG)
-
-    debug(s"started")
+    info(s"Started")
     initializeUI
   }
 
   def initializeUI: Unit = {
+
     // Insert main node if not exists
     val mainNode = dom.document.getElementById("main") match {
       case null =>
@@ -35,7 +35,7 @@ object QuerybaseUI extends LogSupport {
 
     val session = design.noLifeCycleLogging.newSession
     val panel   = session.build[MainPanel]
-    DOMRenderer.renderTo(mainNode, panel)
     session.start
+    DOMRenderer.renderTo(mainNode, panel)
   }
 }
