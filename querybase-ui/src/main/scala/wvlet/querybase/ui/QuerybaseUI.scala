@@ -6,7 +6,7 @@ import wvlet.log.{LogLevel, LogSupport, Logger}
 import scala.scalajs.js.annotation.JSExport
 import org.scalajs.dom
 import wvlet.airframe.rx.html.DOMRenderer
-import wvlet.querybase.ui.component.{LoginProfile, MainPanel}
+import wvlet.querybase.ui.component.{GAuthConfig, LoginProfile, MainPanel}
 
 /**
   */
@@ -19,6 +19,12 @@ object QuerybaseUI extends LogSupport {
     Logger("wvlet.querybase.ui").setLogLevel(LogLevel.DEBUG)
     //Logger("wvlet.airframe.http").setLogLevel(LogLevel.DEBUG)
     info(s"Started")
+
+    LoginProfile.init(
+      GAuthConfig(
+        clientId = "793299428025-n6kmmrmcs4g80kibc7m7qakn6vc656bt.apps.googleusercontent.com"
+      )
+    )
     initializeUI
   }
 

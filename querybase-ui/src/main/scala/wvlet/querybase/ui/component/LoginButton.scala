@@ -5,6 +5,10 @@ import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.log.LogSupport
 
+object LoginButton {
+  def id = "gauth-login-button"
+}
+
 /**
   *
   */
@@ -50,8 +54,8 @@ class LoginButton extends RxElement with LogSupport {
           )
         )
       case None =>
-        // TODO: Hide this tag while initializing Google API
-        span(div(cls -> "g-signin2", data("theme") -> "dark"))
+        // Hide this tag while initializing Google API
+        span(id -> LoginButton.id, cls -> "g-signin2", style -> "display: none;", data("theme") -> "dark")
     }
   }
 }

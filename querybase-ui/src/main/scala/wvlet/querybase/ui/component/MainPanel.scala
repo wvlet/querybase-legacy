@@ -12,7 +12,6 @@ import wvlet.airframe._
 trait MainPanel extends RxElement {
 
   private val navbar = bind[NavBar]
-  LoginProfile.init
 
   override def render = {
     div(

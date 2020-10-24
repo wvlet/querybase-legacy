@@ -19,6 +19,12 @@ case class LoginProfile(
     id_token: String
 )
 
+case class GAuthConfig(
+    clientId: String,
+    // Refresh OAuth token every 45 minutes
+    tokenRefreshIntervalMillis: Long = 45 * 60 * 1000
+)
+
 object LoginProfile extends LogSupport {
   val currentUser: RxOptionVar[LoginProfile] = Rx.optionVariable(None)
 
@@ -26,7 +32,7 @@ object LoginProfile extends LogSupport {
     * Initialize GoogleAPI Auth2, and return a Future, which will be set to true
     * after the initialization completed.
     */
-  private[ui] def init: Future[Boolean] = {
+  def init(config: GAuthConfig): Future[Boolean] = {
     val isInitialized = Promise[Boolean]()
     js.Dynamic.global.gapi.load(
       "auth2",
@@ -35,7 +41,7 @@ object LoginProfile extends LogSupport {
           .init(
             js.Dynamic
               .literal(
-                client_id = s"793299428025-n6kmmrmcs4g80kibc7m7qakn6vc656bt.apps.googleusercontent.com",
+                client_id = config.clientId,
                 fetch_basic_profile = true
               )
           )
@@ -51,13 +57,17 @@ object LoginProfile extends LogSupport {
 
         auth2.`then`({ () =>
           debug(s"gapi.auth2 is initialized")
+          // Show login button
+          Option(dom.document.getElementById(LoginButton.id)).map { el =>
+            el.setAttribute("style", "inline")
+          }
           isInitialized.success(true)
         })
       }
     )
 
-    // Refresh auth token for every 45 minutes
-    timers.setInterval(45 * 60 * 1000) {
+    // Refresh auth token
+    timers.setInterval(config.tokenRefreshIntervalMillis) {
       refreshAuth
     }
 
