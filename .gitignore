@@ -33,3 +33,6 @@ log/*
 querybase-server/log/*
 .vscode/launch.json
 project/metals.sbt
+.bsp
+.vscode
+project/project
