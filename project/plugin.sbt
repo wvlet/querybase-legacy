@@ -9,7 +9,7 @@ addSbtPlugin("com.dwijnand"       % "sbt-dynver"    % "4.0.0")
 // For Scala.js
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.0.0")
 addSbtPlugin("org.scala-js"       % "sbt-scalajs"              % "1.2.0")
-addSbtPlugin("ch.epfl.scala"      % "sbt-scalajs-bundler"      % "0.18.0")
+addSbtPlugin("ch.epfl.scala"      % "sbt-scalajs-bundler"      % "0.20.0")
 libraryDependencies += "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.1.0"
 
 addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.1")
