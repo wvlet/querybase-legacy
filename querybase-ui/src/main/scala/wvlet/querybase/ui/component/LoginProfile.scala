@@ -27,6 +27,7 @@ case class GAuthConfig(
 
 object LoginProfile extends LogSupport {
   val currentUser: RxOptionVar[LoginProfile] = Rx.optionVariable(None)
+  val loading                                = Rx.variable(true)
 
   /**
     * Initialize GoogleAPI Auth2, and return a Future, which will be set to true
@@ -57,10 +58,8 @@ object LoginProfile extends LogSupport {
 
         auth2.`then`({ () =>
           debug(s"gapi.auth2 is initialized")
-          // Show login button
-          Option(dom.document.getElementById(LoginButton.id)).map { el =>
-            el.setAttribute("style", "inline")
-          }
+          // Show the login button
+          loading := false
           isInitialized.success(true)
         })
       }
