@@ -3,11 +3,10 @@ package wvlet.querybase.server.api.code
 import wvlet.querybase.api.v1.code.ProjectApi
 import wvlet.airframe.control.ULID
 import wvlet.log.LogSupport
-import java.{util => ju}
 
 trait ProjectApiImpl extends ProjectApi with LogSupport {
 
-  def createProject(project: ProjectApi.Project, requestId: ju.UUID): Option[ProjectApi.Project] = {
+  def createProject(project: ProjectApi.Project, requestId: ULID): Option[ProjectApi.Project] = {
     info(s"Create Project: ${project}")
     None
   }
