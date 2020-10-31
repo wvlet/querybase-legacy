@@ -10,7 +10,6 @@ import scala.scalajs.js
 import scala.scalajs.js.timers
 
 /**
-  *
   */
 case class LoginProfile(
     name: String,
@@ -29,8 +28,7 @@ object LoginProfile extends LogSupport {
   val currentUser: RxOptionVar[LoginProfile] = Rx.optionVariable(None)
   val loading                                = Rx.variable(true)
 
-  /**
-    * Initialize GoogleAPI Auth2, and return a Future, which will be set to true
+  /** Initialize GoogleAPI Auth2, and return a Future, which will be set to true
     * after the initialization completed.
     */
   def init(config: GAuthConfig): Future[Boolean] = {

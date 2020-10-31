@@ -6,7 +6,6 @@ import wvlet.airframe.rx.html.all._
 import wvlet.log.LogSupport
 
 /**
-  *
   */
 class LoginButton extends RxElement with LogSupport {
 
