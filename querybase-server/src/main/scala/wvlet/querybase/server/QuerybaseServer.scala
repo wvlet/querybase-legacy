@@ -44,7 +44,7 @@ object QuerybaseServer extends LogSupport {
   private[querybase] def testDesign = {
     val port = IOUtil.randomPort
     design(QuerybaseServerConfig(port = port))
-      .bind[SyncClient].toInstance(Http.client.newSyncClient(s"localhost:${port}"))
+      .bind[SyncClient].toInstance(Http.client.withRetryContext(_.noRetry).newSyncClient(s"localhost:${port}"))
       .bind[QuerybaseSyncClient].toProvider { syncClient: SyncClient =>
         new ServiceSyncClient(syncClient)
       }

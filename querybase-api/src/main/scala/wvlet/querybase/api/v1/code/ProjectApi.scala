@@ -4,13 +4,14 @@ import ProjectApi._
 import java.time.Instant
 import wvlet.airframe.http.RPC
 import wvlet.airframe.control.ULID
+import java.{util => ju}
 
 @RPC
 trait ProjectApi {
   def listProject: Seq[Project]
   def getProject(id: String): Option[Project]
   def updateProject(project: Project, requestId: ULID): Option[Project]
-  def createProject(project: Project, requestId: ULID): Option[Project]
+  def createProject(project: Project, requestId: ju.UUID): Option[Project]
   def deleteProject(projectId: String, requestId: ULID): Unit
 }
 

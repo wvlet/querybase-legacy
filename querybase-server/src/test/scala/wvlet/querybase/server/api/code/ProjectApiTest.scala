@@ -7,6 +7,7 @@ import wvlet.querybase.server.QuerybaseServer
 import wvlet.querybase.server.QuerybaseServer.QuerybaseSyncClient
 import wvlet.querybase.api.v1.code.ProjectApi.Project
 import wvlet.airframe.control.ULID
+import java.{util => ju}
 
 class ProjectApiTest extends AirSpec {
 
@@ -18,7 +19,7 @@ class ProjectApiTest extends AirSpec {
         name = "my_project",
         description = "An example project"
       ),
-      requestId = ULID.newULID
+      requestId = ju.UUID.randomUUID()
     )
   }
 }
