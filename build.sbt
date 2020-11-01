@@ -1,10 +1,10 @@
-val SCALA_2_12 = "2.12.12"
-val SCALA_2_13 = "2.13.3"
+val SCALA_2_12          = "2.12.12"
+val SCALA_2_13          = "2.13.3"
 val targetScalaVersions = SCALA_2_12 :: Nil
 
-val AIRFRAME_VERSION = "20.10.2"
+val AIRFRAME_VERSION    = "20.10.3"
 val SCALAJS_DOM_VERSION = "1.1.0"
-val SPARK_VERSION = "3.0.1"
+val SPARK_VERSION       = "3.0.1"
 
 // Reload build.sbt on changes
 Global / onChangedBuildSource := ReloadOnSourceChanges
@@ -86,10 +86,10 @@ lazy val api =
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %%% "airframe-http"    % AIRFRAME_VERSION,
         "org.wvlet.airframe" %%% "airframe-metrics" % AIRFRAME_VERSION,
-        "org.scala-lang"     % "scala-reflect"      % scalaVersion.value
+        "org.scala-lang"       % "scala-reflect"    % scalaVersion.value
       ),
       buildInfoPackage := "wvlet.querybase.api",
-      buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, scalaBinaryVersion, sbtVersion),
+      buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, scalaBinaryVersion, sbtVersion)
     )
     .jsSettings(jsBuildSettings)
 
@@ -115,13 +115,13 @@ lazy val ui =
       webpackConfigFile := Some(baseDirectory.value / "webpack.config.js"),
       npmDependencies in Compile += "monaco-editor" -> "0.21.1",
       npmDevDependencies in Compile ++= Seq(
-        "import-loader" -> "1.0.1",
-        "expose-loader" -> "1.0.0",
-        "style-loader" -> "^1.2.1",
-        "file-loader" -> "^6.1.0",
-        "css-loader" -> "^4.3.0",
+        "import-loader"                -> "1.0.1",
+        "expose-loader"                -> "1.0.0",
+        "style-loader"                 -> "^1.2.1",
+        "file-loader"                  -> "^6.1.0",
+        "css-loader"                   -> "^4.3.0",
         "monaco-editor-webpack-plugin" -> "2.0.0",
-        "webpack-merge" -> "4.2.2"
+        "webpack-merge"                -> "4.2.2"
       ),
       useYarn := true,
       webpackEmitSourceMaps := false,
@@ -146,7 +146,7 @@ lazy val server =
         "org.wvlet.airframe" %% "airframe"              % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-config"       % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-launcher"     % AIRFRAME_VERSION,
-        "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION,
+        "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION
       )
     )
     .dependsOn(apiJVM, sql, store, client)
@@ -160,7 +160,7 @@ lazy val client =
       name := "querybase-client",
       airframeHttpClients := Seq("wvlet.querybase.api:sync"),
       libraryDependencies ++= Seq(
-        "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION,
+        "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION
       )
     )
     .dependsOn(apiJVM)
@@ -174,7 +174,7 @@ lazy val sql =
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %% "airframe"      % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-sql"  % AIRFRAME_VERSION,
-        "org.wvlet.airframe" %% "airframe-jdbc" % AIRFRAME_VERSION,
+        "org.wvlet.airframe" %% "airframe-jdbc" % AIRFRAME_VERSION
       )
     )
     .dependsOn(apiJVM)
@@ -189,7 +189,7 @@ lazy val store =
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %% "airframe"      % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-jdbc" % AIRFRAME_VERSION,
-        "org.xerial"         % "sqlite-jdbc"    % "3.32.3"
+        "org.xerial"          % "sqlite-jdbc"   % "3.32.3"
       )
     )
     .dependsOn(apiJVM)
@@ -201,6 +201,6 @@ lazy val td =
     .settings(buildSettings)
     .settings(
       name := "querybase-td",
-      description := "querybase log collector for Arm Treasure Data",
+      description := "querybase log collector for Arm Treasure Data"
     )
     .dependsOn(apiJVM, store)

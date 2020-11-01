@@ -1,6 +1,5 @@
 package wvlet.querybase.server
 
-import com.twitter.finagle.http.{Request, Response}
 import wvlet.airframe.Design
 import wvlet.airframe.http.Router
 import wvlet.airframe.http.finagle.{Finagle, FinagleServer, FinagleSyncClient}
@@ -10,6 +9,11 @@ import wvlet.querybase.api.ServiceSyncClient
 import wvlet.querybase.api.v1.ServiceApi
 import wvlet.querybase.server.api.{QueryLogApiImpl, StaticContentApi}
 import wvlet.querybase.store.{QueryStorage, SQLiteQueryStorage}
+import wvlet.airframe.http.Http
+import wvlet.airframe.http.Http.SyncClient
+import wvlet.airframe.http.HttpMessage.Request
+import wvlet.airframe.http.HttpMessage.Response
+import wvlet.querybase.server.api.code.ProjectApiImpl
 
 /**
   */
@@ -20,6 +24,7 @@ object QuerybaseServer extends LogSupport {
       .add[StaticContentApi]
       .add[ServiceApi]
       .add[QueryLogApiImpl]
+      .add[ProjectApiImpl]
 
   type QuerybaseSyncClient = ServiceSyncClient[Request, Response]
 
@@ -39,8 +44,8 @@ object QuerybaseServer extends LogSupport {
   private[querybase] def testDesign = {
     val port = IOUtil.randomPort
     design(QuerybaseServerConfig(port = port))
-      .bind[FinagleSyncClient].toInstance(Finagle.client.newSyncClient(s"localhost:${port}"))
-      .bind[QuerybaseSyncClient].toProvider { syncClient: FinagleSyncClient =>
+      .bind[SyncClient].toInstance(Http.client.withRetryContext(_.noRetry).newSyncClient(s"localhost:${port}"))
+      .bind[QuerybaseSyncClient].toProvider { syncClient: SyncClient =>
         new ServiceSyncClient(syncClient)
       }
   }

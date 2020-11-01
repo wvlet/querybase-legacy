@@ -5,7 +5,6 @@ import wvlet.airframe.rx.html.all._
 import wvlet.airframe._
 
 /**
-  *
   */
 class NavBar(heightPixel: Int = 45, loginButton: LoginButton) extends RxElement {
   override def render: RxElement = {
