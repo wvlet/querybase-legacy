@@ -7,7 +7,6 @@ import wvlet.querybase.ui.RPCService
 import wvlet.airframe.rx.html.all._
 
 /**
-  *
   */
 trait ProjectSelector extends RxElement with RPCService {
 
@@ -19,10 +18,9 @@ trait ProjectSelector extends RxElement with RPCService {
         Rx.fromFuture(rpc(_.ProjectApi.listProject())).map { projectList =>
           projectList.map { x =>
             a(
-              cls  -> "dropdown-item pl-1",
-              href -> "#",
-              onclick -> { e: MouseEvent =>
-                },
+              cls     -> "dropdown-item pl-1",
+              href    -> "#",
+              onclick -> { e: MouseEvent => },
               x.name
             )
           }

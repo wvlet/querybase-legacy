@@ -5,7 +5,6 @@ import NotebookApi._
 import wvlet.airframe.control.ULID
 
 /**
-  *
   */
 class NotebookApiImpl extends NotebookApi {
   override def createNotebook(notebook: Notebook, requestId: ULID): Option[Notebook] = None

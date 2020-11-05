@@ -17,10 +17,9 @@ import wvlet.querybase.ui.component.editor.importedjs.monaco.editor.{
 import scala.scalajs.js
 
 /**
-  *
   */
-class TextEditor(initialValue: String = "", onEnter: String => Unit = { x: String =>
-  }) extends RxElement
+class TextEditor(initialValue: String = "", onEnter: String => Unit = { x: String => })
+    extends RxElement
     with LogSupport {
 
   private val editorNode = {
