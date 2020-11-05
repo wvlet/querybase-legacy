@@ -12,42 +12,65 @@ import wvlet.querybase.ui.component.editor.TextEditor
   */
 trait NotebookElement extends RxElement with RPCService {
 
+  private var cells: Seq[NotebookCell] = Seq.empty
+
   override def render: RxElement = {
     Rx.fromFuture(rpc(_.NotebookApi.getNotebook("1"))).map {
       case None => div("empty")
       case Some(notebook) =>
+        cells = notebook.cells.zipWithIndex.map {
+          case (cell, i) => new NotebookCell(this, i + 1, cell)
+        }
         div(
           h5(notebook.name),
           hr(),
-          notebook.cells.zipWithIndex.map {
-            case (cell, i) => new NotebookCell(i, cell)
-          }
+          cells
         )
     }
   }
-}
 
-class NotebookCell(index: Int, cell: Cell) extends RxElement with LogSupport {
-  override def render: RxElement = {
-    table(
-      cls -> "w-100",
-      tr(
-        td(
-          cls -> "align-top",
-          small(
-            cls -> "text-monospace",
-            s"[${index}] "
+  def focusOnCell(cellIndex: Int): Unit = {
+    cells.find(_.index == cellIndex).foreach { cell =>
+      info(s"Focus on ${cell.index}")
+      cell.focus
+    }
+  }
+
+  class NotebookCell(notebook: NotebookElement, val index: Int, cell: Cell) extends RxElement with LogSupport {
+    private val editor = new TextEditor(
+      cell.source,
+      onExitUp = { () =>
+        info(s"Exit up cell: ${index}")
+        focusOnCell((index - 1).max(0))
+      },
+      onExitDown = { () =>
+        info(s"Exit down cell: ${index}")
+        focusOnCell((index + 1).max(cells.length))
+      }
+    )
+
+    def focus: Unit = {
+      editor.focus
+    }
+
+    override def render: RxElement = {
+      table(
+        cls -> "w-100",
+        tr(
+          td(
+            cls -> "align-top",
+            small(
+              cls -> "text-monospace",
+              s"[${index}] "
+            )
+          ),
+          td(
+            cls -> "align-bottom",
+            editor
           )
-        ),
-        td(
-          cls -> "align-bottom",
-          new TextEditor(cell.source, onExitUp = { () =>
-            info(s"Exit up cell: ${index}")
-          }, onExitDown = { () =>
-            info(s"Exit down cell: ${index}")
-          })
         )
       )
-    )
+    }
   }
+
 }
