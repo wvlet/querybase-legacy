@@ -49,7 +49,6 @@ object NotebookApi {
   */
 @RPC
 trait NotebookApi {
-
   import NotebookApi._
 
   def createNotebook(notebook: Notebook, requestId: ULID): Option[Notebook]

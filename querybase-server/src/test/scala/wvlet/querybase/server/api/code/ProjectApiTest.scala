@@ -16,7 +16,8 @@ class ProjectApiTest extends AirSpec {
     client.ProjectApi.createProject(
       project = Project(
         name = "my_project",
-        description = "An example project"
+        description = "An example project",
+        path = ""
       ),
       requestId = ULID.newULID
     )

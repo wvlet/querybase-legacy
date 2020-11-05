@@ -21,8 +21,8 @@ trait ProjectApiImpl extends ProjectApi with LogSupport {
 
   def listProject: Seq[ProjectApi.Project] = {
     Seq(
-      Project(id = "1", name = "project 1", description = "project"),
-      Project(id = "1", name = "project 2", description = "project")
+      Project(id = "1", name = "project 1", description = "project", path = ""),
+      Project(id = "1", name = "project 2", description = "project", path = "")
     )
   }
 
