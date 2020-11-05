@@ -73,9 +73,7 @@ trait NotebookEditor extends RxElement with RPCService {
           tr(
             td(),
             td(
-              small(
-                code(text.toString)
-              )
+              pre(code(text.toString))
             )
           )
         }

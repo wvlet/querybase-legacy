@@ -26,7 +26,7 @@ class NotebookApiImpl extends NotebookApi {
                       |select 1
                       |""".stripMargin,
             outputs = Seq(
-              """{"output_type":"stream", "name":"stdout", "text":"(query result)"}"""
+              """{"output_type":"stream", "name":"stdout", "text":"(query result)\n1"}"""
             )
           ),
           Cell(
