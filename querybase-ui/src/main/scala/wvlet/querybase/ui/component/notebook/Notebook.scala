@@ -5,7 +5,6 @@ import wvlet.airframe.rx.html.all._
 import wvlet.querybase.ui.component.editor.TextEditor
 
 /**
-  *
   */
 class Notebook extends RxElement {
   override def render: RxElement = {

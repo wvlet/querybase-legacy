@@ -6,7 +6,6 @@ import wvlet.airframe.rx.html.all._
 import wvlet.querybase.ui.component.notebook.Notebook
 
 /**
-  *
   */
 trait NotebookUI extends RxElement {
 

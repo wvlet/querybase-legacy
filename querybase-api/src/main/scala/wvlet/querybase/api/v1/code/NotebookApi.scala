@@ -36,7 +36,6 @@ object NotebookApi {
 }
 
 /**
-  *
   */
 @RPC
 trait NotebookApi {
@@ -44,10 +43,7 @@ trait NotebookApi {
   import NotebookApi._
 
   def createNotebook(notebook: Notebook, requestId: ULID): Option[Notebook]
-
   def getNotebook(id: String): Option[Notebook]
-
   def updateNotebook(notebook: Notebook): Unit
-
   def deleteNotebook(notebookId: String, requestId: ULID): Unit
 }
