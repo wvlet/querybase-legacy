@@ -3,6 +3,7 @@ package wvlet.querybase.ui.component.notebook
 import wvlet.airframe.rx.Rx
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
+import wvlet.log.LogSupport
 import wvlet.querybase.api.v1.code.NotebookApi.Cell
 import wvlet.querybase.ui.RPCService
 import wvlet.querybase.ui.component.editor.TextEditor
@@ -26,7 +27,7 @@ trait NotebookElement extends RxElement with RPCService {
   }
 }
 
-class NotebookCell(index: Int, cell: Cell) extends RxElement {
+class NotebookCell(index: Int, cell: Cell) extends RxElement with LogSupport {
   override def render: RxElement = {
     table(
       cls -> "w-100",
@@ -40,7 +41,11 @@ class NotebookCell(index: Int, cell: Cell) extends RxElement {
         ),
         td(
           cls -> "align-bottom",
-          new TextEditor(cell.source)
+          new TextEditor(cell.source, onExitUp = { () =>
+            info(s"Exit up cell: ${index}")
+          }, onExitDown = { () =>
+            info(s"Exit down cell: ${index}")
+          })
         )
       )
     )
