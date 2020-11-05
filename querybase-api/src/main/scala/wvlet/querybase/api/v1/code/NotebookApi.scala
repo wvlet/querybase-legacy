@@ -27,10 +27,9 @@ object NotebookApi {
   }
 
   case class Cell(
-      // The server-generated ID
-      id: String = "N/A",
-      notebookId: String,
-      text: String
+      cellType: String,
+      // Text source
+      source: String
   )
 
 }
