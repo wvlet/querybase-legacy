@@ -13,10 +13,16 @@ import wvlet.airframe.http.Http
 import wvlet.airframe.http.Http.SyncClient
 import wvlet.airframe.http.HttpMessage.Request
 import wvlet.airframe.http.HttpMessage.Response
-import wvlet.querybase.server.api.code.ProjectApiImpl
+import wvlet.querybase.server.api.code.{NotebookApiImpl, ProjectApiImpl}
 
-/**
-  */
+case class QuerybaseServerConfig(port: Int = 8080)
+
+class QuerybaseServer(server: FinagleServer) {
+  def waitForTermination: Unit = {
+    server.waitServerTermination
+  }
+}
+
 object QuerybaseServer extends LogSupport {
 
   private[server] def router =
@@ -25,6 +31,7 @@ object QuerybaseServer extends LogSupport {
       .add[ServiceApi]
       .add[QueryLogApiImpl]
       .add[ProjectApiImpl]
+      .add[NotebookApiImpl]
 
   type QuerybaseSyncClient = ServiceSyncClient[Request, Response]
 
@@ -48,16 +55,6 @@ object QuerybaseServer extends LogSupport {
       .bind[QuerybaseSyncClient].toProvider { syncClient: SyncClient =>
         new ServiceSyncClient(syncClient)
       }
-  }
-
-}
-
-case class QuerybaseServerConfig(port: Int = 8080)
-
-class QuerybaseServer(server: FinagleServer) {
-
-  def waitForTermination: Unit = {
-    server.waitServerTermination
   }
 
 }

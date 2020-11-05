@@ -108,20 +108,21 @@ lazy val ui =
       airframeHttpClients := Seq("wvlet.querybase.api:scalajs"),
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %%% "airframe-rx-html" % AIRFRAME_VERSION,
-        "org.scala-js"       %%% "scalajs-dom"      % SCALAJS_DOM_VERSION
+        "org.scala-js" %%% "scalajs-dom" % SCALAJS_DOM_VERSION
       ),
       scalaJSUseMainModuleInitializer := true,
       jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
       webpackConfigFile := Some(baseDirectory.value / "webpack.config.js"),
+      version in startWebpackDevServer := "3.11.0",
       npmDependencies in Compile += "monaco-editor" -> "0.21.1",
       npmDevDependencies in Compile ++= Seq(
-        "import-loader"                -> "1.0.1",
-        "expose-loader"                -> "1.0.0",
-        "style-loader"                 -> "^1.2.1",
-        "file-loader"                  -> "^6.1.0",
-        "css-loader"                   -> "^4.3.0",
+        "import-loader" -> "1.0.1",
+        "expose-loader" -> "1.0.0",
+        "style-loader" -> "^1.2.1",
+        "file-loader" -> "^6.1.0",
+        "css-loader" -> "^4.3.0",
         "monaco-editor-webpack-plugin" -> "2.0.0",
-        "webpack-merge"                -> "4.2.2"
+        "webpack-merge" -> "4.2.2"
       ),
       useYarn := true,
       webpackEmitSourceMaps := false,

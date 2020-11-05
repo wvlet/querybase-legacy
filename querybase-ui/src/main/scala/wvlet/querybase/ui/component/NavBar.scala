@@ -2,11 +2,10 @@ package wvlet.querybase.ui.component
 
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
-import wvlet.airframe._
 
 /**
   */
-class NavBar(heightPixel: Int = 45, loginButton: LoginButton) extends RxElement {
+class NavBar(heightPixel: Int = 40, loginButton: LoginButton) extends RxElement {
   override def render: RxElement = {
     nav(
       cls   -> "navbar navbar-expand-md fixed-top navbar-dark bg-dark py-0",
@@ -29,7 +28,7 @@ class NavBar(heightPixel: Int = 45, loginButton: LoginButton) extends RxElement 
           cls -> "navbar-nav mr-auto",
           li(
             cls -> "nav-item text-nowrap",
-            a(href -> "", "Menu")
+            a(href -> "#menu", cls -> "nav-item nav-link", "Menu")
           )
         )
       ),
