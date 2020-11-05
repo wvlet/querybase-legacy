@@ -1,22 +1,21 @@
-package wvlet.querybase.ui.component
+package wvlet.querybase.ui.component.notebook
 
 import wvlet.airframe.bind
-import wvlet.airframe.rx.{Rx, RxOptionVar}
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
+import wvlet.airframe.rx.{Rx, RxOptionVar}
 import wvlet.querybase.api.v1.code.NotebookApi.Notebook
-import wvlet.querybase.ui.RPCService
-import wvlet.querybase.ui.component.notebook.NotebookElement
+import wvlet.querybase.ui.component.ProjectSelector
 
-object NotebookUI {
+object NotebookFrame {
   val targetNotebook: RxOptionVar[Notebook] = Rx.optionVariable(None)
 }
 
 /**
   */
-trait NotebookUI extends RxElement {
+trait NotebookFrame extends RxElement {
 
-  private val notebookElement = bind[NotebookElement]
+  private val notebookElement = bind[NotebookEditor]
   private val projectSelector = bind[ProjectSelector]
 
   override def render: RxElement = div(

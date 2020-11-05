@@ -10,7 +10,7 @@ import wvlet.querybase.ui.component.editor.TextEditor
 
 /**
   */
-trait NotebookElement extends RxElement with RPCService {
+trait NotebookEditor extends RxElement with RPCService {
 
   private var cells: Seq[NotebookCell] = Seq.empty
 
@@ -36,7 +36,7 @@ trait NotebookElement extends RxElement with RPCService {
     }
   }
 
-  class NotebookCell(notebook: NotebookElement, val index: Int, cell: Cell) extends RxElement with LogSupport {
+  class NotebookCell(notebook: NotebookEditor, val index: Int, cell: Cell) extends RxElement with LogSupport {
     private val editor = new TextEditor(
       cell.source,
       onExitUp = { () =>
@@ -68,7 +68,17 @@ trait NotebookElement extends RxElement with RPCService {
             cls -> "align-bottom",
             editor
           )
-        )
+        ),
+        cell.getOutputs.flatMap(output => output.get("text")).map { text =>
+          tr(
+            td(),
+            td(
+              small(
+                code(text.toString)
+              )
+            )
+          )
+        }
       )
     }
   }

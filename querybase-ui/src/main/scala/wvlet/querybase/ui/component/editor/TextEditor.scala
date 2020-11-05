@@ -77,12 +77,7 @@ class TextEditor(initialValue: String = "", onEnter: String => Unit = { x: Strin
   }
 
   def focus: Unit = {
-    document.getElementById(editorId) match {
-      case h: HTMLElement =>
-        debug(s"focus to ${editorId}")
-        editor.focus()
-      case _ =>
-    }
+    editor.focus()
   }
 
   def cursorPosition: Position = {
