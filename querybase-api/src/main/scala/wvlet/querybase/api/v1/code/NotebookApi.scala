@@ -2,8 +2,10 @@ package wvlet.querybase.api.v1.code
 
 import java.time.Instant
 
+import wvlet.airframe.codec.MessageCodec
 import wvlet.airframe.control.ULID
 import wvlet.airframe.http.RPC
+import wvlet.airframe.json.Json
 
 object NotebookApi {
 
@@ -29,9 +31,18 @@ object NotebookApi {
   case class Cell(
       cellType: String,
       // Text source
-      source: String
-  )
-
+      source: String,
+      // Output lines
+      outputs: Seq[Json] = Seq.empty,
+      metadata: Map[Any, Any] = Map.empty,
+  ) {
+    def getOutputs: Seq[Map[Any, Any]] = {
+      val codec = MessageCodec.of[Map[Any, Any]]
+      outputs.map { x =>
+        codec.fromJson(x)
+      }
+    }
+  }
 }
 
 /**
