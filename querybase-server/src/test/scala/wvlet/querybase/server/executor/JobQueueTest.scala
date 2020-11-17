@@ -17,11 +17,15 @@ class JobQueueTest extends AirSpec {
   test("add a job") { jobQueue: JobQueue =>
     val job = PrestoJob(catalog = "td-presto", sql = "select 1")
     val e   = JobEntry(jobType = "presto", jobData = job.toJson)
-    jobQueue.add(e)
-    val jobList = jobQueue.list
-    info(jobList.mkString("\n"))
-    jobQueue.updateState(e.withState(JobState.RUNNING))
-    val jobList2 = jobQueue.list
-    info(jobList2.mkString("\n"))
+    try {
+      jobQueue.add(e)
+      val jobList = jobQueue.list
+      info(jobList.mkString("\n"))
+      jobQueue.updateState(e.withState(JobState.RUNNING))
+      val jobList2 = jobQueue.list
+      info(jobList2.mkString("\n"))
+    } finally {
+      jobQueue.delete(e.id)
+    }
   }
 }

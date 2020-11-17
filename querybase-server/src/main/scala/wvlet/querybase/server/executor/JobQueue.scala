@@ -46,12 +46,13 @@ trait JobQueue {
 
   private val connectionPool = bind[JobQueueConnectionPool]
   private val jobEntryTable  = "job_entry"
+  private val idColumn       = "id"
 
   connectionPool.executeUpdate(
-    SQLHelper.createTableSQLFor[JobEntry](jobEntryTable, Map("id" -> "primary key"))
+    SQLHelper.createTableSQLFor[JobEntry](jobEntryTable, Map(idColumn -> "primary key"))
   )
   connectionPool.executeUpdate(
-    s"create index if not exists job_queue_id_index on ${jobEntryTable} (id)"
+    s"""create index if not exists job_queue_id_index on ${jobEntryTable} ("${idColumn}")"""
   )
 
   def add(e: JobEntry): Unit = {
@@ -68,7 +69,13 @@ trait JobQueue {
 
   def updateState(e: JobEntry): Unit = {
     connectionPool.withConnection { implicit conn =>
-      SQLHelper.updateRecord[JobEntry](jobEntryTable, e, "id", Seq("state, updatedAt"))
+      SQLHelper.updateColumns[JobEntry](jobEntryTable, e, idColumn, Seq("state", "updatedAt"))
+    }
+  }
+
+  def delete(jobId: ULID): Unit = {
+    connectionPool.withConnection { implicit conn =>
+      SQLHelper.deleteRecord(jobEntryTable, idColumn, jobId)
     }
   }
 
