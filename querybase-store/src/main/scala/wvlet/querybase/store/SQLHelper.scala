@@ -51,7 +51,19 @@ object SQLHelper extends LogSupport {
     }
   }
 
-  def updateRecord[A: ru.TypeTag](tableName: String, obj: A, idColumn: String, columnMask: Seq[String])(
+  def deleteRecord(tableName: String, idColumn: String, id: Any)(implicit conn: Connection): Unit = {
+    withResource(conn.prepareStatement(s"""delete from ${tableName} where "${idColumn}" = ?""")) { ps =>
+      ps.setObject(1, id)
+      ps.execute()
+    }
+  }
+
+  def updateRecord[A: ru.TypeTag](tableName: String, obj: A, idColumn: String)(implicit conn: Connection): Unit = {
+    val surface = Surface.of[A]
+    updateColumns[A](tableName, obj, idColumn, columnMask = surface.params.map(_.name).filterNot(_ == idColumn))
+  }
+
+  def updateColumns[A: ru.TypeTag](tableName: String, obj: A, idColumn: String, columnMask: Seq[String])(
       implicit conn: Connection) {
     val surface = Surface.of[A]
     val updateColumns = columnMask
@@ -59,21 +71,23 @@ object SQLHelper extends LogSupport {
         s""""${column}" = ?"""
       }.mkString(", ")
 
-    withResource(conn.prepareStatement(s"""update "${tableName}" set ${updateColumns} where "${idColumn}" = ?""")) {
-      prep =>
-        var index = 1
-        columnMask.map { column =>
-          surface.params.find(_.name == column).foreach { p =>
-            val v = p.get(obj)
-            prep.setObject(index, v)
-            index += 1
-          }
-        }
-        surface.params.find(_.name == idColumn).foreach { p =>
+    val sql = s"""update "${tableName}" set ${updateColumns} where "${idColumn}" = ?"""
+    info(sql)
+
+    withResource(conn.prepareStatement(sql)) { prep =>
+      var index = 1
+      columnMask.map { column =>
+        surface.params.find(_.name == column).foreach { p =>
           val v = p.get(obj)
           prep.setObject(index, v)
+          index += 1
         }
-        prep.execute()
+      }
+      surface.params.find(_.name == idColumn).foreach { p =>
+        val v = p.get(obj)
+        prep.setObject(index, v)
+      }
+      prep.execute()
     }
   }
 
