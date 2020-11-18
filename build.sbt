@@ -10,7 +10,7 @@ val SPARK_VERSION       = "3.0.1"
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 // For using Scala 2.12 in sbt
-scalaVersion in ThisBuild := SCALA_2_12
+scalaVersion in ThisBuild := SCALA_2_13
 organization in ThisBuild := "org.wvlet.querybase"
 
 // Use dynamic snapshot version strings for non tagged versions
