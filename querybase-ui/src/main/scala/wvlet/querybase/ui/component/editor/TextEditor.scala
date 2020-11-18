@@ -13,7 +13,8 @@ import wvlet.querybase.ui.component.editor.importedjs.monaco.editor.{
   IEditorMinimapOptions,
   IModelDecorationsChangedEvent,
   IStandaloneEditorConstructionOptions,
-  ITextModel
+  ITextModel,
+  RenderLineNumbersType
 }
 
 import scala.scalajs.js
@@ -41,6 +42,12 @@ class TextEditor(initialValue: String = "", onEnter: String => Unit = { x: Strin
     option.value = initialValue
     option.language = "sql"
     option.theme = "vs-dark"
+    option.lineNumbers = "on"
+    option.glyphMargin = false
+    option.folding = false
+    option.renderIndentGuides = true
+    option.tabSize = 2.0
+    //option.lineDecorationsWidth = 10
     option.scrollBeyondLastLine = false
     option.lineHeight = 18
     option.automaticLayout = true
@@ -52,7 +59,7 @@ class TextEditor(initialValue: String = "", onEnter: String => Unit = { x: Strin
 
     val editor = Editor.create(editorNode, option)
     editor.onKeyDown { e: IKeyboardEvent =>
-      if (e.keyCode == KeyCode.Enter && e.metaKey) {
+      if (e.keyCode == KeyCode.Enter && (e.metaKey || e.ctrlKey)) {
         val text = editor.getValue()
         debug(s"Command + Enter is pressed:\n[content]\n${text}")
         onEnter(text)
