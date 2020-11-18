@@ -25,7 +25,7 @@ jobs:
       - name: scalafmt test
         run: ./sbt scalafmtCheckAll
   test_2_12:
-    name: Scala 2.12
+    name: Scala 2.13
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -37,7 +37,7 @@ jobs:
           path: ~/.cache
           key: ${{ runner.os }}-scala-2.12-${{ hashFiles('**/*.sbt') }}
           restore-keys: ${{ runner.os }}-scala-2.12-
-      - name: Scala 2.12 test
+      - name: Scala 2.13 test
         run: ./sbt projectJVM/test
   test_js:
     name: Scala.js
