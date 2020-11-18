@@ -4,7 +4,6 @@ import wvlet.airframe.codec.MessageCodec
 import wvlet.airframe.json.Json
 
 /**
-  *
   */
 case class PrestoJob(
     catalog: String,

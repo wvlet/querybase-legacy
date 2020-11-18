@@ -18,8 +18,8 @@ trait NotebookEditor extends RxElement with RPCService {
     Rx.fromFuture(rpc(_.NotebookApi.getNotebook("1"))).map {
       case None => div("empty")
       case Some(notebook) =>
-        cells = notebook.cells.zipWithIndex.map {
-          case (cell, i) => new NotebookCell(this, i + 1, cell)
+        cells = notebook.cells.zipWithIndex.map { case (cell, i) =>
+          new NotebookCell(this, i + 1, cell)
         }
         div(
           h5(notebook.name),

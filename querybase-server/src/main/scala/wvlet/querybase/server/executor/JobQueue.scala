@@ -11,7 +11,6 @@ import wvlet.querybase.store.SQLHelper
 case class JobQueueConfig(dbConfig: DbConfig = DbConfig.ofSQLite(".querybase/job_queue.sqlite"))
 
 /**
-  *
   */
 object JobQueue {
 

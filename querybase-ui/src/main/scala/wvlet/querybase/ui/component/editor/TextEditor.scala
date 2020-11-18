@@ -21,10 +21,12 @@ import scala.scalajs.js
 
 /**
   */
-class TextEditor(initialValue: String = "", onEnter: String => Unit = { x: String =>
-  }, onExitUp: () => Unit = { () =>
-  }, onExitDown: () => Unit = { () =>
-  }) extends RxElement
+class TextEditor(
+    initialValue: String = "",
+    onEnter: String => Unit = { x: String => },
+    onExitUp: () => Unit = { () => },
+    onExitDown: () => Unit = { () => }
+) extends RxElement
     with LogSupport {
 
   private val editorId = ULID.newULID.toString()

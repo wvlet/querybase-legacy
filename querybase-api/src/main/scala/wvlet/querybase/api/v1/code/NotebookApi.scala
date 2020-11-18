@@ -34,7 +34,7 @@ object NotebookApi {
       source: String,
       // Output lines
       outputs: Seq[Json] = Seq.empty,
-      metadata: Map[Any, Any] = Map.empty,
+      metadata: Map[Any, Any] = Map.empty
   ) {
     def getOutputs: Seq[Map[Any, Any]] = {
       val codec = MessageCodec.of[Map[Any, Any]]
