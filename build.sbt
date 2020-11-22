@@ -42,7 +42,7 @@ val buildSettings = Seq[Setting[_]](
   // Use AirSpec for testing
   testFrameworks += new TestFramework("wvlet.airspec.Framework"),
   libraryDependencies ++= Seq(
-    "org.scala-lang.modules" %%% "scala-collection-compat" % "2.2.0",
+    "org.scala-lang.modules" %%% "scala-collection-compat" % "2.3.0",
     "org.wvlet.airframe"     %%% "airspec"                 % AIRFRAME_VERSION % Test
   )
 )
