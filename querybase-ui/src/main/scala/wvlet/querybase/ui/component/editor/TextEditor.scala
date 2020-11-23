@@ -23,9 +23,12 @@ import scala.scalajs.js
   */
 class TextEditor(
     initialValue: String = "",
-    onEnter: String => Unit = { x: String => },
-    onExitUp: () => Unit = { () => },
-    onExitDown: () => Unit = { () => }
+    onEnter: String => Unit = { x: String =>
+      },
+    onExitUp: () => Unit = { () =>
+      },
+    onExitDown: () => Unit = { () =>
+      }
 ) extends RxElement
     with LogSupport {
 
@@ -52,7 +55,7 @@ class TextEditor(
     //option.lineDecorationsWidth = 10
     option.scrollBeyondLastLine = false
     option.lineHeight = 18
-    option.automaticLayout = true
+    option.automaticLayout = false
     option.fontFamily = "Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace"
     //option.fontSize = 14
     val minimapOptions = new js.Object().asInstanceOf[IEditorMinimapOptions]
