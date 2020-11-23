@@ -17,7 +17,20 @@ object ProjectApi {
       // The time when the project was created
       createdAt: Instant = Instant.now()
   )
+
+  case class Module(
+      // The server-generated ID
+      id: String = "N/A",
+      // The module name
+      name: String,
+      // The description of the module
+      description: String,
+      // The time when the module was created
+      createdAt: Instant = Instant.now()
+  )
+
 }
+
 @RPC
 trait ProjectApi {
   import ProjectApi._
