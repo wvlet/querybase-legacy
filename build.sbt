@@ -5,6 +5,7 @@ val targetScalaVersions = SCALA_2_13 :: Nil
 val AIRFRAME_VERSION    = "20.11.0"
 val SCALAJS_DOM_VERSION = "1.1.0"
 val SPARK_VERSION       = "3.0.1"
+val PRESTO_VERSION      = "346"
 
 // Reload build.sbt on changes
 Global / onChangedBuildSource := ReloadOnSourceChanges
@@ -86,7 +87,7 @@ lazy val api =
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %%% "airframe-http"    % AIRFRAME_VERSION,
         "org.wvlet.airframe" %%% "airframe-metrics" % AIRFRAME_VERSION,
-        "org.scala-lang"       % "scala-reflect"    % scalaVersion.value
+        "org.scala-lang"     % "scala-reflect"      % scalaVersion.value
       ),
       buildInfoPackage := "wvlet.querybase.api",
       buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, scalaBinaryVersion, sbtVersion)
@@ -108,7 +109,7 @@ lazy val ui =
       airframeHttpClients := Seq("wvlet.querybase.api:scalajs"),
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %%% "airframe-rx-html" % AIRFRAME_VERSION,
-        "org.scala-js" %%% "scalajs-dom" % SCALAJS_DOM_VERSION
+        "org.scala-js"       %%% "scalajs-dom"      % SCALAJS_DOM_VERSION
       ),
       scalaJSUseMainModuleInitializer := true,
       jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
@@ -116,13 +117,13 @@ lazy val ui =
       version in startWebpackDevServer := "3.11.0",
       npmDependencies in Compile += "monaco-editor" -> "0.21.1",
       npmDevDependencies in Compile ++= Seq(
-        "import-loader" -> "1.0.1",
-        "expose-loader" -> "1.0.0",
-        "style-loader" -> "^1.2.1",
-        "file-loader" -> "^6.1.0",
-        "css-loader" -> "^4.3.0",
+        "import-loader"                -> "1.0.1",
+        "expose-loader"                -> "1.0.0",
+        "style-loader"                 -> "^1.2.1",
+        "file-loader"                  -> "^6.1.0",
+        "css-loader"                   -> "^4.3.0",
         "monaco-editor-webpack-plugin" -> "2.0.0",
-        "webpack-merge" -> "4.2.2"
+        "webpack-merge"                -> "4.2.2"
       ),
       useYarn := true,
       webpackEmitSourceMaps := false,
@@ -147,7 +148,8 @@ lazy val server =
         "org.wvlet.airframe" %% "airframe"              % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-config"       % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-launcher"     % AIRFRAME_VERSION,
-        "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION
+        "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION,
+        "io.prestosql"       % "presto-cli"             % PRESTO_VERSION
       )
     )
     .dependsOn(apiJVM, sql, store, client)
@@ -190,7 +192,7 @@ lazy val store =
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %% "airframe"      % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-jdbc" % AIRFRAME_VERSION,
-        "org.xerial"          % "sqlite-jdbc"   % "3.32.3"
+        "org.xerial"         % "sqlite-jdbc"    % "3.32.3"
       )
     )
     .dependsOn(apiJVM)
