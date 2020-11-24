@@ -9,7 +9,9 @@ import io.prestosql.client.{ClientSelectedRole, ClientSession, StatementClient, 
 import okhttp3.OkHttpClient
 import wvlet.airframe.surface.secret
 import wvlet.airframe._
-import wvlet.airframe.control.Control
+import wvlet.airframe.codec.MessageCodec
+import wvlet.airframe.msgpack.spi.MsgPack
+import wvlet.log.LogSupport
 
 import scala.jdk.CollectionConverters._
 
@@ -19,7 +21,7 @@ case class PrestoQueryRequest(
     @secret password: Option[String] = None,
     sql: String,
     catalog: String,
-    schema: String
+    schema: String = "information_schema"
 ) {
   def withUser(newUser: String): PrestoQueryRequest = {
     this.copy(user = newUser)
@@ -63,6 +65,14 @@ case class PrestoQueryRequest(
   }
 }
 
+object PrestoQueryRunner {
+
+  def design: Design =
+    OkHttpClientService.design
+      .bind[PrestoQueryRunner].toSingleton
+
+}
+
 /**
   *
   */
@@ -72,17 +82,51 @@ class PrestoQueryRunner(okHttpClient: OkHttpClient) {
   }
 }
 
-class PrestoQueryContext(statementClient: StatementClient) extends AutoCloseable {
+class PrestoQueryContext(private val statementClient: StatementClient) extends AutoCloseable with LogSupport {
+
+  private val rowCodec = MessageCodec.of[Seq[Any]]
+
+  def run: Unit = {
+
+    def readRows: Seq[MsgPack] = {
+      val msgpackRowSeq = Option(statementClient.currentData().getData)
+        .map { data =>
+          val status = statementClient.currentStatusInfo()
+          info(status.getStats)
+          val msgpackRows = data.asScala.map { row =>
+            val rowSeq = row.asScala.toSeq
+            rowCodec.toMsgPack(rowSeq)
+          }
+          msgpackRows.toSeq
+        }.getOrElse(Seq.empty)
+      msgpackRowSeq
+    }
+
+//    if(statementClient.isRunning || (statementClient.isFinished && statementClient.finalStatusInfo().getError == null)) {
+//      val status = if(statementClient.isRunning) statementClient.currentStatusInfo() else statementClient.finalStatusInfo()
+//      info(status.getStats)
+//    }
+//
+
+    while (statementClient.isRunning) {
+      readRows
+      statementClient.advance()
+    }
+
+    val lastStatus = statementClient.finalStatusInfo()
+    info(lastStatus.getStats)
+  }
 
   override def close(): Unit = {
     statementClient.close()
   }
 }
 
-object OkHttpClientService {
+object OkHttpClientService extends LogSupport {
   def design: Design =
     Design.newDesign
       .bind[OkHttpClient].toInstance {
+        info(s"Creating a new OkHttp client")
         val builder = new OkHttpClient.Builder
         builder
           .connectTimeout(30, TimeUnit.SECONDS)
@@ -91,6 +135,7 @@ object OkHttpClientService {
         builder.build
       }
       .onShutdown { okHttpClient =>
+        info(s"Closing OkHttp client")
         okHttpClient.dispatcher().executorService().shutdown()
         okHttpClient.connectionPool().evictAll()
       }
