@@ -10,7 +10,8 @@ import okhttp3.OkHttpClient
 import wvlet.airframe.surface.secret
 import wvlet.airframe._
 import wvlet.airframe.codec.MessageCodec
-import wvlet.airframe.msgpack.spi.MsgPack
+import wvlet.airframe.codec.PrimitiveCodec.ValueCodec
+import wvlet.airframe.msgpack.spi.{MsgPack, Value}
 import wvlet.log.LogSupport
 
 import scala.jdk.CollectionConverters._
@@ -108,8 +109,26 @@ class PrestoQueryContext(private val statementClient: StatementClient) extends A
 //    }
 //
 
+    var readSchema = false
+
     while (statementClient.isRunning) {
-      readRows
+      val status = statementClient.currentStatusInfo()
+      info(status.getStats)
+
+      if (!readSchema) {
+        Option(status.getColumns).foreach { columns =>
+          val schema = status.getColumns.asScala.toSeq.map(x => s"${x.getName}:${x.getType}").mkString(", ")
+          info(schema)
+          readSchema = true
+        }
+      }
+
+      val msgpack = readRows
+      val values = msgpack
+        .map { row =>
+          ValueCodec.fromMsgPack(row)
+        }
+      info(values.mkString("\n"))
       statementClient.advance()
     }
 
