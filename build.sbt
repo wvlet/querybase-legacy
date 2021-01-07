@@ -2,7 +2,7 @@ val SCALA_2_12          = "2.12.12"
 val SCALA_2_13          = "2.13.3"
 val targetScalaVersions = SCALA_2_13 :: Nil
 
-val AIRFRAME_VERSION    = "20.11.0"
+val AIRFRAME_VERSION    = "21.1.0"
 val SCALAJS_DOM_VERSION = "1.1.0"
 val SPARK_VERSION       = "3.0.1"
 val PRESTO_VERSION      = "346"
@@ -43,7 +43,7 @@ val buildSettings = Seq[Setting[_]](
   // Use AirSpec for testing
   testFrameworks += new TestFramework("wvlet.airspec.Framework"),
   libraryDependencies ++= Seq(
-    "org.scala-lang.modules" %%% "scala-collection-compat" % "2.3.0",
+    "org.scala-lang.modules" %%% "scala-collection-compat" % "2.3.2",
     "org.wvlet.airframe"     %%% "airspec"                 % AIRFRAME_VERSION % Test
   )
 )
