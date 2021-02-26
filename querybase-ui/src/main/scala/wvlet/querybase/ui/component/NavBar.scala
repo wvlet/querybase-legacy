@@ -4,39 +4,23 @@ import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 
 /**
-  */
-class NavBar(heightPixel: Int = 40, loginButton: LoginButton) extends RxElement {
+ */
+class Navbar(loginProfile: LoginProfileIcon, router: RxRouter) extends RxElement {
+
   override def render: RxElement = {
     nav(
-      cls   -> "navbar navbar-expand-md fixed-top navbar-dark bg-dark py-0",
-      style -> s"height: ${heightPixel}px;",
-      a(cls -> "navbar-brand", href -> "#", "Querybase"),
-      button(
-        cls            -> "navbar-toggler",
-        tpe            -> "button",
-        data("toggle") -> "collapse",
-        data("target") -> "#navbarCollapse",
-        aria.controls  -> "navbarCollapse",
-        aria.expanded  -> "false",
-        aria.label     -> "Toggle navigation",
-        span(cls -> "navbar-toggler-icon")
-      ),
-      div(
-        cls -> "collapse navbar-collapse bg-dark",
-        id  -> "navbarCollapse",
-        ul(
-          cls -> "navbar-nav mr-auto",
-          li(
-            cls -> "nav-item text-nowrap",
-            a(href -> "#menu", cls -> "nav-item nav-link", "Menu")
-          )
-        )
-      ),
+      cls   -> "navbar navbar-dark bg-dark sticky-top",
+      style -> "height: 60px;",
       span(
-        cls   -> "ml-2",
-        style -> "color: white; ",
-        loginButton
-      )
+        cls -> "navbar-brand",
+        router.current.map { p => p.route.title }
+      ),
+      //      form(
+      //        input(cls  -> "form-control mr-2", tpe -> "search", placeholder -> "Search", aria.label -> "Search"),
+      //        button(cls -> "btn btn-success", tpe   -> "submit", "Search")
+      //      ),
+      //      span("Version: xxx"),
+      loginProfile
     )
   }
 }

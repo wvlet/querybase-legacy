@@ -1,17 +1,38 @@
 package wvlet.querybase.ui
 
+import org.scalajs.dom
 import wvlet.airframe.Design
+import wvlet.airframe.rx.html.DOMRenderer
+import wvlet.airframe.rx.html.widget.auth.GoogleAuthConfig
+import wvlet.airframe.surface.Surface
 import wvlet.log.{LogLevel, LogSupport, Logger}
+import wvlet.querybase.ui.component.page.{HomePage, MainPage}
+import wvlet.querybase.ui.component.{RxRoute, RxRouter}
 
 import scala.scalajs.js.annotation.JSExport
-import org.scalajs.dom
-import wvlet.airframe.rx.html.DOMRenderer
-import wvlet.querybase.ui.component.{GAuthConfig, LoginProfile, MainPanel}
 
 /**
   */
 object QuerybaseUI extends LogSupport {
-  def design = Design.newDesign
+  private def router = new RxRouter(
+    prefix = "/ui/#",
+    routes = Seq(
+      //RxRoute(path = "/home", title = "Home - Trinobase", Surface.of[HomePage]),
+      //RxRoute(path = "/explore", title = "Explore - Trinobase", Surface.of[ExplorePanel]),
+      //RxRoute(path = "/services", title = "Services - Trinobase", Surface.of[ServiceCatalog]),
+      RxRoute(path = "*", title = "Home - Querybase", Surface.of[HomePage])
+    )
+  )
+
+  def design: Design = {
+    Design.newDesign
+      .bind[GoogleAuthConfig].toInstance(
+        GoogleAuthConfig(
+          clientId = "793299428025-n6kmmrmcs4g80kibc7m7qakn6vc656bt.apps.googleusercontent.com"
+        )
+      )
+      .bind[RxRouter].toInstance(router)
+  }
 
   @JSExport
   def main(args: Array[String]): Unit = {
@@ -20,11 +41,6 @@ object QuerybaseUI extends LogSupport {
     //Logger("wvlet.airframe.http").setLogLevel(LogLevel.DEBUG)
     info(s"Started")
 
-    LoginProfile.init(
-      GAuthConfig(
-        clientId = "793299428025-n6kmmrmcs4g80kibc7m7qakn6vc656bt.apps.googleusercontent.com"
-      )
-    )
     initializeUI
   }
 
@@ -40,7 +56,7 @@ object QuerybaseUI extends LogSupport {
     }
 
     val session = design.noLifeCycleLogging.newSession
-    val panel   = session.build[MainPanel]
+    val panel   = session.build[MainPage]
     session.start
     DOMRenderer.renderTo(mainNode, panel)
   }
