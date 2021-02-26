@@ -23,7 +23,7 @@ class CoordinatorApiImpl(nodeManager: NodeManager) extends CoordinatorApi with L
 
 }
 
-class NodeManager(coordinatorConfig: CoordinatorConfig) {
+class NodeManager(coordinatorConfig: CoordinatorConfig) extends LogSupport {
   import scala.jdk.CollectionConverters._
 
   private val self: Node = {
@@ -35,6 +35,12 @@ class NodeManager(coordinatorConfig: CoordinatorConfig) {
   private val heartBeatRecord = new ConcurrentHashMap[Node, Long]().asScala
 
   def heartBeat(node: Node): Unit = {
+    heartBeatRecord.getOrElseUpdate(
+      node, {
+        info(s"Joined: ${node}")
+        System.currentTimeMillis()
+      }
+    )
     heartBeatRecord.put(node, System.currentTimeMillis())
   }
 
