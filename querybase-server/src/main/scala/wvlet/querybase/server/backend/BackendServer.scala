@@ -1,15 +1,17 @@
 package wvlet.querybase.server.backend
 
 import io.grpc.{Channel, ManagedChannel, ManagedChannelBuilder}
-import wvlet.airframe.{Design, newDesign}
+import wvlet.airframe.{Design, Session, newDesign}
 import wvlet.airframe.http.{Router, ServerAddress}
-import wvlet.airframe.http.grpc.{GrpcServerConfig, gRPC}
+import wvlet.airframe.http.grpc.{GrpcServer, GrpcServerConfig, gRPC}
+import wvlet.log.LogSupport
 import wvlet.log.io.IOUtil
+import wvlet.log.io.IOUtil.withResource
 import wvlet.querybase.api.backend.ServiceGrpc
 import wvlet.querybase.api.backend.v1.CoordinatorApi.Node
 import wvlet.querybase.api.backend.v1.ServerInfoApi
 
-import java.net.InetAddress
+import java.net.{InetAddress, ServerSocket}
 
 case class NodeConfig(
     name: String,
@@ -24,10 +26,15 @@ case class NodeConfig(
 
 /**
   */
-object BackendServer {
+object BackendServer extends LogSupport {
 
-  type BackendClient      = ServiceGrpc.SyncClient
+  type CoordinatorClient  = ServiceGrpc.SyncClient
   type CoordinatorChannel = ManagedChannel
+  type CoordinatorConfig  = NodeConfig
+  type WorkerConfig       = NodeConfig
+
+  type CoordinatorServer = GrpcServer
+  type WorkerServer      = GrpcServer
 
   def coordinatorRouter = Router.add[ServerInfoApi].add[CoordinatorApiImpl]
   def workerRouter      = Router.add[ServerInfoApi]
@@ -44,43 +51,53 @@ object BackendServer {
       .withPort(config.port)
       .withRouter(workerRouter)
 
-  private def baseDesign(config: NodeConfig): Design =
-    newDesign.bind[NodeConfig].toInstance(config)
+  def coordinatorDesign(config: CoordinatorConfig): Design = {
+    newDesign
+      .bind[CoordinatorConfig].toInstance(config)
+      .bind[CoordinatorServer].toProvider { session: Session => coordinatorServer(config).newServer(session) }
+  }
 
-  def coordinatorDesign(config: NodeConfig): Design = baseDesign(config)
-    .add(coordinatorServer(config).design)
-
-  def workerDesign(config: NodeConfig): Design = {
+  def workerDesign(config: WorkerConfig): Design = {
     val coordinatorAddress = config.coordinatorAddress.get
 
-    baseDesign(config)
-      .add(workerServer(config).design)
+    newDesign
+      .bind[WorkerConfig].toInstance(config)
+      .bind[WorkerServer].toProvider { session: Session => workerServer(config).newServer(session) }
       .bind[CoordinatorChannel].toInstance(
-        ManagedChannelBuilder.forAddress(coordinatorAddress.host, coordinatorAddress.port).build()
+        // TODO: Wait until coordinator starts
+        ManagedChannelBuilder.forAddress(coordinatorAddress.host, coordinatorAddress.port).usePlaintext().build()
       )
       .onShutdown(_.shutdownNow())
-      .bind[BackendClient].toProvider { channel: CoordinatorChannel => ServiceGrpc.newSyncClient(channel) }
+      .bind[CoordinatorClient].toProvider { channel: CoordinatorChannel => ServiceGrpc.newSyncClient(channel) }
       .bind[WorkerService].toEagerSingleton
   }
 
+  private def randomPort(num: Int): Seq[Int] = {
+    val sockets = (0 until num).map(i => new ServerSocket(0))
+    val ports   = sockets.map(_.getLocalPort).toIndexedSeq
+    sockets.foreach(_.close())
+    ports
+  }
+
   def testDesign: Design = {
-    val port               = IOUtil.randomPort
-    val coordiantorAddress = ServerAddress(s"localhost:${port}")
-    val workerPort: Int    = IOUtil.randomPort
+    val port               = randomPort(2)
+    val coordinatorAddress = ServerAddress(s"localhost:${port(0)}")
     val coordinatorConfig = NodeConfig(
       name = "test-coordinator",
-      serverAddress = coordiantorAddress
+      serverAddress = coordinatorAddress
     )
     val workerConfig = NodeConfig(
       name = "test-worker-1",
-      serverAddress = ServerAddress(s"localhost:${workerPort}"),
-      coordinatorAddress = Some(coordiantorAddress)
+      serverAddress = ServerAddress(s"localhost:${port(1)}"),
+      coordinatorAddress = Some(coordinatorAddress)
     )
-    baseDesign(coordinatorConfig)
-      .add(coordinatorServer(coordinatorConfig).designWithChannel)
+
+    coordinatorDesign(coordinatorConfig)
       .add(workerDesign(workerConfig))
-      .bind[BackendClient].toProvider { channel: Channel => ServiceGrpc.newSyncClient(channel) }
-      .withProductionMode
+      // Add a dependency to CoordinatorServer to wait for the startup
+      .bind[CoordinatorClient].toProvider { (coordinatorServer: CoordinatorServer, channel: CoordinatorChannel) =>
+        ServiceGrpc.newSyncClient(channel)
+      }
   }
 
   private[backend] def selfNode(nodeConfig: NodeConfig): Node = {
