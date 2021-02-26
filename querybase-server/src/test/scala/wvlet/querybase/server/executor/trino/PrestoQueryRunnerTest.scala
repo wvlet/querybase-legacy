@@ -1,4 +1,4 @@
-package wvlet.querybase.server.executor.presto
+package wvlet.querybase.server.executor.trino
 
 import wvlet.airframe.Design
 import wvlet.airspec.AirSpec
@@ -11,10 +11,10 @@ class PrestoQueryRunnerTest extends AirSpec {
     skip("No TD_API_KEY is found")
   }
 
-  override def design: Design = PrestoQueryRunner.design
+  override def design: Design = TrinoQueryRunner.design
 
-  test("Run presto query") { queryRunner: PrestoQueryRunner =>
-    val request = PrestoQueryRequest(
+  test("Run presto query") { queryRunner: TrinoQueryRunner =>
+    val request = TrinoQueryRequest(
       "https://api-presto.treasuredata.com",
       user = sys.env("TD_API_KEY"),
       sql = "desc sample_datasets.www_access",

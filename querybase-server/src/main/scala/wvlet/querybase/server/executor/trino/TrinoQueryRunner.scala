@@ -1,11 +1,11 @@
-package wvlet.querybase.server.executor.presto
+package wvlet.querybase.server.executor.trino
 
 import java.net.URI
 import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
 import java.util.{Locale, Optional}
 
-import io.prestosql.client.{ClientSelectedRole, ClientSession, StatementClient, StatementClientFactory}
+import io.trino.client.{ClientSelectedRole, ClientSession, StatementClient, StatementClientFactory}
 import okhttp3.OkHttpClient
 import wvlet.airframe.surface.secret
 import wvlet.airframe._
@@ -16,7 +16,7 @@ import wvlet.log.LogSupport
 
 import scala.jdk.CollectionConverters._
 
-case class PrestoQueryRequest(
+case class TrinoQueryRequest(
     coordinatorAddress: String,
     user: String,
     @secret password: Option[String] = None,
@@ -24,11 +24,11 @@ case class PrestoQueryRequest(
     catalog: String,
     schema: String = "information_schema"
 ) {
-  def withUser(newUser: String): PrestoQueryRequest = {
+  def withUser(newUser: String): TrinoQueryRequest = {
     this.copy(user = newUser)
   }
 
-  def withPassword(newPassword: String): PrestoQueryRequest = {
+  def withPassword(newPassword: String): TrinoQueryRequest = {
     this.copy(password = Some(newPassword))
   }
 
@@ -36,7 +36,8 @@ case class PrestoQueryRequest(
     new ClientSession(
       // server
       new URI(coordinatorAddress),
-      user,
+      "",
+      Optional.of(user),
       "querybase",
       // traceToken
       Optional.empty(),
@@ -61,28 +62,29 @@ case class PrestoQueryRequest(
       // transaction id
       null,
       // client request timeout
-      io.airlift.units.Duration.valueOf("2m")
+      io.airlift.units.Duration.valueOf("2m"),
+      false
     )
   }
 }
 
-object PrestoQueryRunner {
+object TrinoQueryRunner {
 
   def design: Design =
     OkHttpClientService.design
-      .bind[PrestoQueryRunner].toSingleton
+      .bind[TrinoQueryRunner].toSingleton
 
 }
 
 /**
   */
-class PrestoQueryRunner(okHttpClient: OkHttpClient) {
-  def startQuery(r: PrestoQueryRequest): PrestoQueryContext = {
-    new PrestoQueryContext(StatementClientFactory.newStatementClient(okHttpClient, r.toClientSession, r.sql))
+class TrinoQueryRunner(okHttpClient: OkHttpClient) {
+  def startQuery(r: TrinoQueryRequest): TrinoQueryContext = {
+    new TrinoQueryContext(StatementClientFactory.newStatementClient(okHttpClient, r.toClientSession, r.sql))
   }
 }
 
-class PrestoQueryContext(private val statementClient: StatementClient) extends AutoCloseable with LogSupport {
+class TrinoQueryContext(private val statementClient: StatementClient) extends AutoCloseable with LogSupport {
 
   private val rowCodec = MessageCodec.of[Seq[Any]]
 

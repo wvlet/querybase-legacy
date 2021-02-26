@@ -5,7 +5,7 @@ val targetScalaVersions = SCALA_2_13 :: Nil
 val AIRFRAME_VERSION    = "21.2.0"
 val SCALAJS_DOM_VERSION = "1.1.0"
 val SPARK_VERSION       = "3.0.1"
-val PRESTO_VERSION      = "346"
+val TRINO_VERSION       = "352"
 
 // Reload build.sbt on changes
 Global / onChangedBuildSource := ReloadOnSourceChanges
@@ -87,7 +87,7 @@ lazy val api =
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %%% "airframe-http"    % AIRFRAME_VERSION,
         "org.wvlet.airframe" %%% "airframe-metrics" % AIRFRAME_VERSION,
-        "org.scala-lang"     % "scala-reflect"      % scalaVersion.value
+        "org.scala-lang"       % "scala-reflect"    % scalaVersion.value
       ),
       buildInfoPackage := "wvlet.querybase.api",
       buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, scalaBinaryVersion, sbtVersion)
@@ -108,9 +108,9 @@ lazy val ui =
       description := "UI for Querybase",
       airframeHttpClients := Seq("wvlet.querybase.api:scalajs"),
       libraryDependencies ++= Seq(
-        "org.wvlet.airframe" %%% "airframe-rx-html" % AIRFRAME_VERSION,
+        "org.wvlet.airframe" %%% "airframe-rx-html"   % AIRFRAME_VERSION,
         "org.wvlet.airframe" %%% "airframe-rx-widget" % AIRFRAME_VERSION,
-        "org.scala-js"       %%% "scalajs-dom"      % SCALAJS_DOM_VERSION
+        "org.scala-js"       %%% "scalajs-dom"        % SCALAJS_DOM_VERSION
       ),
       scalaJSUseMainModuleInitializer := true,
       jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
@@ -150,7 +150,8 @@ lazy val server =
         "org.wvlet.airframe" %% "airframe-config"       % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-launcher"     % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION,
-        "io.prestosql"       % "presto-cli"             % PRESTO_VERSION
+        "io.trino"            % "trino-cli"             % TRINO_VERSION,
+        "org.slf4j"           % "slf4j-jdk14"           % "1.8.0-beta4"
       )
     )
     .dependsOn(apiJVM, sql, store, client)
@@ -193,7 +194,7 @@ lazy val store =
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %% "airframe"      % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-jdbc" % AIRFRAME_VERSION,
-        "org.xerial"         % "sqlite-jdbc"    % "3.32.3"
+        "org.xerial"          % "sqlite-jdbc"   % "3.32.3"
       )
     )
     .dependsOn(apiJVM)

@@ -4,7 +4,7 @@ import wvlet.airframe.Design
 import wvlet.airframe.jdbc.DbConfig
 import wvlet.airspec.AirSpec
 import wvlet.querybase.server.executor.JobQueue.JobEntry
-import wvlet.querybase.server.executor.presto.PrestoJob
+import wvlet.querybase.server.executor.trino.TrinoJob
 
 /**
   */
@@ -15,7 +15,7 @@ class JobQueueTest extends AirSpec {
   }
 
   test("add a job") { jobQueue: JobQueue =>
-    val job = PrestoJob(catalog = "td-presto", sql = "select 1")
+    val job = TrinoJob(catalog = "td-presto", sql = "select 1")
     val e   = JobEntry(jobType = "presto", jobData = job.toJson)
     try {
       jobQueue.add(e)

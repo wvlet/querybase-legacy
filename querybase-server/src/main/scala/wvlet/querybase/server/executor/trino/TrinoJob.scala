@@ -1,17 +1,17 @@
-package wvlet.querybase.server.executor.presto
+package wvlet.querybase.server.executor.trino
 
 import wvlet.airframe.codec.MessageCodec
 import wvlet.airframe.json.Json
 
 /**
   */
-case class PrestoJob(
+case class TrinoJob(
     catalog: String,
     sql: String
 ) {
   def toJson: Json = {
-    MessageCodec.of[PrestoJob].toJson(this)
+    MessageCodec.of[TrinoJob].toJson(this)
   }
 }
 
-object PrestoJob {}
+object TrinoJob {}
