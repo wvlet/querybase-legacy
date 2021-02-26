@@ -17,7 +17,7 @@ class PrestoQueryRunnerTest extends AirSpec {
     val request = PrestoQueryRequest(
       "https://api-presto.treasuredata.com",
       user = sys.env("TD_API_KEY"),
-      sql = "select 1",
+      sql = "desc sample_datasets.www_access",
       catalog = "td-presto"
     )
 

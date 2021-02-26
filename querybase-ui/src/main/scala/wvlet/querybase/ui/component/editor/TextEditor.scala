@@ -5,9 +5,9 @@ import org.scalajs.dom.raw.HTMLElement
 import wvlet.airframe.control.ULID
 import wvlet.airframe.rx.html.RxElement
 import wvlet.log.LogSupport
-import wvlet.querybase.ui.component.editor.importedjs.monaco.editor.Editor.IEditorModel
-import wvlet.querybase.ui.component.editor.importedjs.monaco.{IKeyboardEvent, KeyCode, Position}
-import wvlet.querybase.ui.component.editor.importedjs.monaco.editor.{
+import wvlet.airframe.rx.html.widget.editor.monaco.editor.Editor.IEditorModel
+import wvlet.airframe.rx.html.widget.editor.monaco.{IKeyboardEvent, KeyCode, Position}
+import wvlet.airframe.rx.html.widget.editor.monaco.editor.{
   Editor,
   IDimension,
   IEditorMinimapOptions,

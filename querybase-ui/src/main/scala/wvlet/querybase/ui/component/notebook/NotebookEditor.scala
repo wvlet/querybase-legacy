@@ -15,7 +15,7 @@ trait NotebookEditor extends RxElement with RPCService {
   private var cells: Seq[NotebookCell] = Seq.empty
 
   override def render: RxElement = {
-    Rx.fromFuture(rpc(_.NotebookApi.getNotebook("1"))).map {
+    Rx.fromFuture(rpc(_.v1.code.NotebookApi.getNotebook("1"))).map {
       case None => div("empty")
       case Some(notebook) =>
         cells = notebook.cells.zipWithIndex.map { case (cell, i) =>
