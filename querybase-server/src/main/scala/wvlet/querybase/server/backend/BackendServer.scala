@@ -13,39 +13,42 @@ import wvlet.querybase.api.backend.v1.ServerInfoApi
 
 import java.net.{InetAddress, ServerSocket}
 
-case class NodeConfig(
+case class CoordinatorConfig(
     name: String,
     // self-address
-    serverAddress: ServerAddress,
-    // Set this for connecting to the coordinator
-    coordinatorAddress: Option[ServerAddress] = None
+    serverAddress: ServerAddress
 ) {
-  def isCoordinator: Boolean = coordinatorAddress.isEmpty
-  def port: Int              = serverAddress.port
+  def port: Int    = serverAddress.port
+  def toNode: Node = Node(name, serverAddress.toString(), isCoordinator = true)
+}
+
+case class WorkerConfig(
+    name: String,
+    serverAddress: ServerAddress,
+    coordinatorAddress: ServerAddress
+) {
+  def port: Int    = serverAddress.port
+  def toNode: Node = Node(name, serverAddress.toString(), isCoordinator = false)
 }
 
 /**
   */
 object BackendServer extends LogSupport {
 
-  type CoordinatorClient  = ServiceGrpc.SyncClient
-  type CoordinatorChannel = ManagedChannel
-  type CoordinatorConfig  = NodeConfig
-  type WorkerConfig       = NodeConfig
-
+  type CoordinatorClient = ServiceGrpc.SyncClient
   type CoordinatorServer = GrpcServer
   type WorkerServer      = GrpcServer
 
   def coordinatorRouter = Router.add[ServerInfoApi].add[CoordinatorApiImpl]
   def workerRouter      = Router.add[ServerInfoApi]
 
-  private def coordinatorServer(config: NodeConfig): GrpcServerConfig =
+  private def coordinatorServer(config: CoordinatorConfig): GrpcServerConfig =
     gRPC.server
       .withName(config.name)
       .withPort(config.port)
       .withRouter(coordinatorRouter)
 
-  private def workerServer(config: NodeConfig): GrpcServerConfig =
+  private def workerServer(config: WorkerConfig): GrpcServerConfig =
     gRPC.server
       .withName(config.name)
       .withPort(config.port)
@@ -58,18 +61,10 @@ object BackendServer extends LogSupport {
   }
 
   def workerDesign(config: WorkerConfig): Design = {
-    val coordinatorAddress = config.coordinatorAddress.get
-
-    newDesign
+    WorkerService.design
       .bind[WorkerConfig].toInstance(config)
       .bind[WorkerServer].toProvider { session: Session => workerServer(config).newServer(session) }
-      .bind[CoordinatorChannel].toInstance(
-        // TODO: Wait until coordinator starts
-        ManagedChannelBuilder.forAddress(coordinatorAddress.host, coordinatorAddress.port).usePlaintext().build()
-      )
-      .onShutdown(_.shutdownNow())
-      .bind[CoordinatorClient].toProvider { channel: CoordinatorChannel => ServiceGrpc.newSyncClient(channel) }
-      .bind[WorkerService].toEagerSingleton
+      .bind[WorkerService].toSingleton
   }
 
   private def randomPort(num: Int): Seq[Int] = {
@@ -82,30 +77,23 @@ object BackendServer extends LogSupport {
   def testDesign: Design = {
     val port               = randomPort(2)
     val coordinatorAddress = ServerAddress(s"localhost:${port(0)}")
-    val coordinatorConfig = NodeConfig(
+    val coordinatorConfig = CoordinatorConfig(
       name = "test-coordinator",
       serverAddress = coordinatorAddress
     )
-    val workerConfig = NodeConfig(
+    val workerConfig = WorkerConfig(
       name = "test-worker-1",
       serverAddress = ServerAddress(s"localhost:${port(1)}"),
-      coordinatorAddress = Some(coordinatorAddress)
+      coordinatorAddress = coordinatorAddress
     )
 
     coordinatorDesign(coordinatorConfig)
       .add(workerDesign(workerConfig))
-      // Add a dependency to CoordinatorServer to wait for the startup
-      .bind[CoordinatorClient].toProvider { (coordinatorServer: CoordinatorServer, channel: CoordinatorChannel) =>
+      .bind[CoordinatorClient].toProvider { (coordinatorServer: CoordinatorServer) =>
+        val channel = ManagedChannelBuilder.forTarget(coordinatorAddress.toString()).usePlaintext().build()
         ServiceGrpc.newSyncClient(channel)
       }
-  }
+      .bind[WorkerService].toEagerSingleton
 
-  private[backend] def selfNode(nodeConfig: NodeConfig): Node = {
-    Node(
-      name = nodeConfig.name,
-      nodeConfig.serverAddress.toString(),
-      isCoordinator = nodeConfig.isCoordinator
-    )
   }
-
 }

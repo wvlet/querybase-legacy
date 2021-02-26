@@ -2,7 +2,6 @@ package wvlet.querybase.server.backend
 
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi
-import wvlet.querybase.server.backend.BackendServer.CoordinatorConfig
 
 import java.net.InetAddress
 
