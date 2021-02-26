@@ -61,8 +61,8 @@ val noPublish = Seq(
   publishLocal := {}
 )
 
-lazy val jvmProjects = Seq[ProjectReference](apiJVM, server, apiClient, sql)
-lazy val jsProjects  = Seq[ProjectReference](apiJS, ui)
+lazy val jvmProjects = Seq[ProjectReference](apiJVM, server, apiClient, sql, frontendClientJVM)
+lazy val jsProjects  = Seq[ProjectReference](apiJS, ui, frontendClientJS)
 
 lazy val projectJVM = project.aggregate(jvmProjects: _*)
 lazy val projectJS  = project.aggregate(jsProjects: _*)
@@ -106,7 +106,6 @@ lazy val ui =
     .settings(
       name := "querybase-ui",
       description := "UI for Querybase",
-      airframeHttpClients := Seq("wvlet.querybase.api.frontend:scalajs"),
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %%% "airframe-rx-html"   % AIRFRAME_VERSION,
         "org.wvlet.airframe" %%% "airframe-rx-widget" % AIRFRAME_VERSION,
@@ -135,7 +134,7 @@ lazy val ui =
       //webpackEmitSourceMaps := false,
       webpackBundlingMode := BundlingMode.LibraryOnly()
     )
-    .dependsOn(apiJS)
+    .dependsOn(frontendClientJS)
 
 lazy val server =
   project
@@ -155,7 +154,7 @@ lazy val server =
         "org.slf4j"           % "slf4j-jdk14"           % "1.8.0-beta4"
       )
     )
-    .dependsOn(apiJVM, sql, store, apiClient)
+    .dependsOn(apiJVM, sql, store, apiClient, frontendClientJVM)
 
 lazy val apiClient =
   project
@@ -170,6 +169,32 @@ lazy val apiClient =
       )
     )
     .dependsOn(apiJVM)
+
+lazy val frontendClient =
+  crossProject(JVMPlatform, JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("querybase-frontend-client"))
+    .enablePlugins(AirframeHttpPlugin)
+    .settings(buildSettings)
+    .settings(
+      name := "querybase-frontend-client"
+    )
+    .jvmSettings(
+      airframeHttpClients := Seq("wvlet.querybase.api.frontend:sync"),
+      libraryDependencies ++= Seq(
+        "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION
+      )
+    )
+    .jsSettings(
+      airframeHttpClients := Seq("wvlet.querybase.api.frontend:scalajs"),
+      libraryDependencies ++= Seq(
+        "org.wvlet.airframe" %% "airframe-http" % AIRFRAME_VERSION
+      )
+    )
+    .dependsOn(api)
+
+lazy val frontendClientJVM = frontendClient.jvm
+lazy val frontendClientJS  = frontendClient.js
 
 lazy val sql =
   project

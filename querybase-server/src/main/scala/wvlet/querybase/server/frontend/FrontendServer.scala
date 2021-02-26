@@ -2,10 +2,12 @@ package wvlet.querybase.server.frontend
 
 import wvlet.airframe.Design
 import wvlet.airframe.http.Http.SyncClient
+import wvlet.airframe.http.HttpMessage.{Request, Response}
 import wvlet.airframe.http.finagle.{Finagle, FinagleServer}
 import wvlet.airframe.http.{Http, Router}
 import wvlet.log.LogSupport
 import wvlet.log.io.IOUtil
+import wvlet.querybase.api.frontend.ServiceSyncClient
 import wvlet.querybase.api.frontend.ServiceApi
 import wvlet.querybase.server.frontend.code.{NotebookApiImpl, ProjectApiImpl}
 import wvlet.querybase.store.{QueryStorage, SQLiteQueryStorage}
@@ -28,6 +30,8 @@ object FrontendServer extends LogSupport {
       .add[ProjectApiImpl]
       .add[NotebookApiImpl]
 
+  type FrontendClient = ServiceSyncClient[Request, Response]
+
   def design(config: QuerybaseServerConfig): Design =
     Design.newDesign
       .bind[QuerybaseServerConfig].toInstance(config)
@@ -45,5 +49,8 @@ object FrontendServer extends LogSupport {
     val port = IOUtil.randomPort
     design(QuerybaseServerConfig(port = port))
       .bind[SyncClient].toInstance(Http.client.withRetryContext(_.noRetry).newSyncClient(s"localhost:${port}"))
+      .bind[FrontendClient].toProvider { syncClient: SyncClient =>
+        new ServiceSyncClient(syncClient)
+      }
   }
 }
