@@ -1,11 +1,10 @@
 package wvlet.querybase.server.backend
 
-import wvlet.airframe.{bindLocal, newDesign}
+import wvlet.airframe.newDesign
 import wvlet.querybase.server.backend.BackendServer.WorkerServer
 import wvlet.querybase.server.backend.WorkerService.BackgroundExecutor
 
-import java.util.concurrent.{Executor, ExecutorService, Executors}
-import javax.annotation.PostConstruct
+import java.util.concurrent.{Executors, ScheduledExecutorService, TimeUnit}
 
 /**
   */
@@ -19,21 +18,27 @@ class WorkerService(
   private val self                   = workerConfig.toNode
   private lazy val coordinatorClient = rpcClientProvider.getSyncClientFor(workerConfig.coordinatorAddress.toString())
 
-  executor.submit(new Runnable {
-    override def run(): Unit = {
-      coordinatorClient.v1.CoordinatorApi.register(self)
-    }
-  })
+  // Polling coordinator every 5 seconds
+  executor.scheduleAtFixedRate(
+    new Runnable {
+      override def run(): Unit = {
+        coordinatorClient.v1.CoordinatorApi.register(self)
+      }
+    },
+    0,
+    5,
+    TimeUnit.SECONDS
+  )
 
 }
 
 object WorkerService {
 
-  type BackgroundExecutor = ExecutorService
+  type BackgroundExecutor = ScheduledExecutorService
 
   def design = newDesign
     .bind[BackgroundExecutor].toInstance(
-      Executors.newCachedThreadPool()
+      Executors.newSingleThreadScheduledExecutor()
     )
     .onShutdown(_.shutdownNow())
 

@@ -13,8 +13,8 @@ class BackendServerTest extends AirSpec {
   test("launch grpc server") { client: CoordinatorClient =>
     val serviceInfo = client.v1.ServerInfoApi.serviceInfo()
     info(serviceInfo)
+
     val nodes = client.v1.CoordinatorApi.listNodes()
-    info(nodes)
   }
 
 }

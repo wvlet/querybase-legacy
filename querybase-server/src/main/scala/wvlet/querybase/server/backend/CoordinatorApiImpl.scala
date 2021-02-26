@@ -2,13 +2,29 @@ package wvlet.querybase.server.backend
 
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi
+import wvlet.querybase.api.backend.v1.CoordinatorApi.Node
 
 import java.net.InetAddress
+import java.util.concurrent.ConcurrentHashMap
 
 /**
   */
-class CoordinatorApiImpl(coordinatorConfig: CoordinatorConfig) extends CoordinatorApi with LogSupport {
+class CoordinatorApiImpl(nodeManager: NodeManager) extends CoordinatorApi with LogSupport {
   import CoordinatorApi._
+
+  override def listNodes: Seq[Node] = {
+    nodeManager.listNodes
+  }
+
+  override def register(node: Node): RegisterResponse = {
+    nodeManager.heartBeat(node)
+    RegisterResponse()
+  }
+
+}
+
+class NodeManager(coordinatorConfig: CoordinatorConfig) {
+  import scala.jdk.CollectionConverters._
 
   private val self: Node = {
     val localHost = InetAddress.getLocalHost
@@ -16,15 +32,12 @@ class CoordinatorApiImpl(coordinatorConfig: CoordinatorConfig) extends Coordinat
     Node(name = "coordinator", address = localAddr, isCoordinator = true)
   }
 
-  override def listNodes: Seq[Node] = {
-    Seq(self)
+  private val heartBeatRecord = new ConcurrentHashMap[Node, Long]().asScala
+
+  def heartBeat(node: Node): Unit = {
+    heartBeatRecord.put(node, System.currentTimeMillis())
   }
 
-  override def register(node: Node): RegisterResponse = {
-    synchronized {
-      info(s"Add ${node}")
-    }
-    RegisterResponse()
-  }
+  def listNodes: Seq[Node] = self +: heartBeatRecord.keys.toSeq
 
 }
