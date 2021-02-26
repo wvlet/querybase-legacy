@@ -14,7 +14,9 @@ class BackendServerTest extends AirSpec {
     val serviceInfo = client.v1.ServerInfoApi.serviceInfo()
     info(serviceInfo)
 
+    Thread.sleep(100)
     val nodes = client.v1.CoordinatorApi.listNodes()
+    info(nodes)
   }
 
 }
