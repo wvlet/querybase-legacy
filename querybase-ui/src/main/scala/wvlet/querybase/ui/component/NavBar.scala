@@ -4,7 +4,7 @@ import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 
 /**
- */
+  */
 class Navbar(loginProfile: LoginProfileIcon, router: RxRouter) extends RxElement {
 
   override def render: RxElement = {

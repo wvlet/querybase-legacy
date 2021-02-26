@@ -7,8 +7,7 @@ import wvlet.airframe.rx.html.widget.auth.GoogleAuth
 import wvlet.querybase.ui.component.{Navbar, RxRouter, Sidebar}
 
 /**
- *
- */
+  */
 class MainPage(mainFrame: MainFrame, loginMenu: LoginPage, auth: GoogleAuth) extends RxElement {
 
   override def render: RxElement = {

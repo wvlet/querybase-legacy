@@ -5,7 +5,6 @@ import java.time.Instant
 import wvlet.airframe.http.RPC
 
 /**
-  *
   */
 object FunctionApi {
 
@@ -27,7 +26,7 @@ object FunctionApi {
       // Tags for classifying functions
       tags: Map[String, String] = Map.empty,
       // Parent function (if exists)
-      parent: Option[FunctionDef] = None,
+      parent: Option[FunctionDef] = None
   )
 
   case class FunctionInput(
@@ -37,7 +36,7 @@ object FunctionApi {
   case class FunctionOutput(
       params: Seq[Param],
       revision: Option[Int] = None,
-      updatedAt: Instant,
+      updatedAt: Instant
   )
 
   case class Param(

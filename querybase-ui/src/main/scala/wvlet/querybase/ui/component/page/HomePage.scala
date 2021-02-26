@@ -4,8 +4,7 @@ import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all.{button, cls, div, style, tpe}
 
 /**
- *
- */
+  */
 class HomePage extends RxElement {
   override def render: RxElement =
     div(

@@ -75,7 +75,6 @@ object PrestoQueryRunner {
 }
 
 /**
-  *
   */
 class PrestoQueryRunner(okHttpClient: OkHttpClient) {
   def startQuery(r: PrestoQueryRequest): PrestoQueryContext = {

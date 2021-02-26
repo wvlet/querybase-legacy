@@ -1,8 +1,7 @@
 package wvlet.querybase.ui.component
 
 /**
- *
- */
+  */
 import org.scalajs.dom
 import org.scalajs.dom.PopStateEvent
 import wvlet.airframe.codec.MessageCodec
@@ -13,7 +12,7 @@ import wvlet.log.LogSupport
 import scala.annotation.tailrec
 
 /**
- */
+  */
 class RxRouter(prefix: String, routes: Seq[RxRoute]) extends LogSupport {
   private lazy val currentRoute: RxOptionVar[RouteMatch] = Rx.optionVariable(None)
 
@@ -69,13 +68,13 @@ class RxRouter(prefix: String, routes: Seq[RxRoute]) extends LogSupport {
 case class RouteMatch(path: String, route: RxRoute, params: Map[String, String])
 
 case class RxRoute(
-        // path like '/home', '/user/:user_id'
-        path: String,
-        title: String,
-        // Create RxElement from a given PageTarget
-        pageSurface: Surface,
-        children: Seq[RxRoute] = Seq.empty,
-        redirect: Option[RxRoute] = None
+    // path like '/home', '/user/:user_id'
+    path: String,
+    title: String,
+    // Create RxElement from a given PageTarget
+    pageSurface: Surface,
+    children: Seq[RxRoute] = Seq.empty,
+    redirect: Option[RxRoute] = None
 ) {
   private val pathComponents = path.split("/")
 

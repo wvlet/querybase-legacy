@@ -1,8 +1,7 @@
 package wvlet.querybase.ui.component
 
 /**
- *
- */
+  */
 import org.scalajs.dom.raw.MouseEvent
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
