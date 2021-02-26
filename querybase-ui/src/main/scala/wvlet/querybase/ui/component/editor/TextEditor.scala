@@ -23,12 +23,9 @@ import scala.scalajs.js
   */
 class TextEditor(
     initialValue: String = "",
-    onEnter: String => Unit = { x: String =>
-      },
-    onExitUp: () => Unit = { () =>
-      },
-    onExitDown: () => Unit = { () =>
-      }
+    onEnter: String => Unit = { x: String => },
+    onExitUp: () => Unit = { () => },
+    onExitDown: () => Unit = { () => }
 ) extends RxElement
     with LogSupport {
 
@@ -50,14 +47,18 @@ class TextEditor(
     option.lineNumbers = "on"
     option.glyphMargin = false
     option.folding = false
+    option.dragAndDrop = true
     option.renderIndentGuides = true
     option.tabSize = 2.0
-    //option.lineDecorationsWidth = 10
+    option.lineDecorationsWidth = 10
     option.scrollBeyondLastLine = false
     option.lineHeight = 18
-    option.automaticLayout = false
+    option.automaticLayout = true
     option.fontFamily = "Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace"
-    //option.fontSize = 14
+    option.fontSize = 12
+    option.fontLigatures = true
+    option.fixedOverflowWidgets = true
+    option.contextmenu = false
     val minimapOptions = new js.Object().asInstanceOf[IEditorMinimapOptions]
     minimapOptions.enabled = false
     option.minimap = minimapOptions
@@ -104,31 +105,27 @@ class TextEditor(
     editor.getValue()
   }
 
-  def updateLayout: Unit = {
-    val lineHeight    = editor.getRawOptions().lineHeight
-    val lineCount     = editor.getModel().asInstanceOf[ITextModel].getLineCount().max(1)
-    val topLineNumber = editor.getTopForLineNumber(lineCount + 1)
-    val height        = topLineNumber.max(lineHeight * lineCount)
+  def updateLayout(isInit: Boolean = false): Unit = {
+    val lineHeight  = editor.getRawOptions().lineHeight
+    val lineCount   = editor.getModel().asInstanceOf[ITextModel].getLineCount()
+    val minHeight   = lineCount * lineHeight
+    val lastLinePos = editor.getTopForLineNumber(lineCount + 1)
 
+    val height = (if (isInit) lineCount * lineHeight else (lastLinePos + lineHeight)).max(minHeight)
     editor.getDomNode() match {
       case el: HTMLElement =>
-        val newWidth = editorNode.clientWidth.max(800) // Workaround to avoid width:0px issue when switching tabs
-        val d        = new js.Object().asInstanceOf[IDimension]
-        d.height = height
-        if (newWidth > 0) {
-          d.width = newWidth
-        }
-        editor.layout(d)
+        el.style.height = s"${height}px"
+        editor.layout()
       case _ =>
     }
   }
 
   override def render: RxElement = {
     editor.onDidChangeModelDecorations { e: IModelDecorationsChangedEvent =>
-      updateLayout
+      updateLayout()
     }
 
-    updateLayout
+    updateLayout(isInit = true)
     editorNode
   }
 }
