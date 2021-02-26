@@ -61,7 +61,7 @@ val noPublish = Seq(
   publishLocal := {}
 )
 
-lazy val jvmProjects = Seq[ProjectReference](apiJVM, server, client, sql)
+lazy val jvmProjects = Seq[ProjectReference](apiJVM, server, apiClient, sql)
 lazy val jsProjects  = Seq[ProjectReference](apiJS, ui)
 
 lazy val projectJVM = project.aggregate(jvmProjects: _*)
@@ -106,7 +106,7 @@ lazy val ui =
     .settings(
       name := "querybase-ui",
       description := "UI for Querybase",
-      airframeHttpClients := Seq("wvlet.querybase.api:scalajs"),
+      airframeHttpClients := Seq("wvlet.querybase.api.frontend:scalajs"),
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %%% "airframe-rx-html"   % AIRFRAME_VERSION,
         "org.wvlet.airframe" %%% "airframe-rx-widget" % AIRFRAME_VERSION,
@@ -150,22 +150,23 @@ lazy val server =
         "org.wvlet.airframe" %% "airframe-config"       % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-launcher"     % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION,
+        "org.wvlet.airframe" %% "airframe-http-grpc"    % AIRFRAME_VERSION,
         "io.trino"            % "trino-cli"             % TRINO_VERSION,
         "org.slf4j"           % "slf4j-jdk14"           % "1.8.0-beta4"
       )
     )
-    .dependsOn(apiJVM, sql, store, client)
+    .dependsOn(apiJVM, sql, store, apiClient)
 
-lazy val client =
+lazy val apiClient =
   project
-    .in(file("querybase-client"))
+    .in(file("querybase-api-client"))
     .enablePlugins(AirframeHttpPlugin)
     .settings(buildSettings)
     .settings(
-      name := "querybase-client",
-      airframeHttpClients := Seq("wvlet.querybase.api:sync"),
+      name := "querybase-api-client",
+      airframeHttpClients := Seq("wvlet.querybase.api.backend:grpc"),
       libraryDependencies ++= Seq(
-        "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION
+        "org.wvlet.airframe" %% "airframe-http-grpc" % AIRFRAME_VERSION
       )
     )
     .dependsOn(apiJVM)

@@ -2,14 +2,15 @@ package wvlet.querybase.server
 
 import wvlet.airframe.Design
 import wvlet.airspec.AirSpec
-import wvlet.querybase.server.QuerybaseServer.QuerybaseSyncClient
+import wvlet.querybase.server.frontend.FrontendServer.QuerybaseSyncClient
 import wvlet.airframe.http.Http
+import wvlet.querybase.server.frontend.FrontendServer
 
 /**
   */
 class QuerybaseServerTest extends AirSpec {
 
-  override protected def design: Design = QuerybaseServer.testDesign
+  override protected def design: Design = FrontendServer.testDesign
 
   test("provide index.html") { client: QuerybaseSyncClient =>
     val resp = client.getClient.send(Http.GET("/ui/index.html"))

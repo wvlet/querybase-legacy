@@ -3,6 +3,7 @@ package wvlet.querybase.server
 import wvlet.airframe.launcher.{Launcher, command, option}
 import wvlet.log.{LogSupport, Logger}
 import wvlet.querybase.api.BuildInfo
+import wvlet.querybase.server.frontend.{FrontendServer, QuerybaseServerConfig}
 
 /**
   */
@@ -30,9 +31,9 @@ class QuerybaseServerMain(
     info(s"Querybase version:${BuildInfo.version}")
 
     val config = QuerybaseServerConfig(port = port)
-    QuerybaseServer
+    FrontendServer
       .design(config)
-      .build[QuerybaseServer] { server =>
+      .build[FrontendServer] { server =>
         server.waitForTermination
       }
   }

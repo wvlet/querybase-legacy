@@ -1,4 +1,4 @@
-package wvlet.querybase.api.v1.query
+package wvlet.querybase.api.backend.v1.query
 
 import java.util.Locale
 

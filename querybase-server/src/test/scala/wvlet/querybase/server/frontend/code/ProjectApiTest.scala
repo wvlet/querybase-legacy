@@ -1,16 +1,16 @@
-package wvlet.querybase.server.api.code
+package wvlet.querybase.server.frontend.code
 
 import wvlet.airspec.AirSpec
 import wvlet.querybase.api.ServiceSyncClient
 import wvlet.airframe.Design
-import wvlet.querybase.server.QuerybaseServer
-import wvlet.querybase.server.QuerybaseServer.QuerybaseSyncClient
-import wvlet.querybase.api.v1.code.ProjectApi.Project
+import wvlet.querybase.server.frontend.FrontendServer.QuerybaseSyncClient
+import wvlet.querybase.api.frontend.code.ProjectApi.Project
 import wvlet.airframe.control.ULID
+import wvlet.querybase.server.frontend.FrontendServer
 
 class ProjectApiTest extends AirSpec {
 
-  override protected def design: Design = QuerybaseServer.testDesign
+  override protected def design: Design = FrontendServer.testDesign
 
   test("project api") { client: QuerybaseSyncClient =>
     client.ProjectApi.createProject(

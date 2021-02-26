@@ -1,6 +1,6 @@
-package wvlet.querybase.server.api.code
+package wvlet.querybase.server.frontend.code
 
-import wvlet.querybase.api.v1.code.ProjectApi
+import wvlet.querybase.api.frontend.code.ProjectApi
 import wvlet.airframe.control.ULID
 import wvlet.log.LogSupport
 

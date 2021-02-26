@@ -1,8 +1,8 @@
-package wvlet.querybase.server.api.code
+package wvlet.querybase.server.frontend.code
 
 import java.time.Instant
 
-import wvlet.querybase.api.v1.code.NotebookApi
+import wvlet.querybase.api.frontend.code.NotebookApi
 import NotebookApi._
 import wvlet.airframe.control.ULID
 

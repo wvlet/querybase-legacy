@@ -1,6 +1,6 @@
-package wvlet.querybase.server.api
+package wvlet.querybase.server.frontend
 
-import wvlet.airframe.http.{Endpoint, Http, HttpStatus, StaticContent}
+import wvlet.airframe.http.{Endpoint, Http, StaticContent}
 import wvlet.log.LogSupport
 import wvlet.querybase.api.BuildInfo
 

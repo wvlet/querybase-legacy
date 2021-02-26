@@ -11,7 +11,7 @@ class HomePage extends RxElement {
       cls -> "px-1",
       div(
         style -> "height: calc(60vh - 60px);",
-        div("Hello Trinobase")
+        div("Hello Querybase")
       ),
       div(
         cls   -> "bg-dark",

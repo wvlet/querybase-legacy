@@ -4,7 +4,7 @@ import wvlet.airframe.rx.Rx
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.log.LogSupport
-import wvlet.querybase.api.v1.code.NotebookApi.Cell
+import wvlet.querybase.api.frontend.code.NotebookApi.Cell
 import wvlet.querybase.ui.RPCService
 import wvlet.querybase.ui.component.editor.TextEditor
 
@@ -15,7 +15,7 @@ trait NotebookEditor extends RxElement with RPCService {
   private var cells: Seq[NotebookCell] = Seq.empty
 
   override def render: RxElement = {
-    Rx.fromFuture(rpc(_.v1.code.NotebookApi.getNotebook("1"))).map {
+    Rx.fromFuture(rpc(_.code.NotebookApi.getNotebook("1"))).map {
       case None => div("empty")
       case Some(notebook) =>
         cells = notebook.cells.zipWithIndex.map { case (cell, i) =>

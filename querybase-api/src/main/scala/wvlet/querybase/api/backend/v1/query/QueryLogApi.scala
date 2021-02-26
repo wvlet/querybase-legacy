@@ -1,11 +1,11 @@
-package wvlet.querybase.api.v1.query
+package wvlet.querybase.api.backend.v1.query
 
 import java.time.Instant
 import java.util.UUID
 
 import wvlet.airframe.http.RPC
 import wvlet.airframe.metrics.{DataSize, ElapsedTime}
-import wvlet.querybase.api.v1.query.QueryLogApi.presto.{PrestoQueryStageStats, PrestoQueryStats}
+import wvlet.querybase.api.backend.v1.query.QueryLogApi.presto.{PrestoQueryStageStats, PrestoQueryStats}
 
 /** API for collecting query logs
   */

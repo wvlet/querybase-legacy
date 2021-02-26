@@ -3,7 +3,7 @@ package wvlet.querybase.ui
 import wvlet.airframe._
 import wvlet.airframe.http.js.JSHttpClient
 import wvlet.log.LogSupport
-import wvlet.querybase.api.ServiceJSClient
+import wvlet.querybase.api.frontend.ServiceJSClient
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}

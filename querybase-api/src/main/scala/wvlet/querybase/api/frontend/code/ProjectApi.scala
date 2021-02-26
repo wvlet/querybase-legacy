@@ -1,4 +1,4 @@
-package wvlet.querybase.api.v1.code
+package wvlet.querybase.api.frontend.code
 
 import java.time.Instant
 import wvlet.airframe.http.RPC

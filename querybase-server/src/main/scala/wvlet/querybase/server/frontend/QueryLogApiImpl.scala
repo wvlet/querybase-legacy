@@ -1,8 +1,8 @@
-package wvlet.querybase.server.api
+package wvlet.querybase.server.frontend
 
-import wvlet.airframe._
-import wvlet.querybase.api.v1.query.QueryLogApi
-import wvlet.querybase.api.v1.query.QueryLogApi._
+import wvlet.airframe.bind
+import wvlet.querybase.api.backend.v1.query.QueryLogApi
+import wvlet.querybase.api.backend.v1.query.QueryLogApi._
 import wvlet.querybase.store.{QueryList, QueryStorage}
 
 /**

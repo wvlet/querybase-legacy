@@ -15,7 +15,7 @@ trait ProjectSelector extends RxElement with RPCService {
       cls -> "dropdown p",
       div(
         h5(cls -> "dropdown-header pl-1", "Projects"),
-        Rx.fromFuture(rpc(_.v1.code.ProjectApi.listProject())).map { projectList =>
+        Rx.fromFuture(rpc(_.code.ProjectApi.listProject())).map { projectList =>
           projectList.map { x =>
             a(
               cls     -> "dropdown-item pl-1",

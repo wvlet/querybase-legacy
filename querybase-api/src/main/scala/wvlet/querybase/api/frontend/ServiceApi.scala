@@ -1,4 +1,4 @@
-package wvlet.querybase.api.v1
+package wvlet.querybase.api.frontend
 
 import wvlet.airframe.http.RPC
 import wvlet.airframe.metrics.ElapsedTime
