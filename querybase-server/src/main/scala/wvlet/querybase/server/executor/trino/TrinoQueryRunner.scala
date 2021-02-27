@@ -4,8 +4,7 @@ import java.net.URI
 import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
 import java.util.{Locale, Optional}
-
-import io.trino.client.{ClientSelectedRole, ClientSession, StatementClient, StatementClientFactory}
+import io.trino.client.{ClientSelectedRole, ClientSession, QueryData, StatementClient, StatementClientFactory}
 import okhttp3.OkHttpClient
 import wvlet.airframe.surface.secret
 import wvlet.airframe._
@@ -90,18 +89,13 @@ class TrinoQueryContext(private val statementClient: StatementClient) extends Au
 
   def run: Unit = {
 
-    def readRows: Seq[MsgPack] = {
-      val msgpackRowSeq = Option(statementClient.currentData().getData)
-        .map { data =>
-          val status = statementClient.currentStatusInfo()
-          info(status.getStats)
-          val msgpackRows = data.asScala.map { row =>
-            val rowSeq = row.asScala.toSeq
-            rowCodec.toMsgPack(rowSeq)
-          }
-          msgpackRows.toSeq
-        }.getOrElse(Seq.empty)
-      msgpackRowSeq
+    def readRows(data: java.lang.Iterable[java.util.List[AnyRef]]): Seq[MsgPack] = {
+      val row = data.asScala
+      val msgpackRows = data.asScala.map { row =>
+        val rowSeq = row.asScala.toSeq
+        rowCodec.toMsgPack(rowSeq)
+      }
+      msgpackRows.toSeq
     }
 
 //    if(statementClient.isRunning || (statementClient.isFinished && statementClient.finalStatusInfo().getError == null)) {
@@ -110,12 +104,13 @@ class TrinoQueryContext(private val statementClient: StatementClient) extends Au
 //    }
 //
 
-    var readSchema = false
+//    while (statementClient.isRunning && (statementClient.currentData().getData() == null)) {
+//      statementClient.advance()
+//    }
 
+    var readSchema = false
     while (statementClient.isRunning) {
       val status = statementClient.currentStatusInfo()
-      info(status.getStats)
-
       if (!readSchema) {
         Option(status.getColumns).foreach { columns =>
           val schema = status.getColumns.asScala.toSeq.map(x => s"${x.getName}:${x.getType}").mkString(", ")
@@ -124,39 +119,21 @@ class TrinoQueryContext(private val statementClient: StatementClient) extends Au
         }
       }
 
-      val msgpack = readRows
-      val values = msgpack
-        .map { row =>
-          ValueCodec.fromMsgPack(row)
+      val data = statementClient.currentData().getData
+      if (data != null) {
+        val rows = readRows(data)
+        rows.map { row =>
+          val v = ValueCodec.fromMsgPack(row)
+          info(v)
         }
-      info(values.mkString("\n"))
+      }
       statementClient.advance()
     }
-
     val lastStatus = statementClient.finalStatusInfo()
-    info(lastStatus.getStats)
+    debug(lastStatus.getStats)
   }
 
   override def close(): Unit = {
     statementClient.close()
   }
-}
-
-object OkHttpClientService extends LogSupport {
-  def design: Design =
-    Design.newDesign
-      .bind[OkHttpClient].toInstance {
-        info(s"Creating a new OkHttp client")
-        val builder = new OkHttpClient.Builder
-        builder
-          .connectTimeout(30, TimeUnit.SECONDS)
-          .readTimeout(1, TimeUnit.MINUTES)
-          .writeTimeout(1, TimeUnit.MINUTES)
-        builder.build
-      }
-      .onShutdown { okHttpClient =>
-        info(s"Closing OkHttp client")
-        okHttpClient.dispatcher().executorService().shutdown()
-        okHttpClient.connectionPool().evictAll()
-      }
 }

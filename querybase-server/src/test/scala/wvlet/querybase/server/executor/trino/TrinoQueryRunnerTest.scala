@@ -5,19 +5,19 @@ import wvlet.airspec.AirSpec
 
 /**
   */
-class PrestoQueryRunnerTest extends AirSpec {
+class TrinoQueryRunnerTest extends AirSpec {
 
   if (sys.env.get("TD_API_KEY").isEmpty) {
     skip("No TD_API_KEY is found")
   }
 
-  override def design: Design = TrinoQueryRunner.design
+  override protected def design: Design = TrinoQueryRunner.design
 
-  test("Run presto query") { queryRunner: TrinoQueryRunner =>
+  test("Run Trino query") { queryRunner: TrinoQueryRunner =>
     val request = TrinoQueryRequest(
       "https://api-presto.treasuredata.com",
       user = sys.env("TD_API_KEY"),
-      sql = "desc sample_datasets.www_access",
+      sql = "select * from sample_datasets.www_access limit 5",
       catalog = "td-presto"
     )
 
