@@ -8,13 +8,15 @@ sealed trait QueryStatus
 
 object QueryStatus {
 
+  case object QUEUED   extends QueryStatus
+  case object RUNNING  extends QueryStatus
   case object FINISHED extends QueryStatus
   case object FAILED   extends QueryStatus
   case object CANCELED extends QueryStatus
   case object UNKNOWN  extends QueryStatus
 
   private def statusTable =
-    Seq(FINISHED, FAILED, CANCELED, UNKNOWN).map { x =>
+    Seq(QUEUED, RUNNING, FINISHED, FAILED, CANCELED, UNKNOWN).map { x =>
       x.toString -> x
     }.toMap
 

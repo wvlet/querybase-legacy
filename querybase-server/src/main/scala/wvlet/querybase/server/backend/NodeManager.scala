@@ -4,6 +4,7 @@ import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi.{Node, NodeInfo}
 
 import java.net.InetAddress
+import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -17,21 +18,21 @@ class NodeManager(coordinatorConfig: CoordinatorConfig) extends LogSupport {
     Node(name = coordinatorConfig.name, address = localAddr, isCoordinator = true)
   }
 
-  private val heartBeatRecord = new ConcurrentHashMap[Node, Long]().asScala
+  private val heartBeatRecord = new ConcurrentHashMap[Node, Instant]().asScala
 
   def heartBeat(node: Node): Unit = {
     heartBeatRecord.getOrElseUpdate(
       node, {
         info(s"Joined: ${node}")
-        System.currentTimeMillis()
+        Instant.now()
       }
     )
-    heartBeatRecord.put(node, System.currentTimeMillis())
+    heartBeatRecord.put(node, Instant.now())
   }
 
   def listNodes: Seq[NodeInfo] = {
     val b = Seq.newBuilder[NodeInfo]
-    b += NodeInfo(self, System.currentTimeMillis())
+    b += NodeInfo(self, Instant.now())
     heartBeatRecord.foreach { case (n, hb) => b += NodeInfo(n, hb) }
     b.result()
   }
