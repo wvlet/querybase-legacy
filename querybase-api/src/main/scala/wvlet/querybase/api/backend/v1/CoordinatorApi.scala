@@ -10,6 +10,8 @@ trait CoordinatorApi {
 
   def listNodes: Seq[NodeInfo]
   def register(node: Node): RegisterResponse
+
+  def newQuery(queryRequest: NewQueryRequest): NewQueryResponse
 }
 
 object CoordinatorApi {
@@ -18,4 +20,6 @@ object CoordinatorApi {
   case class NodeInfo(node: Node, lastHeartBeat: Long)
   case class RegisterResponse()
 
+  case class NewQueryRequest(query: String)
+  case class NewQueryResponse(queryId: String)
 }

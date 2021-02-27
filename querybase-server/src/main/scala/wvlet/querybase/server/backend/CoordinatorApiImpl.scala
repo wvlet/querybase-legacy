@@ -3,13 +3,14 @@ package wvlet.querybase.server.backend
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi
 import wvlet.querybase.api.backend.v1.CoordinatorApi.Node
+import wvlet.querybase.server.backend.query.QueryManager
 
 import java.net.InetAddress
 import java.util.concurrent.ConcurrentHashMap
 
 /**
   */
-class CoordinatorApiImpl(nodeManager: NodeManager) extends CoordinatorApi with LogSupport {
+class CoordinatorApiImpl(nodeManager: NodeManager, queryManager: QueryManager) extends CoordinatorApi with LogSupport {
   import CoordinatorApi._
 
   override def listNodes: Seq[NodeInfo] = {
@@ -21,4 +22,8 @@ class CoordinatorApiImpl(nodeManager: NodeManager) extends CoordinatorApi with L
     RegisterResponse()
   }
 
+  override def newQuery(queryRequest: NewQueryRequest): NewQueryResponse = {
+    val qi = queryManager.newQuery(queryRequest)
+    NewQueryResponse(qi.queryId.toString)
+  }
 }
