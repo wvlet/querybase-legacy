@@ -1,3 +1,9 @@
+body {
+    /** Necessary to fix the windows without any scroll **/
+    height: 100vh;
+    overflow: hidden;
+}
+
 pre code {
     color: #666699;
 }
