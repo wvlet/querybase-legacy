@@ -3,15 +3,17 @@ package wvlet.querybase.ui.component.page
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all.{cls, div}
 import wvlet.querybase.ui.component.editor.TextEditor
+import wvlet.airframe._
+import wvlet.querybase.ui.component.notebook.NotebookFrame
 
 /**
   */
-class NotebookPage extends RxElement {
-  private val editorCell = new EditorCell
+trait NotebookPage extends RxElement {
+  private val notebook = new EditorCell()
 
   override def render: RxElement = div(
     cls -> "p-1",
-    editorCell
+    notebook
   )
 }
 

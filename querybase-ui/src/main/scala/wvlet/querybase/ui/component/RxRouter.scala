@@ -59,7 +59,7 @@ class RxRouter(prefix: String, routes: Seq[RxRoute]) extends LogSupport {
     // Record the page transition to the browser history so that we can use back/forward button of the browser
     val url      = s"${prefix}${m.path}"
     val newTitle = m.route.title
-    debug(s"Push history state: ${url}")
+    trace(s"Push history state: ${url}")
     dom.window.history.pushState(s"""{"location":"${url}"}""", newTitle, url)
     dom.document.title = newTitle
   }
