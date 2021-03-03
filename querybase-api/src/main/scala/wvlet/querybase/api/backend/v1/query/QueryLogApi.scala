@@ -5,7 +5,7 @@ import java.util.UUID
 
 import wvlet.airframe.http.RPC
 import wvlet.airframe.metrics.{DataSize, ElapsedTime}
-import wvlet.querybase.api.backend.v1.query.QueryLogApi.presto.{PrestoQueryStageStats, PrestoQueryStats}
+import wvlet.querybase.api.backend.v1.query.QueryLogApi.trino.{PrestoQueryStageStats, TrinoQueryStats}
 
 /** API for collecting query logs
   */
@@ -52,7 +52,7 @@ object QueryLogApi {
       queryParams: Map[String, Any] = Map.empty
   )
 
-  /** Engine-agonistic query log format
+  /** Engine-agnostic query log format
     */
   case class QueryLog(
       queryIndex: QueryIndex,
@@ -140,10 +140,10 @@ object QueryLogApi {
     def timeWindowSize: Option[ElapsedTime] = scanRange.timeWindowSize
   }
 
-  /** Presto-specific query stats
+  /** Trino-specific query stats
     */
-  object presto {
-    case class PrestoPerfStats(
+  object trino {
+    case class TrinoPerfStats(
         wallTimeMillis: Long,
         analysisTimeMillis: Double,
         planningTimeMillis: Double,
@@ -155,9 +155,9 @@ object QueryLogApi {
         processedBytes: Long
     )
 
-    case class PrestoQueryStats(
+    case class TrinoQueryStats(
         queryIndex: QueryIndex,
-        performanceStats: PrestoPerfStats,
+        performanceStats: TrinoPerfStats,
         peakMemory: DataSize,
         cumulativeMemoryGBSec: Double,
         numSplits: Long
@@ -180,7 +180,7 @@ object QueryLogApi {
         queryIndex: QueryIndex,
         stageId: String,
         numSplits: String,
-        performanceStats: PrestoPerfStats,
+        performanceStats: TrinoPerfStats,
         processedRowsPercentiles: Percentiles,
         processedBytesPercentiles: Percentiles,
         rowsPerSecPercentiles: Percentiles,
@@ -196,7 +196,7 @@ object QueryLogApi {
   case class AddTableScanLogRequest(logs: Seq[TableScanLog], uuid: UUID = UUID.randomUUID())
   case class AddTableScanLogResponse(uuid: UUID)
 
-  case class AddPrestoQueryStatsRequest(logs: Seq[PrestoQueryStats], uuid: UUID = UUID.randomUUID())
+  case class AddPrestoQueryStatsRequest(logs: Seq[TrinoQueryStats], uuid: UUID = UUID.randomUUID())
   case class AddPrestoQueryStatsResponse(uuid: UUID)
 
   case class AddPrestoQueryStageStatsRequest(logs: Seq[PrestoQueryStageStats], uuid: UUID = UUID.randomUUID())
