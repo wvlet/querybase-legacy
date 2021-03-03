@@ -188,7 +188,7 @@ lazy val frontendClient =
     .jsSettings(
       airframeHttpClients := Seq("wvlet.querybase.api.frontend:scalajs"),
       libraryDependencies ++= Seq(
-        "org.wvlet.airframe" %% "airframe-http" % AIRFRAME_VERSION
+        "org.wvlet.airframe" %%% "airframe-http" % AIRFRAME_VERSION
       )
     )
     .dependsOn(api)

@@ -9,10 +9,12 @@ import wvlet.querybase.ui.component.notebook.NotebookFrame
 /**
   */
 trait NotebookPage extends RxElement {
+  private val frame    = bind[NotebookFrame]
   private val notebook = new EditorCell()
 
   override def render: RxElement = div(
     cls -> "p-1",
+    frame,
     notebook
   )
 }

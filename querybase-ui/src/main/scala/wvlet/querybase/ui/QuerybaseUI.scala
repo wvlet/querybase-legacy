@@ -34,7 +34,6 @@ object QuerybaseUI extends LogSupport {
       )
       .bind[RxRouter].toInstance(router)
       .bind[NotebookPage].toSingleton
-
   }
 
   @JSExport
