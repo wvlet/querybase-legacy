@@ -32,4 +32,14 @@ trait RPCService extends LogSupport {
     Rx.fromFuture(rpc(body))
   }
 
+  protected def repeatRpc[U](intervalMillis: Int)(body: ServiceJSClient => Future[U]): RxOption[U] = {
+    Rx
+      .intervalMillis(intervalMillis)
+      .flatMap { i =>
+        Rx.fromFuture(body(rpcClient))
+      }
+      .filter(_.isDefined)
+      .toOption
+  }
+
 }

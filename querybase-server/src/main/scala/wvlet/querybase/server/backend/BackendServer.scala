@@ -18,17 +18,15 @@ case class CoordinatorConfig(
     // self-address
     serverAddress: ServerAddress
 ) {
-  def port: Int    = serverAddress.port
-  def toNode: Node = Node(name, serverAddress.toString(), isCoordinator = true)
+  def port: Int = serverAddress.port
 }
 
 case class WorkerConfig(
-    name: String = "worker-0",
+    name: String = "worker-1",
     serverAddress: ServerAddress,
     coordinatorAddress: ServerAddress
 ) {
-  def port: Int    = serverAddress.port
-  def toNode: Node = Node(name, serverAddress.toString(), isCoordinator = false)
+  def port: Int = serverAddress.port
 }
 
 /**

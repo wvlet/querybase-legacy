@@ -20,7 +20,7 @@ trait CoordinatorApi {
 
 object CoordinatorApi {
 
-  case class Node(name: String, address: String, isCoordinator: Boolean)
+  case class Node(name: String, address: String, isCoordinator: Boolean, startedAt: Instant)
   case class NodeInfo(node: Node, lastHeartbeatAt: Instant)
   case class RegisterResponse()
 

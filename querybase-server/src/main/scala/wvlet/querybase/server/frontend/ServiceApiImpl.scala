@@ -8,7 +8,12 @@ class ServiceApiImpl(coordinatorClient: CoordinatorClient) extends ServiceApi {
   override def serviceNodes: Seq[ServiceApi.ServiceNode] = {
     val nodes = coordinatorClient.v1.CoordinatorApi.listNodes()
     nodes.map { n =>
-      ServiceNode(name = n.node.name, address = n.node.address, lastHeartBeatAt = n.lastHeartbeatAt)
+      ServiceNode(
+        name = n.node.name,
+        address = n.node.address,
+        startedAt = n.node.startedAt,
+        lastHeartBeatAt = n.lastHeartbeatAt
+      )
     }
   }
 }

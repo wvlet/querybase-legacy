@@ -28,5 +28,7 @@ object ServiceApi {
       upTime: ElapsedTime
   )
 
-  case class ServiceNode(name: String, address: String, lastHeartBeatAt: Instant)
+  case class ServiceNode(name: String, address: String, startedAt: Instant, lastHeartBeatAt: Instant) {
+    def upTime: ElapsedTime = ElapsedTime.succinctMillis(System.currentTimeMillis() - startedAt.toEpochMilli)
+  }
 }
