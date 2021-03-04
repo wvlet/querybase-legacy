@@ -1,6 +1,7 @@
 package wvlet.querybase.api.backend.v1
 
 import wvlet.airframe.http.RPC
+import wvlet.airframe.metrics.ElapsedTime
 import wvlet.querybase.api.backend.v1.query.QueryStatus
 
 import java.time.Instant
@@ -36,6 +37,15 @@ object CoordinatorApi {
       createdAt: Instant = Instant.now(),
       completedAt: Option[Instant] = None
   ) {
+    def elapsed: ElapsedTime = {
+      completedAt match {
+        case Some(completed) =>
+          ElapsedTime.succinctMillis(completed.toEpochMilli - createdAt.toEpochMilli)
+        case _ =>
+          ElapsedTime.succinctMillis(System.currentTimeMillis() - createdAt.toEpochMilli)
+      }
+    }
+
     def withQueryStatus(newQueryStatus: QueryStatus): QueryInfo = this.copy(queryStatus = newQueryStatus)
     def withCompletedAt(completedAt: Instant): QueryInfo        = this.copy(completedAt = Some(completedAt))
   }

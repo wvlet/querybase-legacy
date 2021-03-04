@@ -8,7 +8,7 @@ import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
 import wvlet.querybase.api.frontend.FrontendApi.SubmitQueryRequest
 import wvlet.querybase.ui.RPCService
-import wvlet.querybase.ui.component.{ServiceSelector, Table}
+import wvlet.querybase.ui.component.{QueryListPanel, ServiceSelector, Table}
 import wvlet.querybase.ui.component.editor.TextEditor
 
 /**
@@ -61,31 +61,5 @@ class QueryEditor(query: String, rpcService: RPCService) extends RxElement with 
         resp =>
           info(s"query_id: ${resp.queryId}")
       }
-  }
-}
-
-trait QueryListPanel extends RxElement with RPCService {
-  private val queryList = Rx.variable(Seq.empty[QueryInfo])
-
-  override def render: RxElement = {
-    new Table(Seq("query_id", "service", "type", "status", "query"))(
-      tbody(
-        queryList.map { ql =>
-          ql.map { q =>
-            tr(
-              td(cls -> "text-monospace", small(q.queryId)),
-              td(q.serviceName),
-              td(q.serviceType),
-              td(q.queryStatus.toString),
-              td(q.query)
-            )
-          }
-        },
-        repeatRpc(1000)(_.FrontendApi.listQueries()).map { lst =>
-          queryList := lst
-          span()
-        }
-      )
-    )
   }
 }
