@@ -7,7 +7,7 @@ import wvlet.airframe.rx.html.widget.auth.GoogleAuthConfig
 import wvlet.airframe.surface.Surface
 import wvlet.log.{LogLevel, LogSupport, Logger}
 import wvlet.querybase.ui.component.notebook.NotebookFrame
-import wvlet.querybase.ui.component.page.{HomePage, MainPage, ExplorePage, SystemPage}
+import wvlet.querybase.ui.component.page.{ExplorePage, HomePage, MainPage, ServicePage, SystemPage}
 import wvlet.querybase.ui.component.{RxRoute, RxRouter}
 
 import scala.scalajs.js.annotation.JSExport
@@ -20,7 +20,7 @@ object QuerybaseUI extends LogSupport {
     routes = Seq(
       //RxRoute(path = "/home", title = "Home - Querybase", Surface.of[HomePage]),
       RxRoute(path = "/explore", title = "Explore - Querybase", Surface.of[ExplorePage]),
-      //RxRoute(path = "/services", title = "Services - Querybase", Surface.of[ServiceCatalog]),
+      RxRoute(path = "/services", title = "Services - Querybase", Surface.of[ServicePage]),
       RxRoute(path = "/system", title = "System - Querybase", Surface.of[SystemPage]),
       RxRoute(path = "*", title = "Home - Querybase", Surface.of[HomePage])
     )
@@ -37,6 +37,8 @@ object QuerybaseUI extends LogSupport {
       .bind[HomePage].toSingleton
       .bind[ExplorePage].toSingleton
       .bind[SystemPage].toSingleton
+      .bind[ServicePage].toSingleton
+      .bind[RPCService].toSingleton
   }
 
   @JSExport

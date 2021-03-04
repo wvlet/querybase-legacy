@@ -3,6 +3,7 @@ package wvlet.querybase.api.frontend
 import wvlet.airframe.http.RPC
 import wvlet.airframe.metrics.ElapsedTime
 import wvlet.querybase.api.BuildInfo
+import wvlet.querybase.api.backend.v1.ServiceCatalogApi
 
 import java.time.Instant
 
@@ -18,6 +19,8 @@ trait ServiceApi {
   }
 
   def serviceNodes: Seq[ServiceNode]
+
+  def serviceCatalog: Seq[ServiceCatalogApi.Service]
 }
 
 object ServiceApi {

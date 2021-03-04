@@ -1,5 +1,6 @@
 package wvlet.querybase.server.frontend
 
+import wvlet.querybase.api.backend.v1.ServiceCatalogApi
 import wvlet.querybase.api.frontend.ServiceApi
 import wvlet.querybase.api.frontend.ServiceApi.ServiceNode
 import wvlet.querybase.server.backend.BackendServer.CoordinatorClient
@@ -15,5 +16,9 @@ class ServiceApiImpl(coordinatorClient: CoordinatorClient) extends ServiceApi {
         lastHeartBeatAt = n.lastHeartbeatAt
       )
     }
+  }
+
+  override def serviceCatalog: Seq[ServiceCatalogApi.Service] = {
+    coordinatorClient.v1.ServiceCatalogApi.listServices()
   }
 }

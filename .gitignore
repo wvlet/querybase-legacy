@@ -36,3 +36,4 @@ project/metals.sbt
 .bsp
 .vscode
 project/project
+.querybase

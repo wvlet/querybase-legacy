@@ -1,17 +1,17 @@
 package wvlet.querybase.server.backend
 
-import io.grpc.{Channel, ManagedChannel, ManagedChannelBuilder}
-import wvlet.airframe.{Design, Session, newDesign}
-import wvlet.airframe.http.{Router, ServerAddress}
+import io.grpc.ManagedChannelBuilder
+import wvlet.airframe.codec.MessageCodec
 import wvlet.airframe.http.grpc.{GrpcServer, GrpcServerConfig, gRPC}
+import wvlet.airframe.http.{Router, ServerAddress}
+import wvlet.airframe.{Design, Session, newDesign}
 import wvlet.log.LogSupport
 import wvlet.log.io.IOUtil
-import wvlet.log.io.IOUtil.withResource
 import wvlet.querybase.api.backend.ServiceGrpc
-import wvlet.querybase.api.backend.v1.CoordinatorApi.Node
 import wvlet.querybase.api.backend.v1.ServerInfoApi
 
-import java.net.{InetAddress, ServerSocket}
+import java.io.File
+import java.net.ServerSocket
 
 case class CoordinatorConfig(
     name: String = "coordinator",
@@ -37,8 +37,12 @@ object BackendServer extends LogSupport {
   type CoordinatorServer = GrpcServer
   type WorkerServer      = GrpcServer
 
-  def coordinatorRouter = Router.add[ServerInfoApi].add[CoordinatorApiImpl]
-  def workerRouter      = Router.add[ServerInfoApi]
+  def coordinatorRouter = Router
+    .add[ServerInfoApi]
+    .add[CoordinatorApiImpl]
+    .add[ServiceCatalogApiImpl]
+
+  def workerRouter = Router.add[ServerInfoApi]
 
   private def coordinatorServer(config: CoordinatorConfig): GrpcServerConfig =
     gRPC.server
@@ -56,6 +60,16 @@ object BackendServer extends LogSupport {
     newDesign
       .bind[CoordinatorConfig].toInstance(config)
       .bind[CoordinatorServer].toProvider { session: Session => coordinatorServer(config).newServer(session) }
+      .bind[ServiceCatalog].toInstance {
+        val file = new File(".querybase/services.json")
+        if (!file.exists) {
+          ServiceCatalog(Seq.empty)
+        } else {
+          val json     = IOUtil.readAsString(file)
+          val services = MessageCodec.of[ServiceCatalog].fromJson(json)
+          services
+        }
+      }
   }
 
   def workerDesign(config: WorkerConfig): Design = {
