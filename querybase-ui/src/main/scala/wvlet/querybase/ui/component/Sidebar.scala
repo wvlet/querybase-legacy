@@ -79,7 +79,8 @@ class Sidebar(router: RxRouter) extends RxElement {
         navFrame(
           navItem("Home", "fa-home", "/home"),
           navItem("Explore", "fas fa-book-open", "/explore"),
-          navItem("Services", "fa-project-diagram", "/services")
+          navItem("Services", "fa-project-diagram", "/services"),
+          navItem("System", "fa-server", "/system")
         ),
         new FoldableMenu(elementId = "projectList", name = "Projects"),
         SidebarBorder,
