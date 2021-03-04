@@ -15,12 +15,11 @@ object NotebookFrame {
   */
 trait NotebookFrame extends RxElement {
   private val projectSelector = bind[ProjectSelector]
+  private val notebookEditor  = bind[NotebookEditor]
 
   override def render: RxElement = div(
-    cls -> "row",
-    div(
-      cls -> "col-2",
-      projectSelector
-    )
+    cls -> "w-100",
+    projectSelector,
+    notebookEditor
   )
 }

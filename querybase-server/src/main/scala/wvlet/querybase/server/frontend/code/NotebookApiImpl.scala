@@ -23,7 +23,7 @@ class NotebookApiImpl extends NotebookApi {
           Cell(
             cellType = "sql",
             source = """-- Simple SQL
-                      |select 1
+                      |select 100
                       |""".stripMargin,
             outputs = Seq(
               """{"output_type":"stream", "name":"stdout", "text":"(query result)\n1"}"""
