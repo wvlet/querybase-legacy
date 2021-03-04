@@ -37,7 +37,7 @@ object FrontendApi {
     def upTime: ElapsedTime = ElapsedTime.succinctMillis(System.currentTimeMillis() - startedAt.toEpochMilli)
   }
 
-  case class SubmitQueryRequest(query: String, uuid: UUID = UUID.randomUUID())
+  case class SubmitQueryRequest(query: String, serviceName: String, uuid: UUID = UUID.randomUUID())
   case class SubmitQueryResponse(queryId: String)
 
 }

@@ -7,13 +7,13 @@ import wvlet.querybase.api.backend.v1.ServiceCatalogApi
 import wvlet.querybase.api.backend.v1.ServiceCatalogApi.Service
 
 case class ServiceCatalog(services: Seq[ServiceDef])
-case class ServiceDef(id: String, serviceType: String, name: String, description: String, @secret properties: Json)
+case class ServiceDef(serviceType: String, name: String, description: String, @secret properties: Json)
 
 class ServiceCatalogApiImpl(catalog: ServiceCatalog) extends ServiceCatalogApi {
 
   override def listServices: Seq[ServiceCatalogApi.Service] = {
     catalog.services.map { x =>
-      Service(x.id, x.serviceType, x.name, x.description)
+      Service(x.serviceType, x.name, x.description)
     }
   }
 }

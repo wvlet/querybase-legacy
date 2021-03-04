@@ -36,7 +36,7 @@ class ServiceSelector(private var serviceList: Seq[Service], private var selecte
           cls -> "form-control form-control-sm",
           serviceList.map { s =>
             option(
-              value -> s.id,
+              value -> s.name,
               s.name
             )
           }

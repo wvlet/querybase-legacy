@@ -9,5 +9,5 @@ trait ServiceCatalogApi {
 }
 
 object ServiceCatalogApi {
-  case class Service(id: String, serviceType: String, name: String, description: String)
+  case class Service(serviceType: String, name: String, description: String)
 }

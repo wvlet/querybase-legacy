@@ -24,11 +24,13 @@ object CoordinatorApi {
   case class NodeInfo(node: Node, lastHeartbeatAt: Instant)
   case class RegisterResponse()
 
-  case class NewQueryRequest(query: String)
+  case class NewQueryRequest(query: String, serviceName: String)
   case class NewQueryResponse(queryId: String)
 
   case class QueryInfo(
       queryId: String,
+      serviceName: String,
+      serviceType: String,
       queryStatus: QueryStatus,
       query: String,
       createdAt: Instant = Instant.now(),

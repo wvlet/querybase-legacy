@@ -54,10 +54,13 @@ class QueryEditor(query: String, rpcService: RPCService) extends RxElement with 
   private implicit val queue = scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
   private def submitQuery(query: String): Unit = {
-    info(s"Submit to ${serviceSelector.selectedService.name}: ${query}")
-    rpcService.rpc(_.FrontendApi.submitQuery(SubmitQueryRequest(query = query))).map { resp =>
-      info(s"query_id: ${resp.queryId}")
-    }
+    val selectedService = serviceSelector.selectedService
+    info(s"Submit to ${selectedService.name}: ${query}")
+    rpcService
+      .rpc(_.FrontendApi.submitQuery(SubmitQueryRequest(query = query, serviceName = selectedService.name))).map {
+        resp =>
+          info(s"query_id: ${resp.queryId}")
+      }
   }
 }
 
@@ -65,12 +68,14 @@ trait QueryListPanel extends RxElement with RPCService {
   private val queryList = Rx.variable(Seq.empty[QueryInfo])
 
   override def render: RxElement = {
-    new Table(Seq("query_id", "status", "query"))(
+    new Table(Seq("query_id", "service", "type", "status", "query"))(
       tbody(
         queryList.map { ql =>
           ql.map { q =>
             tr(
-              td(q.queryId),
+              td(cls -> "text-monospace", small(q.queryId)),
+              td(q.serviceName),
+              td(q.serviceType),
               td(q.queryStatus.toString),
               td(q.query)
             )
