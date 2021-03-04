@@ -9,7 +9,7 @@ class ServicePage(rpcService: RPCService) extends RxElement {
   override def render: RxElement = div(
     new Table(Seq("name", "type", "description"))(
       tbody(
-        rpcService.rpcRx(_.ServiceApi.serviceCatalog()).map { lst =>
+        rpcService.rpcRx(_.FrontendApi.serviceCatalog()).map { lst =>
           lst.map { s =>
             tr(
               td(s.name),

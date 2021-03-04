@@ -10,7 +10,6 @@ import wvlet.log.LogSupport
 import wvlet.log.io.IOUtil
 import wvlet.querybase.api.backend.ServiceGrpc
 import wvlet.querybase.api.frontend.ServiceSyncClient
-import wvlet.querybase.api.frontend.ServiceApi
 import wvlet.querybase.server.backend.BackendServer.CoordinatorClient
 import wvlet.querybase.server.frontend.code.{NotebookApiImpl, ProjectApiImpl}
 import wvlet.querybase.store.{QueryStorage, SQLiteQueryStorage}
@@ -31,11 +30,10 @@ object FrontendServer extends LogSupport {
   private[server] def router =
     Router
       .add[StaticContentApi]
-      .add[ServiceApiImpl]
+      .add[FrontendApiImpl]
       .add[QueryLogApiImpl]
       .add[ProjectApiImpl]
       .add[NotebookApiImpl]
-      .add[QueryApiImpl]
 
   type FrontendClient = ServiceSyncClient[Request, Response]
 

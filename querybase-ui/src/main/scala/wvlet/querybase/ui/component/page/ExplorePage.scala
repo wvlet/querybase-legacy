@@ -6,11 +6,10 @@ import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
-import wvlet.querybase.api.frontend.QueryApi.SubmitQueryRequest
+import wvlet.querybase.api.frontend.FrontendApi.SubmitQueryRequest
 import wvlet.querybase.ui.RPCService
 import wvlet.querybase.ui.component.{ServiceSelector, Table}
 import wvlet.querybase.ui.component.editor.TextEditor
-import wvlet.querybase.ui.component.notebook.NotebookFrame
 
 /**
   */
@@ -44,7 +43,7 @@ class QueryEditor(query: String, rpcService: RPCService) extends RxElement with 
 
   override def render: RxElement = {
     div(
-      rpcService.rpcRx(_.ServiceApi.serviceCatalog()).map { lst =>
+      rpcService.rpcRx(_.FrontendApi.serviceCatalog()).map { lst =>
         serviceSelector.updateList(lst)
         serviceSelector
       },
@@ -56,7 +55,7 @@ class QueryEditor(query: String, rpcService: RPCService) extends RxElement with 
 
   private def submitQuery(query: String): Unit = {
     info(s"Submit to ${serviceSelector.selectedService.name}: ${query}")
-    rpcService.rpc(_.QueryApi.submitQuery(SubmitQueryRequest(query = query))).map { resp =>
+    rpcService.rpc(_.FrontendApi.submitQuery(SubmitQueryRequest(query = query))).map { resp =>
       info(s"query_id: ${resp.queryId}")
     }
   }
@@ -77,7 +76,7 @@ trait QueryListPanel extends RxElement with RPCService {
             )
           }
         },
-        repeatRpc(1000)(_.QueryApi.listQueries()).map { lst =>
+        repeatRpc(1000)(_.FrontendApi.listQueries()).map { lst =>
           queryList := lst
           span()
         }
