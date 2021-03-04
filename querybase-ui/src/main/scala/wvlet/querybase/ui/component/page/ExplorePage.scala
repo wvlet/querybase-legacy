@@ -8,7 +8,7 @@ import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
 import wvlet.querybase.api.frontend.QueryApi.SubmitQueryRequest
 import wvlet.querybase.ui.RPCService
-import wvlet.querybase.ui.component.Table
+import wvlet.querybase.ui.component.{ServiceSelector, Table}
 import wvlet.querybase.ui.component.editor.TextEditor
 import wvlet.querybase.ui.component.notebook.NotebookFrame
 
@@ -20,24 +20,42 @@ trait ExplorePage extends RxElement {
 
   private val queryEditor = new QueryEditor("select 1", rpcService)
 
-  override def render: RxElement = div(
-    cls -> "w-100",
-    queryEditor,
-    queryListPanel
-  )
+  override def render: RxElement = {
+    div(
+      cls -> "w-100 h-100",
+      div(
+        cls -> "d-flex flex-column",
+        div(
+          cls -> "mb-auto",
+          queryEditor
+        ),
+        hr(),
+        div(
+          queryListPanel
+        )
+      )
+    )
+  }
 }
 
 class QueryEditor(query: String, rpcService: RPCService) extends RxElement with LogSupport {
-  private val textEditor = new TextEditor(query, onEnter = submitQuery(_))
+  private val serviceSelector = new ServiceSelector(Seq.empty)
+  private val textEditor      = new TextEditor(query, onEnter = submitQuery(_))
 
   override def render: RxElement = {
-    textEditor
+    div(
+      rpcService.rpcRx(_.ServiceApi.serviceCatalog()).map { lst =>
+        serviceSelector.updateList(lst)
+        serviceSelector
+      },
+      textEditor
+    )
   }
 
   private implicit val queue = scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
   private def submitQuery(query: String): Unit = {
-    info(s"Submit query:\n${query}")
+    info(s"Submit to ${serviceSelector.selectedService.name}: ${query}")
     rpcService.rpc(_.QueryApi.submitQuery(SubmitQueryRequest(query = query))).map { resp =>
       info(s"query_id: ${resp.queryId}")
     }

@@ -6,7 +6,7 @@ import wvlet.airframe.rx.html.{RxComponent, RxElement}
 class Table(columnNames: Seq[String]) extends RxElement {
   override def render: RxElement = {
     table(
-      cls -> "table table-sm table-hover border-right border-bottom",
+      cls -> "table table-sm table-hover",
       thead(
         cls -> "thead-light",
         tr(
