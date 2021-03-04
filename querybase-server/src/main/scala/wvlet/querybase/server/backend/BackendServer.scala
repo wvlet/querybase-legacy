@@ -14,7 +14,7 @@ import wvlet.querybase.api.backend.v1.ServerInfoApi
 import java.net.{InetAddress, ServerSocket}
 
 case class CoordinatorConfig(
-    name: String,
+    name: String = "coordinator",
     // self-address
     serverAddress: ServerAddress
 ) {
@@ -23,7 +23,7 @@ case class CoordinatorConfig(
 }
 
 case class WorkerConfig(
-    name: String,
+    name: String = "worker-0",
     serverAddress: ServerAddress,
     coordinatorAddress: ServerAddress
 ) {
@@ -67,7 +67,7 @@ object BackendServer extends LogSupport {
       .bind[WorkerService].toSingleton
   }
 
-  private def randomPort(num: Int): Seq[Int] = {
+  private[server] def randomPort(num: Int): Seq[Int] = {
     val sockets = (0 until num).map(i => new ServerSocket(0))
     val ports   = sockets.map(_.getLocalPort).toIndexedSeq
     sockets.foreach(_.close())

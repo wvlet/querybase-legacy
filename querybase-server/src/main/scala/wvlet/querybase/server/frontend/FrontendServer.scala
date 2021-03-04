@@ -1,18 +1,24 @@
 package wvlet.querybase.server.frontend
 
+import io.grpc.ManagedChannelBuilder
 import wvlet.airframe.Design
 import wvlet.airframe.http.Http.SyncClient
 import wvlet.airframe.http.HttpMessage.{Request, Response}
 import wvlet.airframe.http.finagle.{Finagle, FinagleServer}
-import wvlet.airframe.http.{Http, Router}
+import wvlet.airframe.http.{Http, Router, ServerAddress}
 import wvlet.log.LogSupport
 import wvlet.log.io.IOUtil
+import wvlet.querybase.api.backend.ServiceGrpc
 import wvlet.querybase.api.frontend.ServiceSyncClient
 import wvlet.querybase.api.frontend.ServiceApi
+import wvlet.querybase.server.backend.BackendServer.CoordinatorClient
 import wvlet.querybase.server.frontend.code.{NotebookApiImpl, ProjectApiImpl}
 import wvlet.querybase.store.{QueryStorage, SQLiteQueryStorage}
 
-case class QuerybaseServerConfig(port: Int = 8080)
+case class FrontendServerConfig(
+    port: Int = 8080,
+    coordinatorAddress: ServerAddress = ServerAddress("localhost:8081")
+)
 
 class FrontendServer(server: FinagleServer) {
   def waitForTermination: Unit = {
@@ -25,16 +31,16 @@ object FrontendServer extends LogSupport {
   private[server] def router =
     Router
       .add[StaticContentApi]
-      .add[ServiceApi]
+      .add[ServiceApiImpl]
       .add[QueryLogApiImpl]
       .add[ProjectApiImpl]
       .add[NotebookApiImpl]
 
   type FrontendClient = ServiceSyncClient[Request, Response]
 
-  def design(config: QuerybaseServerConfig): Design =
+  def design(config: FrontendServerConfig): Design = {
     Design.newDesign
-      .bind[QuerybaseServerConfig].toInstance(config)
+      .bind[FrontendServerConfig].toInstance(config)
       .add(
         Finagle.server
           .withName("querybase-frontend")
@@ -44,10 +50,15 @@ object FrontendServer extends LogSupport {
       )
       .bind[FrontendServer].toEagerSingleton
       .bind[QueryStorage].to[SQLiteQueryStorage]
+      .bind[CoordinatorClient].toLazyInstance {
+        val channel = ManagedChannelBuilder.forTarget(config.coordinatorAddress.hostAndPort).usePlaintext().build
+        ServiceGrpc.newSyncClient(channel)
+      }
+  }
 
   private[querybase] def testDesign = {
     val port = IOUtil.randomPort
-    design(QuerybaseServerConfig(port = port))
+    design(FrontendServerConfig(port = port, coordinatorAddress = ServerAddress("localhost:8081")))
       .bind[SyncClient].toInstance(Http.client.withRetryContext(_.noRetry).newSyncClient(s"localhost:${port}"))
       .bind[FrontendClient].toProvider { syncClient: SyncClient =>
         new ServiceSyncClient(syncClient)

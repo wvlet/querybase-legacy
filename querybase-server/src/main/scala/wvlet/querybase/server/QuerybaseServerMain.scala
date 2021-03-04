@@ -1,9 +1,12 @@
 package wvlet.querybase.server
 
+import wvlet.airframe.http.ServerAddress
 import wvlet.airframe.launcher.{Launcher, command, option}
 import wvlet.log.{LogSupport, Logger}
 import wvlet.querybase.api.BuildInfo
-import wvlet.querybase.server.frontend.{FrontendServer, QuerybaseServerConfig}
+import wvlet.querybase.server.backend.BackendServer.CoordinatorServer
+import wvlet.querybase.server.backend.{BackendServer, CoordinatorConfig, WorkerConfig, WorkerService}
+import wvlet.querybase.server.frontend.{FrontendServer, FrontendServerConfig}
 
 /**
   */
@@ -30,11 +33,48 @@ class QuerybaseServerMain(
   ): Unit = {
     info(s"Querybase version:${BuildInfo.version}")
 
-    val config = QuerybaseServerConfig(port = port)
+    val config = FrontendServerConfig(port = port)
     FrontendServer
       .design(config)
       .build[FrontendServer] { server =>
         server.waitForTermination
       }
   }
+
+  @command(description = "Launch a standalone service")
+  def standalone(
+      @option(prefix = "-p,--port", description = "port number (default: 8080)")
+      port: Int = 8080
+  ): Unit = {
+
+    val randomPorts        = BackendServer.randomPort(2)
+    val coordinatorAddress = ServerAddress(s"localhost:${randomPorts(0)}")
+    val coordinatorConfig  = CoordinatorConfig(serverAddress = coordinatorAddress)
+    val workerConfig = WorkerConfig(
+      serverAddress = ServerAddress(s"localhost:${randomPorts(1)}"),
+      coordinatorAddress = coordinatorAddress
+    )
+    val frontendServerConfig = FrontendServerConfig(port = port, coordinatorAddress = coordinatorAddress)
+    val design = FrontendServer
+      .design(frontendServerConfig)
+      .add(BackendServer.coordinatorDesign(coordinatorConfig))
+      .add(BackendServer.workerDesign(workerConfig))
+      .withProductionMode
+
+    design.build[StandaloneService] { service =>
+      service.awaitTermination
+    }
+  }
+}
+
+class StandaloneService(
+    frontendServer: FrontendServer,
+    coordinatorServer: CoordinatorServer,
+    workerService: WorkerService
+) {
+
+  def awaitTermination: Unit = {
+    frontendServer.waitForTermination
+  }
+
 }

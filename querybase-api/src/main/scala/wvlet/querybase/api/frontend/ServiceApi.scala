@@ -4,6 +4,8 @@ import wvlet.airframe.http.RPC
 import wvlet.airframe.metrics.ElapsedTime
 import wvlet.querybase.api.BuildInfo
 
+import java.time.Instant
+
 /**
   */
 @RPC
@@ -14,6 +16,8 @@ trait ServiceApi {
   def serviceInfo: ServiceInfo = {
     ServiceInfo(upTime = ElapsedTime.succinctMillis(System.currentTimeMillis() - serviceStartTimeMillis))
   }
+
+  def serviceNodes: Seq[ServiceNode]
 }
 
 object ServiceApi {
@@ -23,4 +27,6 @@ object ServiceApi {
       oauthClientId: Option[String] = None,
       upTime: ElapsedTime
   )
+
+  case class ServiceNode(name: String, address: String, lastHeartBeatAt: Instant)
 }

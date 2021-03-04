@@ -2,6 +2,7 @@ package wvlet.querybase.ui
 
 import wvlet.airframe._
 import wvlet.airframe.http.js.JSHttpClient
+import wvlet.airframe.rx.{Rx, RxOption}
 import wvlet.log.LogSupport
 import wvlet.querybase.api.frontend.ServiceJSClient
 
@@ -25,6 +26,10 @@ trait RPCService extends LogSupport {
         error(e)
     }
     future
+  }
+
+  protected def rxRpc[U](body: ServiceJSClient => Future[U]): RxOption[U] = {
+    Rx.fromFuture(rpc(body))
   }
 
 }
