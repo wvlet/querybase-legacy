@@ -1,8 +1,7 @@
 package wvlet.querybase.ui.component.page
 
-import wvlet.airframe.rx.Rx
 import wvlet.airframe.rx.html.RxElement
-import wvlet.airframe.rx.html.all.{button, cls, div, span, style, tpe}
+import wvlet.airframe.rx.html.all._
 import wvlet.querybase.ui.RPCService
 
 /**
@@ -16,13 +15,23 @@ trait HomePage extends RxElement with RPCService {
         style -> "height: calc(60vh - 60px);",
         div("Hello Querybase")
       ),
-      rxRpc(_.ServiceApi.serviceNodes()).map { nodeList =>
-        nodeList.map { n =>
-          div(
-            span(s"${n.name}: ${n.address} ${n.lastHeartBeatAt.toString}")
-          )
+      table(
+        cls -> "table",
+        thead(
+          th("name"),
+          th("address"),
+          th("last heartbeat")
+        ),
+        rpcRx(_.ServiceApi.serviceNodes()).map { nodeList =>
+          nodeList.map { n =>
+            tr(
+              td(n.name),
+              td(n.address),
+              td(n.lastHeartBeatAt.toString)
+            )
+          }
         }
-      },
+      ),
       div(
         cls   -> "bg-dark",
         style -> "height: 40vh;",

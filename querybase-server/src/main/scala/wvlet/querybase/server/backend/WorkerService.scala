@@ -1,9 +1,11 @@
 package wvlet.querybase.server.backend
 
 import wvlet.airframe.newDesign
+import wvlet.querybase.api.backend.v1.CoordinatorApi.Node
 import wvlet.querybase.server.backend.BackendServer.WorkerServer
 import wvlet.querybase.server.backend.WorkerService.BackgroundExecutor
 
+import java.net.InetAddress
 import java.util.concurrent.{Executors, ScheduledExecutorService, TimeUnit}
 
 /**
@@ -15,7 +17,12 @@ class WorkerService(
     executor: BackgroundExecutor
 ) {
 
-  private val self                   = workerConfig.toNode
+  private val self: Node = {
+    val localHost = InetAddress.getLocalHost
+    val localAddr = s"${localHost.getHostAddress}:${workerConfig.serverAddress.port}"
+    Node(name = workerConfig.name, address = localAddr, isCoordinator = false)
+  }
+
   private lazy val coordinatorClient = rpcClientProvider.getSyncClientFor(workerConfig.coordinatorAddress.toString())
 
   // Polling coordinator every 5 seconds

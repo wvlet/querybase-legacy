@@ -28,7 +28,7 @@ trait RPCService extends LogSupport {
     future
   }
 
-  protected def rxRpc[U](body: ServiceJSClient => Future[U]): RxOption[U] = {
+  protected def rpcRx[U](body: ServiceJSClient => Future[U]): RxOption[U] = {
     Rx.fromFuture(rpc(body))
   }
 
