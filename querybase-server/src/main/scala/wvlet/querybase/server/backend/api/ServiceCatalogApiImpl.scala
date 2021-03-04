@@ -1,8 +1,7 @@
-package wvlet.querybase.server.backend
+package wvlet.querybase.server.backend.api
 
 import wvlet.airframe.json.Json
 import wvlet.airframe.surface.secret
-import wvlet.log.io.Resource
 import wvlet.querybase.api.backend.v1.ServiceCatalogApi
 import wvlet.querybase.api.backend.v1.ServiceCatalogApi.Service
 

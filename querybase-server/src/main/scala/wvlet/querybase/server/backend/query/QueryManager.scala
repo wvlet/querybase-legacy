@@ -3,7 +3,7 @@ package wvlet.querybase.server.backend.query
 import wvlet.querybase.api.backend.v1.CoordinatorApi.{NewQueryRequest, QueryInfo}
 import wvlet.querybase.api.backend.v1.ServiceCatalogApi
 import wvlet.querybase.api.backend.v1.query.QueryStatus
-import wvlet.querybase.server.backend.ServiceCatalog
+import wvlet.querybase.server.backend.api.ServiceCatalog
 
 import java.util.concurrent.ConcurrentHashMap
 import scala.jdk.CollectionConverters._

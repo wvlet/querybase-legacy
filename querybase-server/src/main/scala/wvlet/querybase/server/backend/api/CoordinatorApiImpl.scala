@@ -1,12 +1,9 @@
-package wvlet.querybase.server.backend
+package wvlet.querybase.server.backend.api
 
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi
-import wvlet.querybase.api.backend.v1.CoordinatorApi.Node
+import wvlet.querybase.server.backend.NodeManager
 import wvlet.querybase.server.backend.query.QueryManager
-
-import java.net.InetAddress
-import java.util.concurrent.ConcurrentHashMap
 
 /**
   */
