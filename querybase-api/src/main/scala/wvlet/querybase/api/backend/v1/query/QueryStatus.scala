@@ -1,7 +1,5 @@
 package wvlet.querybase.api.backend.v1.query
 
-import java.util.Locale
-
 /**
   */
 sealed trait QueryStatus
@@ -21,6 +19,6 @@ object QueryStatus {
     }.toMap
 
   def unapply(s: String): Option[QueryStatus] = {
-    Some(statusTable.getOrElse(s.toUpperCase(Locale.US), UNKNOWN))
+    Some(statusTable.getOrElse(s.toUpperCase(), UNKNOWN))
   }
 }

@@ -35,6 +35,7 @@ object FrontendServer extends LogSupport {
       .add[QueryLogApiImpl]
       .add[ProjectApiImpl]
       .add[NotebookApiImpl]
+      .add[QueryApiImpl]
 
   type FrontendClient = ServiceSyncClient[Request, Response]
 

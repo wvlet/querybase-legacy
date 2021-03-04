@@ -17,7 +17,7 @@ trait RPCService extends LogSupport {
   private lazy val rpcClient               = bind[ServiceJSClient]
   protected val jsHttpClient: JSHttpClient = rpcClient.getClient
 
-  protected def rpc[U](body: ServiceJSClient => Future[U]): Future[U] = {
+  def rpc[U](body: ServiceJSClient => Future[U]): Future[U] = {
     val future = body(rpcClient)
     future.onComplete {
       case Success(_) =>
@@ -28,11 +28,11 @@ trait RPCService extends LogSupport {
     future
   }
 
-  protected def rpcRx[U](body: ServiceJSClient => Future[U]): RxOption[U] = {
+  def rpcRx[U](body: ServiceJSClient => Future[U]): RxOption[U] = {
     Rx.fromFuture(rpc(body))
   }
 
-  protected def repeatRpc[U](intervalMillis: Int)(body: ServiceJSClient => Future[U]): RxOption[U] = {
+  def repeatRpc[U](intervalMillis: Int)(body: ServiceJSClient => Future[U]): RxOption[U] = {
     Rx
       .intervalMillis(intervalMillis)
       .flatMap { i =>

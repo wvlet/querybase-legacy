@@ -35,7 +35,7 @@ class TextEditor(
     val editorNode: HTMLElement = document.createElement("div").asInstanceOf[HTMLElement]
     editorNode.setAttribute("id", editorId)
     editorNode.setAttribute("class", "query-editor")
-    editorNode.setAttribute("style", "width: 98%;")
+    editorNode.setAttribute("style", "width: 100%;")
     editorNode
   }
 
