@@ -4,10 +4,23 @@ import wvlet.airframe.rx.Rx
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
+import wvlet.querybase.api.backend.v1.query.QueryStatus
 import wvlet.querybase.ui.RPCService
 
 trait QueryListPanel extends RxElement with RPCService {
   private val queryList = Rx.variable(Seq.empty[QueryInfo])
+
+  private def renderStatus(s: QueryStatus): RxElement = {
+    val color = s match {
+      case QueryStatus.RUNNING  => "info"
+      case QueryStatus.FINISHED => "success"
+      case QueryStatus.FAILED   => "danger"
+      case QueryStatus.CANCELED => "warning"
+      case QueryStatus.QUEUED   => "secondary"
+      case _                    => "light"
+    }
+    span(cls -> s"badge badge-${color}", s.toString)
+  }
 
   override def render: RxElement = {
     new Table(Seq("query_id", "service", "type", "status", "elapsed", "query"))(
@@ -18,8 +31,10 @@ trait QueryListPanel extends RxElement with RPCService {
               td(cls -> "text-monospace", small(q.queryId)),
               td(q.serviceName),
               td(q.serviceType),
-              td(q.queryStatus.toString),
-              td(q.elapsed.toString()),
+              td(
+                renderStatus(q.queryStatus)
+              ),
+              td(cls -> "text-center", q.elapsed.toString()),
               td(q.query)
             )
           }

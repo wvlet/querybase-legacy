@@ -11,7 +11,7 @@ import java.time.Instant
 trait WorkerApi {
   import WorkerApi._
 
-  def runTask(queryId: String, service: TrinoService, query: String): TaskInfo
+  def runTrinoTask(queryId: String, service: TrinoService, query: String): TaskInfo
 }
 
 object WorkerApi {

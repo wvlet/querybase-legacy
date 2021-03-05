@@ -91,7 +91,7 @@ class QueryManager(
               info(trinoService)
               val workerApi = rpcClientProvider.getSyncClientFor(w.node.address)
               try {
-                val taskInfo = workerApi.v1.WorkerApi.runTask(qi.queryId, service = trinoService, query = qi.query)
+                val taskInfo = workerApi.v1.WorkerApi.runTrinoTask(qi.queryId, service = trinoService, query = qi.query)
                 info(taskInfo)
                 updateQuery(qi.withQueryStatus(QueryStatus.RUNNING))
               } catch {
