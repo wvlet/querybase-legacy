@@ -5,7 +5,6 @@ import wvlet.airframe.control.Control
 import wvlet.airframe.http.ServerAddress
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.ServiceGrpc
-import wvlet.querybase.server.backend.BackendServer.CoordinatorClient
 
 import java.util.concurrent.ConcurrentHashMap
 import scala.annotation.tailrec

@@ -9,7 +9,7 @@ import wvlet.log.LogSupport
 import wvlet.log.io.IOUtil
 import wvlet.querybase.api.backend.ServiceGrpc
 import wvlet.querybase.api.backend.v1.ServerInfoApi
-import wvlet.querybase.server.backend.api.{CoordinatorApiImpl, ServiceCatalog, ServiceCatalogApiImpl}
+import wvlet.querybase.server.backend.api.{CoordinatorApiImpl, ServiceCatalog, ServiceCatalogApiImpl, WorkerApiImpl}
 
 import java.io.File
 import java.net.ServerSocket
@@ -43,7 +43,9 @@ object BackendServer extends LogSupport {
     .add[CoordinatorApiImpl]
     .add[ServiceCatalogApiImpl]
 
-  def workerRouter = Router.add[ServerInfoApi]
+  def workerRouter = Router
+    .add[ServerInfoApi]
+    .add[WorkerApiImpl]
 
   private def coordinatorServer(config: CoordinatorConfig): GrpcServerConfig =
     gRPC.server

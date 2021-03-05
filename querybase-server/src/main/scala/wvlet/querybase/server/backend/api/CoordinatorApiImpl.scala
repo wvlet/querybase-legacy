@@ -21,7 +21,7 @@ class CoordinatorApiImpl(nodeManager: NodeManager, queryManager: QueryManager) e
 
   override def newQuery(queryRequest: NewQueryRequest): NewQueryResponse = {
     val qi = queryManager.newQuery(queryRequest)
-    NewQueryResponse(qi.queryId.toString)
+    NewQueryResponse(qi.queryId)
   }
 
   override def listQueries: Seq[QueryInfo] = {

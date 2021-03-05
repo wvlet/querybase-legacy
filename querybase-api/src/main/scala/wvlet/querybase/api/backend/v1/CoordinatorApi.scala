@@ -21,21 +21,28 @@ trait CoordinatorApi {
 
 object CoordinatorApi {
 
-  case class Node(name: String, address: String, isCoordinator: Boolean, startedAt: Instant)
-  case class NodeInfo(node: Node, lastHeartbeatAt: Instant)
+  type QueryId = String
+  type NodeId  = String
+
+  case class Node(name: NodeId, address: String, isCoordinator: Boolean, startedAt: Instant)
+  case class NodeInfo(node: Node, lastHeartbeatAt: Instant) {
+    def isCoordinator: Boolean = node.isCoordinator
+  }
   case class RegisterResponse()
 
   case class NewQueryRequest(query: String, serviceName: String)
-  case class NewQueryResponse(queryId: String)
+  case class NewQueryResponse(queryId: QueryId)
 
   case class QueryInfo(
-      queryId: String,
+      queryId: QueryId,
       serviceName: String,
       serviceType: String,
       queryStatus: QueryStatus,
       query: String,
       createdAt: Instant = Instant.now(),
-      completedAt: Option[Instant] = None
+      completedAt: Option[Instant] = None,
+      errorCode: Option[String] = None,
+      errorMessage: Option[String] = None
   ) {
     def elapsed: ElapsedTime = {
       completedAt match {

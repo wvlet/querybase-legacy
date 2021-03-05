@@ -1,6 +1,7 @@
 package wvlet.querybase.api.backend.v1
 
 import wvlet.airframe.http.RPC
+import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryId
 
 import java.time.Instant
 
@@ -10,13 +11,13 @@ import java.time.Instant
 trait WorkerApi {
   import WorkerApi._
 
-  def runTask(taskRequest: TaskRequest): TaskInfo
-
+  def runTrinoTask(trinoTaskRequest: TrinoTaskRequest): TrinoTaskInfo
 }
 
 object WorkerApi {
 
-  case class TaskRequest(queryId: String)
-  case class TaskInfo(queryId: String, taskId: String, createdAt: Instant = Instant.now())
+  case class TrinoTaskRequest(queryId: QueryId, query: String)
+  case class TrinoService(address: String, connector: String, schema: String, user: String)
+  case class TrinoTaskInfo(queryId: QueryId, taskId: String, createdAt: Instant = Instant.now())
 
 }

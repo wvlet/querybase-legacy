@@ -47,7 +47,7 @@ class QueryIdGenerator {
     BASE_SYSTEM_TIME_MILLIS + TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - BASE_NANO_TIME)
   }
 
-  def newQueryId: QueryId = {
+  def newQueryId: String = {
     import org.weakref.jmx.internal.guava.util.concurrent.Uninterruptibles
 
     import java.util.concurrent.TimeUnit
@@ -73,7 +73,7 @@ class QueryIdGenerator {
     }
     val c = counter
     counter += 1
-    QueryId(f"${lastTimestamp}_${c}%05d_${coordinatorId}")
+    f"${lastTimestamp}_${c}%05d_${coordinatorId}"
   }
 
 }

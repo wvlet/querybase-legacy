@@ -10,13 +10,13 @@ trait ServerInfoApi {
   private val serviceStartTimeMillis = System.currentTimeMillis()
 
   import ServerInfoApi._
-  def serviceInfo: ServiceInfo = {
-    ServiceInfo(upTime = ElapsedTime.succinctMillis(System.currentTimeMillis() - serviceStartTimeMillis))
+  def serverInfo: ServerInfo = {
+    ServerInfo(upTime = ElapsedTime.succinctMillis(System.currentTimeMillis() - serviceStartTimeMillis))
   }
 }
 
 object ServerInfoApi {
-  case class ServiceInfo(
+  case class ServerInfo(
       name: String = "querybase",
       version: String = wvlet.querybase.api.BuildInfo.version,
       upTime: ElapsedTime
