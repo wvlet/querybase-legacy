@@ -4,7 +4,7 @@ import io.grpc.StatusRuntimeException
 import wvlet.airframe.codec.MessageCodec
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi.{NewQueryRequest, NodeId, QueryId, QueryInfo}
-import wvlet.querybase.api.backend.v1.WorkerApi.{TrinoService, TrinoTaskRequest}
+import wvlet.querybase.api.backend.v1.WorkerApi.TrinoService
 import wvlet.querybase.api.backend.v1.query.QueryStatus
 import wvlet.querybase.server.backend.api.{ServiceCatalog, ServiceDef}
 import wvlet.querybase.server.backend.query.QueryManager.QueryManagerThreadManager
@@ -87,20 +87,17 @@ class QueryManager(
 
           qi.serviceType match {
             case "trino" =>
-              val taskRequest = TrinoTaskRequest(
-                queryId = qi.queryId,
-                //service = MessageCodec.of[TrinoService].fromJson(svc.properties),
-                query = qi.query
-              )
-              info(taskRequest)
+              val trinoService = MessageCodec.of[TrinoService].fromJson(svc.properties)
+              info(trinoService)
               val workerApi = rpcClientProvider.getSyncClientFor(w.node.address)
               try {
-                val taskInfo = workerApi.v1.WorkerApi.runTrinoTask(taskRequest)
+                val taskInfo = workerApi.v1.WorkerApi.runTask(qi.queryId, service = trinoService, query = qi.query)
                 info(taskInfo)
                 updateQuery(qi.withQueryStatus(QueryStatus.RUNNING))
               } catch {
                 case e: StatusRuntimeException =>
-                  warn(e)
+                  warn(e.getTrailers)
+                  warn(e.getStatus.getCode)
                   updateQuery(qi.withQueryStatus(QueryStatus.FAILED))
               }
             case other =>
