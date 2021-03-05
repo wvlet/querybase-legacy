@@ -12,8 +12,8 @@ trait QueryListPanel extends RxElement with RPCService {
 
   private def renderStatus(s: QueryStatus): RxElement = {
     val color = s match {
-      case QueryStatus.RUNNING  => "info"
-      case QueryStatus.FINISHED => "success"
+      case QueryStatus.RUNNING  => "success"
+      case QueryStatus.FINISHED => "info"
       case QueryStatus.FAILED   => "danger"
       case QueryStatus.CANCELED => "warning"
       case QueryStatus.QUEUED   => "secondary"

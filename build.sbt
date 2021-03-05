@@ -151,6 +151,7 @@ lazy val server =
         "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-http-grpc"    % AIRFRAME_VERSION,
         "io.trino"            % "trino-cli"             % TRINO_VERSION,
+        "io.trino"            % "trino-jdbc"            % TRINO_VERSION,
         "org.slf4j"           % "slf4j-jdk14"           % "1.8.0-beta4"
       )
     )

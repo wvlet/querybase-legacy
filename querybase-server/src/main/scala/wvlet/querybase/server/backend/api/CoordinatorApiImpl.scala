@@ -6,6 +6,8 @@ import wvlet.querybase.api.backend.v1.query.QueryStatus
 import wvlet.querybase.server.backend.NodeManager
 import wvlet.querybase.server.backend.query.QueryManager
 
+import java.time.Instant
+
 /**
   */
 class CoordinatorApiImpl(nodeManager: NodeManager, queryManager: QueryManager) extends CoordinatorApi with LogSupport {
@@ -29,12 +31,15 @@ class CoordinatorApiImpl(nodeManager: NodeManager, queryManager: QueryManager) e
     queryManager.listQueries
   }
 
-  override def updateQueryStatus(queryId: QueryId, status: QueryStatus): Int = {
+  override def updateQueryStatus(queryId: String, status: QueryStatus, completedAt: Option[Instant]): Int = {
     queryManager.update(queryId) { qi =>
-      qi.withQueryStatus(status)
-    } match {
-      case Some(qi) => RequestStatus.Ok
-      case _        => RequestStatus.Failed
+      qi.withQueryStatus(status).withCompletedAt(completedAt)
     }
+    info(s"Update query status: ${queryId}, status: ${status}")
+    //ret match {
+///      case Some(qi) => RequestStatus.Ok
+    //   case _        => RequestStatus.Failed
+    //}
+    0
   }
 }

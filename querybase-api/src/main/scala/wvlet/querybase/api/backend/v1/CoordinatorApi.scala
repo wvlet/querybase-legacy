@@ -18,7 +18,7 @@ trait CoordinatorApi {
   def newQuery(queryRequest: NewQueryRequest): NewQueryResponse
   def listQueries: Seq[QueryInfo]
 
-  def updateQueryStatus(queryId: String, status: QueryStatus): Int
+  def updateQueryStatus(queryId: String, status: QueryStatus, completedAt: Option[Instant] = None): Int
 }
 
 object CoordinatorApi {
@@ -54,12 +54,11 @@ object CoordinatorApi {
       }
     }
 
-    def withQueryStatus(newQueryStatus: QueryStatus): QueryInfo = this.copy(queryStatus = newQueryStatus)
-    def withCompletedAt(completedAt: Instant): QueryInfo        = this.copy(completedAt = Some(completedAt))
+    def withQueryStatus(newQueryStatus: QueryStatus): QueryInfo     = this.copy(queryStatus = newQueryStatus)
+    def withCompletedAt(newCompletedAt: Option[Instant]): QueryInfo = this.copy(completedAt = newCompletedAt)
   }
 }
 
-sealed trait RequestStatus
 object RequestStatus {
   val Ok     = 0
   val Failed = -1

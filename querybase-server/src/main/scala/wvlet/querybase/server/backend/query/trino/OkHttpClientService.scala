@@ -1,4 +1,4 @@
-package wvlet.querybase.server.executor.trino
+package wvlet.querybase.server.backend.query.trino
 
 import okhttp3.OkHttpClient
 import wvlet.airframe.Design

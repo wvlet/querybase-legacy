@@ -1,4 +1,4 @@
-package wvlet.querybase.server.executor.trino
+package wvlet.querybase.server.backend.query.trino
 
 import java.net.URI
 import java.time.ZoneOffset

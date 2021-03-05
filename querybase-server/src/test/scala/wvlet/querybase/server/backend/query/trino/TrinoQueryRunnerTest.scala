@@ -1,4 +1,4 @@
-package wvlet.querybase.server.executor.trino
+package wvlet.querybase.server.backend.query.trino
 
 import wvlet.airframe.Design
 import wvlet.airspec.AirSpec

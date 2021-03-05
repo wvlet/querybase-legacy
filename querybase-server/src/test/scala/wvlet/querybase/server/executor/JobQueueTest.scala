@@ -4,7 +4,7 @@ import wvlet.airframe.Design
 import wvlet.airframe.jdbc.DbConfig
 import wvlet.airspec.AirSpec
 import wvlet.querybase.server.executor.JobQueue.JobEntry
-import wvlet.querybase.server.executor.trino.TrinoJob
+import wvlet.querybase.server.backend.query.trino.TrinoJob
 
 /**
   */
