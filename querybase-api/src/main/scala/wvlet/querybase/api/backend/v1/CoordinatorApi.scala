@@ -17,10 +17,11 @@ trait CoordinatorApi {
 
   def newQuery(queryRequest: NewQueryRequest): NewQueryResponse
   def listQueries: Seq[QueryInfo]
+
+  def updateQueryStatus(queryId: String, status: QueryStatus): Int
 }
 
 object CoordinatorApi {
-
   type QueryId = String
   type NodeId  = String
 
@@ -56,4 +57,10 @@ object CoordinatorApi {
     def withQueryStatus(newQueryStatus: QueryStatus): QueryInfo = this.copy(queryStatus = newQueryStatus)
     def withCompletedAt(completedAt: Instant): QueryInfo        = this.copy(completedAt = Some(completedAt))
   }
+}
+
+sealed trait RequestStatus
+object RequestStatus {
+  val Ok     = 0
+  val Failed = -1
 }

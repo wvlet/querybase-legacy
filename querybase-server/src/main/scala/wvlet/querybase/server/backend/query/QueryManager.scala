@@ -8,7 +8,7 @@ import wvlet.querybase.api.backend.v1.WorkerApi.TrinoService
 import wvlet.querybase.api.backend.v1.query.QueryStatus
 import wvlet.querybase.server.backend.api.{ServiceCatalog, ServiceDef}
 import wvlet.querybase.server.backend.query.QueryManager.QueryManagerThreadManager
-import wvlet.querybase.server.backend.{NodeManager, RPCClientProvider}
+import wvlet.querybase.server.backend.{NodeManager, RPCClientProvider, ThreadManager}
 
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.{ConcurrentHashMap, Executors}
@@ -69,7 +69,15 @@ class QueryManager(
     catalog.services.find(_.name == name)
   }
 
-  private def updateQuery(qi: QueryInfo): Unit = {
+  private[backend] def update(queryId: QueryId)(updater: QueryInfo => QueryInfo): Option[QueryInfo] = {
+    queryList.get(queryId).map { qi =>
+      val updated = updater(qi)
+      queryList.put(queryId, updated)
+      updated
+    }
+  }
+
+  private[backend] def updateQuery(qi: QueryInfo): Unit = {
     queryList.put(qi.queryId, qi)
   }
 
@@ -92,13 +100,10 @@ class QueryManager(
               try {
                 val executionInfo =
                   workerApi.v1.WorkerApi.runTrinoQuery(qi.queryId, service = trinoService, query = qi.query)
-                info(executionInfo)
                 queryAssignment.put(qi.queryId, RemoteQuery(executionInfo.nodeId))
-                updateQuery(qi.withQueryStatus(QueryStatus.RUNNING))
               } catch {
                 case e: StatusRuntimeException =>
-                  warn(e.getTrailers)
-                  warn(e.getStatus.getCode)
+                  warn(e.getMessage)
                   updateQuery(qi.withQueryStatus(QueryStatus.FAILED))
               }
             case other =>
@@ -125,17 +130,7 @@ class QueryManager(
 
 object QueryManager {
 
-  type QueryManagerThreadManager = ScheduledThreadManager
-
-  class ScheduledThreadManager extends AutoCloseable {
-    private val executorService = Executors.newCachedThreadPool()
-    def submit[U](body: => U): Unit = {
-      executorService.submit(new Runnable {
-        override def run(): Unit = body
-      })
-    }
-    override def close(): Unit = executorService.shutdownNow()
-  }
+  type QueryManagerThreadManager = ThreadManager
 
 }
 

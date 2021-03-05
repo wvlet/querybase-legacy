@@ -39,7 +39,7 @@ trait QueryListPanel extends RxElement with RPCService {
             )
           }
         },
-        repeatRpc(1000)(_.FrontendApi.listQueries()).map { lst =>
+        repeatRpc(1500)(_.FrontendApi.listQueries()).map { lst =>
           queryList.forceSet(lst)
           span()
         }
