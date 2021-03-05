@@ -1,15 +1,13 @@
 package wvlet.querybase.ui.component.page
 
 import wvlet.airframe._
-import wvlet.airframe.rx.Rx
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.log.LogSupport
-import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
 import wvlet.querybase.api.frontend.FrontendApi.SubmitQueryRequest
 import wvlet.querybase.ui.RPCService
-import wvlet.querybase.ui.component.{QueryListPanel, ServiceSelector, Table}
 import wvlet.querybase.ui.component.editor.TextEditor
+import wvlet.querybase.ui.component.{QueryListPanel, ServiceSelector}
 
 /**
   */
@@ -19,24 +17,22 @@ trait ExplorePage extends RxElement {
 
   private val queryEditor = new QueryEditor("select 1", rpcService)
 
-  override def render: RxElement = {
+  override def render: RxElement = div(
+    cls -> "d-flex flex-column w-100 h-100",
     div(
-      cls -> "d-flex flex-column w-100 h-100",
+      queryEditor
+    ),
+    div(
+      cls -> "flex-grow-1 border",
+      // Necessary to make w-100 work for the element with position: absolute
+      style -> "position: relative;",
       div(
-        queryEditor
-      ),
-      div(
-        cls -> "flex-grow-1",
-        // Necessary to make w-100 work for the element with position: absolute
-        style -> "position: relative;",
-        div(
-          cls   -> "w-100",
-          style -> "position: absolute; bottom: 0; min-height: 100px;",
-          queryListPanel
-        )
+        cls   -> "w-100",
+        style -> "position: absolute; bottom: 0;",
+        queryListPanel
       )
     )
-  }
+  )
 }
 
 class QueryEditor(query: String, rpcService: RPCService) extends RxElement with LogSupport {

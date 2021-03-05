@@ -23,6 +23,7 @@ import scala.scalajs.js
   */
 class TextEditor(
     initialValue: String = "",
+    maxHeight: Int = 250,
     onEnter: String => Unit = { x: String => },
     onExitUp: () => Unit = { () => },
     onExitDown: () => Unit = { () => }
@@ -35,7 +36,7 @@ class TextEditor(
     val editorNode: HTMLElement = document.createElement("div").asInstanceOf[HTMLElement]
     editorNode.setAttribute("id", editorId)
     editorNode.setAttribute("class", "query-editor")
-    editorNode.setAttribute("style", "width: 100%;")
+    editorNode.setAttribute("style", s"width: 100%; max-height: ${maxHeight}px;")
     editorNode
   }
 
@@ -111,7 +112,7 @@ class TextEditor(
     val minHeight   = lineCount * lineHeight
     val lastLinePos = editor.getTopForLineNumber(lineCount + 1)
 
-    val height = (if (isInit) lineCount * lineHeight else (lastLinePos + lineHeight)).max(minHeight)
+    val height = (if (isInit) lineCount * lineHeight else (lastLinePos + lineHeight)).max(minHeight).min(maxHeight)
     editor.getDomNode() match {
       case el: HTMLElement =>
         el.style.height = s"${height}px"

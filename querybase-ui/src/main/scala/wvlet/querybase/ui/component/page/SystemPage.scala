@@ -14,15 +14,13 @@ trait SystemPage extends RxElement with RPCService {
   override def render: RxElement = {
     new Table(Seq("name", "address", "uptime"))(
       nodeList.map { lst =>
-        tbody(
-          lst.map { n =>
-            tr(
-              td(n.name),
-              td(n.address),
-              td(n.upTime.toString())
-            )
-          }
-        )
+        lst.map { n =>
+          tr(
+            td(n.name),
+            td(n.address),
+            td(n.upTime.toString())
+          )
+        }
       },
       repeatRpc(1500)(_.FrontendApi.serverNodes()).map { x =>
         nodeList := x

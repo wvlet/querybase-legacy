@@ -24,26 +24,25 @@ trait QueryListPanel extends RxElement with RPCService {
 
   override def render: RxElement = {
     new Table(Seq("query_id", "service", "type", "status", "elapsed", "query"))(
-      tbody(
-        queryList.map { ql =>
-          ql.map { q =>
-            tr(
-              td(cls -> "text-monospace", small(q.queryId)),
-              td(q.serviceName),
-              td(q.serviceType),
-              td(
-                renderStatus(q.queryStatus)
-              ),
-              td(cls -> "text-center", q.elapsed.toString()),
-              td(q.query)
-            )
-          }
-        },
-        repeatRpc(1500)(_.FrontendApi.listQueries()).map { lst =>
-          queryList.forceSet(lst)
-          span()
+      style -> "max-height: 200px;",
+      queryList.map { ql =>
+        ql.map { q =>
+          tr(
+            td(cls -> "text-monospace", small(q.queryId)),
+            td(q.serviceName),
+            td(q.serviceType),
+            td(
+              renderStatus(q.queryStatus)
+            ),
+            td(cls -> "text-center", q.elapsed.toString()),
+            td(q.query)
+          )
         }
-      )
+      },
+      repeatRpc(1500)(_.FrontendApi.listQueries()).map { lst =>
+        queryList.forceSet(lst)
+        span()
+      }
     )
   }
 }
