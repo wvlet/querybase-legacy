@@ -25,7 +25,7 @@ class QueryManager(
     with AutoCloseable {
 
   private val queryList        = new ConcurrentHashMap[QueryId, QueryInfo]().asScala
-  private val queryAssignment  = new ConcurrentHashMap[QueryId, RemoteTask]()
+  private val queryAssignment  = new ConcurrentHashMap[QueryId, RemoteQuery]()
   private val queryIdGenerator = new QueryIdGenerator()
 
   threadManager.submit(processQueries)
@@ -88,11 +88,12 @@ class QueryManager(
           qi.serviceType match {
             case "trino" =>
               val trinoService = MessageCodec.of[TrinoService].fromJson(svc.properties)
-              info(trinoService)
-              val workerApi = rpcClientProvider.getSyncClientFor(w.node.address)
+              val workerApi    = rpcClientProvider.getSyncClientFor(w.node.address)
               try {
-                val taskInfo = workerApi.v1.WorkerApi.runTrinoTask(qi.queryId, service = trinoService, query = qi.query)
-                info(taskInfo)
+                val executionInfo =
+                  workerApi.v1.WorkerApi.runTrinoQuery(qi.queryId, service = trinoService, query = qi.query)
+                info(executionInfo)
+                queryAssignment.put(qi.queryId, RemoteQuery(executionInfo.nodeId))
                 updateQuery(qi.withQueryStatus(QueryStatus.RUNNING))
               } catch {
                 case e: StatusRuntimeException =>
@@ -138,4 +139,4 @@ object QueryManager {
 
 }
 
-case class RemoteTask(nodeId: NodeId)
+case class RemoteQuery(nodeId: NodeId)

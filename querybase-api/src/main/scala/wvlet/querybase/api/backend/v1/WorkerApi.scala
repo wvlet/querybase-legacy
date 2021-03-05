@@ -2,6 +2,7 @@ package wvlet.querybase.api.backend.v1
 
 import wvlet.airframe.http.RPC
 import wvlet.airframe.surface.secret
+import wvlet.querybase.api.backend.v1.CoordinatorApi.NodeId
 
 import java.time.Instant
 
@@ -11,11 +12,11 @@ import java.time.Instant
 trait WorkerApi {
   import WorkerApi._
 
-  def runTrinoTask(queryId: String, service: TrinoService, query: String): TaskInfo
+  def runTrinoQuery(queryId: String, service: TrinoService, query: String): QueryExecutionInfo
 }
 
 object WorkerApi {
   case class TrinoService(address: String, connector: String, schema: String, @secret user: String)
-  case class TaskInfo(queryId: String, taskId: String, createdAt: Instant = Instant.now())
+  case class QueryExecutionInfo(queryId: String, nodeId: NodeId, createdAt: Instant = Instant.now())
 
 }
