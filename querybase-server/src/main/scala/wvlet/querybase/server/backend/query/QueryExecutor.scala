@@ -11,6 +11,7 @@ import wvlet.querybase.server.backend.ThreadManager
 import wvlet.querybase.server.backend.query.QueryExecutor.{QueryExecutionRequest, QueryExecutorThreadManager}
 import wvlet.querybase.server.backend.query.trino.TrinoJDBCRunner
 
+import java.sql.SQLException
 import java.time.Instant
 
 class QueryExecutor(
@@ -34,14 +35,23 @@ class QueryExecutor(
 
     trinoJDBCRunner.withConnection(request.service) { conn =>
       Control.withResource(conn.createStatement()) { stmt =>
-        val rs   = stmt.executeQuery(request.query)
-        val json = JDBCCodec(rs).toJsonSeq.iterator.toIndexedSeq.mkString("\n")
-        info(json)
-        coordinatorClient.v1.CoordinatorApi.updateQueryStatus(
-          queryId = request.queryId,
-          status = QueryStatus.FINISHED,
-          completedAt = Some(Instant.now())
-        )
+        try {
+          val rs   = stmt.executeQuery(request.query)
+          val json = JDBCCodec(rs).toJsonSeq.iterator.toIndexedSeq.mkString("\n")
+          coordinatorClient.v1.CoordinatorApi.updateQueryStatus(
+            queryId = request.queryId,
+            status = QueryStatus.FINISHED,
+            completedAt = Some(Instant.now())
+          )
+        } catch {
+          case e: SQLException =>
+            warn(s"${e.getMessage}")
+            coordinatorClient.v1.CoordinatorApi.updateQueryStatus(
+              queryId = request.queryId,
+              status = QueryStatus.FAILED,
+              completedAt = Some(Instant.now())
+            )
+        }
       }
     }
   }

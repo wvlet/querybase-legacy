@@ -21,15 +21,17 @@ trait ExplorePage extends RxElement {
 
   override def render: RxElement = {
     div(
-      cls -> "w-100 h-100",
+      cls -> "d-flex flex-column w-100 h-100",
       div(
-        cls -> "d-flex flex-column",
+        queryEditor
+      ),
+      div(
+        cls -> "flex-grow-1",
+        // Necessary to make w-100 work for the element with position: absolute
+        style -> "position: relative;",
         div(
-          cls -> "mb-auto",
-          queryEditor
-        ),
-        hr(),
-        div(
+          cls   -> "w-100",
+          style -> "position: absolute; bottom: 0; min-height: 100px;",
           queryListPanel
         )
       )

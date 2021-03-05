@@ -9,7 +9,6 @@ import wvlet.querybase.server.backend.query.QueryExecutor.QueryExecutionRequest
 
 class WorkerApiImpl(queryExecutor: QueryExecutor, workerConfig: WorkerConfig) extends WorkerApi with LogSupport {
   override def runTrinoQuery(queryId: String, service: WorkerApi.TrinoService, query: String): QueryExecutionInfo = {
-    info(s"Run Trino query for ${queryId}")
     queryExecutor.executeQuery(QueryExecutionRequest(queryId, query, service))
     QueryExecutionInfo(queryId, nodeId = workerConfig.name)
   }

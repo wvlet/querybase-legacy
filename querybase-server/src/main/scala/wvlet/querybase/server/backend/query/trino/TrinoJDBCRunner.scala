@@ -31,8 +31,7 @@ class TrinoJDBCDriver extends AutoCloseable with LogSupport {
     val p = new Properties()
     p.setProperty("user", user)
     val connectAddress = s"jdbc:trino://${hostname}/${catalog}/${schema}"
-    info(s"${connectAddress}")
-    val conn = driver.connect(connectAddress, p).asInstanceOf[TrinoConnection]
+    val conn           = driver.connect(connectAddress, p).asInstanceOf[TrinoConnection]
     conn
   }
 
