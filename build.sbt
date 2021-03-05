@@ -100,7 +100,7 @@ lazy val apiJS  = api.js
 lazy val ui =
   project
     .in(file("querybase-ui"))
-    .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin, AirframeHttpPlugin)
+    .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
     .settings(buildSettings)
     .settings(jsBuildSettings)
     .settings(

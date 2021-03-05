@@ -24,7 +24,6 @@ trait QueryListPanel extends RxElement with RPCService {
 
   override def render: RxElement = {
     new Table(Seq("query_id", "service", "type", "status", "elapsed", "query"))(
-      style -> "max-height: 200px;",
       queryList.map { ql =>
         ql.map { q =>
           tr(

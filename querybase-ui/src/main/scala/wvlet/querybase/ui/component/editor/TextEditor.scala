@@ -11,6 +11,7 @@ import wvlet.airframe.rx.html.widget.editor.monaco.editor.{
   Editor,
   IDimension,
   IEditorMinimapOptions,
+  IEditorScrollbarOptions,
   IModelDecorationsChangedEvent,
   IStandaloneEditorConstructionOptions,
   ITextModel,
@@ -63,6 +64,10 @@ class TextEditor(
     val minimapOptions = new js.Object().asInstanceOf[IEditorMinimapOptions]
     minimapOptions.enabled = false
     option.minimap = minimapOptions
+
+    val scrollbarOptions = new js.Object().asInstanceOf[IEditorScrollbarOptions]
+    scrollbarOptions.alwaysConsumeMouseWheel = true
+    option.scrollbar = scrollbarOptions
 
     val editor = Editor.create(editorNode, option)
     editor.onKeyDown { e: IKeyboardEvent =>

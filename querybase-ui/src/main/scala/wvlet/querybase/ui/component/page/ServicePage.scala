@@ -8,17 +8,15 @@ import wvlet.querybase.ui.component.Table
 class ServicePage(rpcService: RPCService) extends RxElement {
   override def render: RxElement = div(
     new Table(Seq("name", "type", "description"))(
-      tbody(
-        rpcService.rpcRx(_.FrontendApi.serviceCatalog()).map { lst =>
-          lst.map { s =>
-            tr(
-              td(s.name),
-              td(s.serviceType),
-              td(s.description)
-            )
-          }
+      rpcService.rpcRx(_.FrontendApi.serviceCatalog()).map { lst =>
+        lst.map { s =>
+          tr(
+            td(s.name),
+            td(s.serviceType),
+            td(s.description)
+          )
         }
-      )
+      }
     )
   )
 }

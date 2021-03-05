@@ -38,6 +38,7 @@ class QueryExecutor(
         try {
           val rs   = stmt.executeQuery(request.query)
           val json = JDBCCodec(rs).toJsonSeq.iterator.toIndexedSeq.mkString("\n")
+          info(json)
           coordinatorClient.v1.CoordinatorApi.updateQueryStatus(
             queryId = request.queryId,
             status = QueryStatus.FINISHED,
