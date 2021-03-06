@@ -86,7 +86,8 @@ class Sidebar(router: RxRouter) extends RxElement {
         SidebarBorder,
         navFrame(
           navItem("Settings", "fa-cog", "/settings"),
-          navItem("Help", "fa-question-circle", "/help")
+          navItem("Help", "fa-question-circle", "/help"),
+          navItem("Test", "fa-diagnoses", "/test")
         )
       )
     )
