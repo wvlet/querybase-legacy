@@ -5,9 +5,10 @@ import wvlet.airframe.metrics.ElapsedTime
 import wvlet.airframe.rx.{Rx, RxOption}
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
+import wvlet.log.LogSupport
 import wvlet.querybase.ui.test.{RPCTest, RxTest}
 
-class TestPage extends RxElement {
+class TestPage extends RxElement with LogSupport {
 
   private val testSuites: Seq[RxTest] = Seq(
     bind[RPCTest]
@@ -27,7 +28,9 @@ class TestPage extends RxElement {
         testSuites.map { suite =>
           val startNanos = System.nanoTime()
           val finished   = Rx.variable[Boolean](false)
+          info(s"[${suite.name}]")
           suite.tests.reverse.map { t =>
+            info(s"- ${t.testName}")
             tr(
               td(t.suite),
               td(t.testName),

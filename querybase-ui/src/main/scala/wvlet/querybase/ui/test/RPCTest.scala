@@ -1,11 +1,12 @@
 package wvlet.querybase.ui.test
 
 import wvlet.airframe.rx.{Rx, RxOption}
+import wvlet.log.LogSupport
 import wvlet.querybase.ui.RPCService
 
 case class RxTestCase(suite: String, testName: String, body: () => Rx[_])
 
-trait RxTest {
+trait RxTest extends LogSupport {
   def name: String
 
   private[ui] var tests: List[RxTestCase] = List.empty[RxTestCase]
