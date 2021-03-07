@@ -8,12 +8,12 @@ class VerticalSplitPanel(top: RxElement, bottom: RxElement, ratio: Double = 0.5)
   override def render: RxElement = div(
     cls -> "d-flex flex-column w-100 h-100",
     div(
-      cls   -> "overflow-auto",
+      cls   -> "border overflow-auto",
       style -> s"height: ${ratio * 100}%;",
       top
     ),
     div(
-      cls   -> "overflow-auto",
+      cls   -> "border overflow-auto",
       style -> s"height: ${(1 - ratio) * 100}%;",
       bottom
     )

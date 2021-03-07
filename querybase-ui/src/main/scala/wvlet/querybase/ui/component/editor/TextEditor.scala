@@ -37,7 +37,7 @@ class TextEditor(
     val editorNode: HTMLElement = document.createElement("div").asInstanceOf[HTMLElement]
     editorNode.setAttribute("id", editorId)
     editorNode.setAttribute("class", "query-editor")
-    editorNode.setAttribute("style", s"width: 100%; max-height: ${maxHeight}px;")
+    editorNode.setAttribute("style", s"width: 99%; max-height: ${maxHeight}px;")
     editorNode
   }
 
@@ -47,7 +47,9 @@ class TextEditor(
     option.language = "sql"
     option.theme = "vs-dark"
     option.lineNumbers = "on"
+    option.renderLineHighlight = "none"
     option.glyphMargin = false
+    option.wordWrap = "on"
     option.folding = false
     option.dragAndDrop = true
     option.renderIndentGuides = true

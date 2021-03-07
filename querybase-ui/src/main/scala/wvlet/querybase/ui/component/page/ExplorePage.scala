@@ -18,7 +18,11 @@ trait ExplorePage extends RxElement {
   private val queryEditor = new QueryEditor("select 1", rpcService)
 
   override def render: RxElement = {
-    new VerticalSplitPanel(top = queryEditor, bottom = queryListPanel, ratio = 0.7)
+    new VerticalSplitPanel(
+      top = queryEditor,
+      bottom = queryListPanel,
+      ratio = 0.7
+    )
 //
 //    div(
 //      cls -> "d-flex flex-column w-100 h-100",
