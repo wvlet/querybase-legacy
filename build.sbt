@@ -2,7 +2,7 @@ val SCALA_2_12          = "2.12.12"
 val SCALA_2_13          = "2.13.4"
 val targetScalaVersions = SCALA_2_13 :: Nil
 
-val AIRFRAME_VERSION    = "21.2.0"
+val AIRFRAME_VERSION    = "21.2.0-37-00736358-SNAPSHOT"
 val SCALAJS_DOM_VERSION = "1.1.0"
 val SPARK_VERSION       = "3.0.1"
 val TRINO_VERSION       = "352"
@@ -45,6 +45,9 @@ val buildSettings = Seq[Setting[_]](
   libraryDependencies ++= Seq(
     "org.scala-lang.modules" %%% "scala-collection-compat" % "2.4.2",
     "org.wvlet.airframe"     %%% "airspec"                 % AIRFRAME_VERSION % Test
+  ),
+  resolvers ++= Seq(
+    Resolver.sonatypeRepo("snapshots")
   )
 )
 

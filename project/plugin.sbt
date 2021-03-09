@@ -3,7 +3,7 @@ addSbtPlugin("com.jsuereth"       % "sbt-pgp"       % "2.1.1")
 addSbtPlugin("org.scoverage"      % "sbt-scoverage" % "1.6.1")
 addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo" % "0.10.0")
 addSbtPlugin("org.scalameta"      % "sbt-scalafmt"  % "2.4.2")
-addSbtPlugin("org.wvlet.airframe" % "sbt-airframe"  % "21.2.0")
+addSbtPlugin("org.wvlet.airframe" % "sbt-airframe"  % "21.2.0-37-00736358-SNAPSHOT")
 addSbtPlugin("com.dwijnand"       % "sbt-dynver"    % "4.1.1")
 
 // For Scala.js
@@ -22,3 +22,7 @@ addSbtPlugin("org.xerial.sbt" % "sbt-sql-td" % "0.13")
 addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.2.18")
 
 scalacOptions ++= Seq("-deprecation", "-feature")
+
+resolvers ++= Seq(
+  Resolver.sonatypeRepo("snapshots")
+)
