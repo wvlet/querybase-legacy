@@ -1,8 +1,9 @@
 package wvlet.querybase.ui
 
 import wvlet.airframe._
+import wvlet.airframe.control.CircuitBreakerOpenException
 import wvlet.airframe.http.js.JSHttpClient
-import wvlet.airframe.rx.{Rx, RxOption}
+import wvlet.airframe.rx.{Rx, RxOption, RxStream}
 import wvlet.log.LogSupport
 import wvlet.querybase.api.frontend.ServiceJSClient
 
@@ -22,6 +23,8 @@ trait RPCService extends LogSupport {
     future.onComplete {
       case Success(_) =>
       // Do nothing
+      case Failure(c: CircuitBreakerOpenException) =>
+        error(c.getMessage)
       case Failure(e) =>
         error(e)
     }
@@ -32,14 +35,10 @@ trait RPCService extends LogSupport {
     Rx.fromFuture(rpc(body))
   }
 
-  def repeatRpc[U](intervalMillis: Int)(body: ServiceJSClient => Future[U]): RxOption[U] = {
+  def repeatRpc[U](intervalMillis: Int)(body: ServiceJSClient => Future[U]): RxStream[U] = {
     Rx
       .intervalMillis(intervalMillis)
-      .flatMap { i =>
-        Rx.fromFuture(body(rpcClient))
-      }
-      .filter(_.isDefined)
-      .toOption
+      .andThen(i => body(rpcClient))
   }
 
 }

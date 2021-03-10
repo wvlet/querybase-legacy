@@ -1,14 +1,13 @@
 package wvlet.querybase.ui.component
 
-import wvlet.airframe.rx.Rx
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
-import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
 import wvlet.querybase.api.backend.v1.query.QueryStatus
 import wvlet.querybase.ui.RPCService
 
 trait QueryListPanel extends RxElement with RPCService {
-  private val queryList = Rx.variable(Seq.empty[QueryInfo])
+  private val queryList =
+    repeatRpc(1500)(_.FrontendApi.listQueries()).cache
 
   private def renderStatus(s: QueryStatus): RxElement = {
     val color = s match {
@@ -37,10 +36,6 @@ trait QueryListPanel extends RxElement with RPCService {
             td(q.query)
           )
         }
-      },
-      repeatRpc(1500)(_.FrontendApi.listQueries()).map { lst =>
-        queryList.forceSet(lst)
-        span()
       }
     )
   }
