@@ -6,7 +6,6 @@ import wvlet.airframe.rx.html.DOMRenderer
 import wvlet.airframe.rx.html.widget.auth.GoogleAuthConfig
 import wvlet.airframe.surface.Surface
 import wvlet.log.{LogLevel, LogSupport, Logger}
-import wvlet.querybase.ui.component.notebook.NotebookFrame
 import wvlet.querybase.ui.component.page.{ExplorePage, HomePage, MainPage, ServicePage, SystemPage, TestPage}
 import wvlet.querybase.ui.component.{RxRoute, RxRouter}
 

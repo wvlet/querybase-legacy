@@ -7,6 +7,7 @@ import wvlet.log.LogSupport
 import wvlet.querybase.api.frontend.FrontendApi.SubmitQueryRequest
 import wvlet.querybase.ui.RPCService
 import wvlet.querybase.ui.component.editor.TextEditor
+import wvlet.querybase.ui.component.notebook.NotebookEditor
 import wvlet.querybase.ui.component.{QueryListPanel, ServiceSelector, VerticalSplitPanel}
 
 /**
@@ -15,7 +16,7 @@ trait ExplorePage extends RxElement {
   private val rpcService     = bind[RPCService]
   private val queryListPanel = bind[QueryListPanel]
 
-  private val queryEditor = new QueryEditor("select 1", rpcService)
+  private val queryEditor = new QueryEditor(rpcService)
 
   override def render: RxElement = {
     new VerticalSplitPanel(
@@ -44,9 +45,9 @@ trait ExplorePage extends RxElement {
   }
 }
 
-class QueryEditor(query: String, rpcService: RPCService) extends RxElement with LogSupport {
+class QueryEditor(rpcService: RPCService) extends RxElement with LogSupport {
   private val serviceSelector = new ServiceSelector(Seq.empty)
-  private val textEditor      = new TextEditor(query, onEnter = submitQuery(_))
+  private val textEditor      = new NotebookEditor(rpcService, onEnter = submitQuery(_))
 
   override def render: RxElement = {
     div(

@@ -10,13 +10,14 @@ import wvlet.querybase.ui.component.editor.TextEditor
 
 /**
   */
-trait NotebookEditor extends RxElement with RPCService {
+class NotebookEditor(rpcService: RPCService, onEnter: String => Unit) extends RxElement with LogSupport {
 
   private var cells: Seq[NotebookCell] = Seq.empty
 
   override def render: RxElement = {
-    Rx.fromFuture(rpc(_.code.NotebookApi.getNotebook("1"))).map {
-      case None => div("empty")
+    rpcService.rpcRx(_.code.NotebookApi.getNotebook("1")).map {
+      case None =>
+        div("N/A")
       case Some(notebook) =>
         cells = notebook.cells.zipWithIndex.map { case (cell, i) =>
           new NotebookCell(this, i + 1, cell)
@@ -39,6 +40,9 @@ trait NotebookEditor extends RxElement with RPCService {
   class NotebookCell(notebook: NotebookEditor, val index: Int, cell: Cell) extends RxElement with LogSupport {
     private val editor = new TextEditor(
       cell.source,
+      onEnter = { text: String =>
+        onEnter(text)
+      },
       onExitUp = { () =>
         info(s"Exit up cell: ${index}")
         focusOnCell((index - 1).max(0))
