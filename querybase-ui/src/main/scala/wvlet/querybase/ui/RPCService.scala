@@ -7,6 +7,7 @@ import wvlet.airframe.rx.{Rx, RxOption, RxStream}
 import wvlet.log.LogSupport
 import wvlet.querybase.api.frontend.ServiceJSClient
 
+import java.util.concurrent.TimeUnit
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
@@ -31,13 +32,13 @@ trait RPCService extends LogSupport {
     future
   }
 
-  def rpcRx[U](body: ServiceJSClient => Future[U]): RxOption[U] = {
-    Rx.fromFuture(rpc(body))
+  def rpcRx[U](body: ServiceJSClient => Future[U]): RxStream[U] = {
+    Rx.future(rpc(body))
   }
 
-  def repeatRpc[U](intervalMillis: Int)(body: ServiceJSClient => Future[U]): RxStream[U] = {
+  def repeatRpc[U](time: Long, unit: TimeUnit)(body: ServiceJSClient => Future[U]): RxStream[U] = {
     Rx
-      .intervalMillis(intervalMillis)
+      .interval(time, unit)
       .andThen(i => body(rpcClient))
   }
 

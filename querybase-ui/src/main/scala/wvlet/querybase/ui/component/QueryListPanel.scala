@@ -5,9 +5,11 @@ import wvlet.airframe.rx.html.all._
 import wvlet.querybase.api.backend.v1.query.QueryStatus
 import wvlet.querybase.ui.RPCService
 
+import java.util.concurrent.TimeUnit
+
 trait QueryListPanel extends RxElement with RPCService {
   private val queryList =
-    repeatRpc(1500)(_.FrontendApi.listQueries()).cache
+    repeatRpc(1500, TimeUnit.MILLISECONDS)(_.FrontendApi.listQueries()).cache
 
   private def renderStatus(s: QueryStatus): RxElement = {
     val color = s match {
