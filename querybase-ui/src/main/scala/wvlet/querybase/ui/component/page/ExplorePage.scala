@@ -47,7 +47,7 @@ trait ExplorePage extends RxElement {
 
 class QueryEditor(rpcService: RPCService) extends RxElement with LogSupport {
   private val serviceSelector = new ServiceSelector(Seq.empty)
-  private val textEditor      = new NotebookEditor(rpcService, onEnter = submitQuery(_))
+  private val notebook        = new NotebookEditor(rpcService, onEnter = submitQuery(_))
 
   override def render: RxElement = {
     div(
@@ -55,7 +55,7 @@ class QueryEditor(rpcService: RPCService) extends RxElement with LogSupport {
         serviceSelector.updateList(lst)
         serviceSelector
       },
-      textEditor
+      notebook
     )
   }
 

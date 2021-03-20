@@ -37,6 +37,7 @@ trait QueryListPanel extends RxElement with RPCService {
     new Table(Seq("query_id", "service", "type", "status", "elapsed", "query"))(
       queryList.map { ql =>
         sortQueryList(ql)
+          .take(10)
           .map { q =>
             tr(
               td(cls -> "text-monospace", small(q.queryId)),
