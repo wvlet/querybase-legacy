@@ -69,7 +69,7 @@ class TextEditor(
     option.value = initialValue
     option.language = "sql"
     option.theme = "vs-querybase" // "vs-dark"
-    option.lineNumbers = "on"
+    option.lineNumbers = "off"
     option.renderLineHighlight = "none"
     option.glyphMargin = false
     option.wordWrap = "on"
