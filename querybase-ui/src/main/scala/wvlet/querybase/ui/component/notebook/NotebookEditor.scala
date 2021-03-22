@@ -38,9 +38,14 @@ class NotebookEditor(rpcService: RPCService, onEnter: String => Unit) extends Rx
   )
 
   override def render: RxElement = {
-    updated.map { x =>
-      cells
-    }
+    div(
+      updated.map { x =>
+        cells
+      },
+      div(
+        span("console")
+      )
+    )
   }
 
 //    rpcService.rpcRx(_.code.NotebookApi.getNotebook("1")).map {
@@ -81,21 +86,18 @@ class NotebookEditor(rpcService: RPCService, onEnter: String => Unit) extends Rx
       cell.source,
       onEnter = { text: String => run },
       onExitUp = { () =>
-        info(s"Exit up cell: ${index}")
+        //info(s"Exit up cell: ${index}")
         focusOnCell((index - 1).max(1))
       },
       onExitDown = { () =>
-        info(s"Exit down cell: ${index}")
+        //info(s"Exit down cell: ${index}")
         focusOnCell((index + 1).min(cells.length))
       }
     )
 
-    private var isFocused = Rx.variable(focused)
-
     private val cellId = s"cell-${index}"
 
     def unfocus: Unit = {
-      info(s"unfocus: ${cellId}")
       dom.document.getElementById(cellId) match {
         case e: HTMLElement =>
           e.className = "w-100 shadow-none border border-white"
@@ -106,7 +108,7 @@ class NotebookEditor(rpcService: RPCService, onEnter: String => Unit) extends Rx
 
       dom.document.getElementById(cellId) match {
         case e: HTMLElement =>
-          e.className = "w-100 shadow border"
+          e.className = "w-100 shadow-sm border"
       }
     }
 
@@ -116,25 +118,13 @@ class NotebookEditor(rpcService: RPCService, onEnter: String => Unit) extends Rx
         table(
           id  -> cellId,
           cls -> "w-100",
-//          onmouseover -> { e: MouseEvent =>
-//            e.currentTarget match {
-//              case el: HTMLElement =>
-//                el.className = "w-100 shadow"
-//            }
-//          },
-//          onmouseout -> { e: MouseEvent =>
-//            e.currentTarget match {
-//              case el: HTMLElement =>
-//                el.className = "w-100"
-//            }
-//          },
           tr(
             cls -> "mt-1",
             td(
-              cls -> "align-top",
+              cls -> "align-top bg-light",
               small(
                 cls -> "text-monospace",
-                i(cls -> "fa fa-play-circle", onclick -> { e: MouseEvent => run })
+                i(cls -> "fa fa-play-circle text-secondary", onclick -> { e: MouseEvent => run })
                 //s"[${index}] "
               )
             ),
@@ -155,5 +145,27 @@ class NotebookEditor(rpcService: RPCService, onEnter: String => Unit) extends Rx
       )
     }
   }
+
+}
+
+class PlayIcon(onClick: MouseEvent => Unit) extends RxElement {
+
+  private val baseCls = "fa fa-play-circle"
+
+  override def render: RxElement =
+    small(
+      cls -> "text-monospace",
+      i(
+        cls     -> s"${baseCls} text-secondary",
+        onclick -> { e: MouseEvent => onClick(e) },
+        onmouseout -> { e: MouseEvent =>
+          e.currentTarget match {
+            case e: HTMLElement =>
+              e.className = s"${baseCls} "
+          }
+
+        }
+      )
+    )
 
 }

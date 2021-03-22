@@ -55,12 +55,12 @@ class TextEditor(
     val r1 = newRule
     r1.token = "keyword"
     r1.foreground = "#aa99dd"
-    val r2 = newRule
-    r2.token = "string"
-    r2.foreground = "#eeeeee"
+//    val r2 = newRule
+//    r2.token = "string"
+//    r2.foreground = "#eeeeee"
     val rules = Seq[ITokenThemeRule](
-      r1,
-      r2
+      r1
+//      r2
     ).toJSArray
     editorTheme.rules = rules
     Editor.defineTheme("vs-querybase", editorTheme)
@@ -69,7 +69,7 @@ class TextEditor(
     option.value = initialValue
     option.language = "sql"
     option.theme = "vs-querybase" // "vs-dark"
-    option.lineNumbers = "off"
+    option.lineNumbers = "on"
     option.renderLineHighlight = "none"
     option.glyphMargin = false
     option.wordWrap = "on"
