@@ -27,6 +27,7 @@ class QueryExecutor(
   private def execute(request: QueryExecutionRequest): Unit = {
     info(s"Starting query: ${request.queryId}")
 
+    // TODO Make this an asynchronous call to avoid the latency before query processing
     coordinatorClient.v1.CoordinatorApi.updateQueryStatus(
       queryId = request.queryId,
       status = QueryStatus.RUNNING,

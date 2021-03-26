@@ -9,6 +9,7 @@ import wvlet.log.LogSupport
 import wvlet.querybase.api.frontend.code.NotebookApi.{Cell, Notebook}
 import wvlet.querybase.ui.RPCService
 import wvlet.querybase.ui.component.editor.TextEditor
+import wvlet.querybase.ui.component._
 
 /**
   */
@@ -159,11 +160,9 @@ class PlayIcon(onClick: MouseEvent => Unit) extends RxElement {
         cls     -> s"${baseCls} text-secondary",
         onclick -> { e: MouseEvent => onClick(e) },
         onmouseout -> { e: MouseEvent =>
-          e.currentTarget match {
-            case e: HTMLElement =>
-              e.className = s"${baseCls} "
+          e.getCurrentTarget.foreach {
+            _.className = s"${baseCls} "
           }
-
         }
       )
     )
