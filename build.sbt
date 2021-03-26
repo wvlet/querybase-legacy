@@ -137,7 +137,7 @@ lazy val ui =
       //webpackEmitSourceMaps := false,
       webpackBundlingMode := BundlingMode.LibraryOnly()
     )
-    .dependsOn(frontendClientJS)
+    .dependsOn(apiJS, frontendClientJS)
 
 lazy val server =
   project
