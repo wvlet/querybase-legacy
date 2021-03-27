@@ -3,8 +3,9 @@ package wvlet.querybase.ui.component.notebook
 import org.scalajs.dom.raw.MouseEvent
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
-import wvlet.airframe.rx.{Rx, RxOptionVar}
+import wvlet.airframe.rx.{Rx, RxOption, RxOptionVar}
 import wvlet.log.LogSupport
+import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
 import wvlet.querybase.api.frontend.FrontendApi.SubmitQueryRequest
 import wvlet.querybase.api.frontend.code.NotebookApi.Cell
 import wvlet.querybase.ui.RPCService
@@ -70,10 +71,15 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
 
   class NotebookCell(val index: Int, cell: Cell, focused: Boolean = false) extends RxElement with LogSupport {
 
-    private val result: RxOptionVar[Seq[Map[Any, Any]]] = Rx.optionVariable(None)
+    private val currentQueryId                           = Rx.optionVariable[String](None)
+    private val currentQueryInfo: RxOptionVar[QueryInfo] = Rx.optionVariable(None)
 
     private def run: Unit = {
-      submitQuery(editor.getTextValue).foreach { queryId => }
+      currentQueryId := None
+      currentQueryInfo := None
+      submitQuery(editor.getTextValue).foreach { queryId =>
+        currentQueryId := Some(queryId)
+      }
       focusOnCell((index + 1).max(0), create = true)
     }
 
@@ -124,7 +130,34 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
               editor
             )
           ),
-          new ResultWindow(cell.getOutputs)
+          tr(
+            style -> "min-height: 20px; ",
+            td(),
+            td(
+              code(
+                Rx.join(currentQueryInfo, currentQueryId).map[RxElement] {
+                  case (Some(qi), _) =>
+                    span(qi.toString)
+                  case (None, Some(queryId)) =>
+                    span(Rx.intervalMillis(500).flatMap { i =>
+                      rpcService
+                        .rpcRx(_.FrontendApi.getQueryInfo(queryId))
+                        .map {
+                          case Some(qi) =>
+                            if (qi.queryStatus.isFinished) {
+                              currentQueryInfo := Some(qi)
+                            }
+                            qi.toString
+                          case None =>
+                            "Loading ..."
+                        }
+                    })
+                  case (None, None) =>
+                    span("> ")
+                }
+              )
+            )
+          )
         )
       )
     }

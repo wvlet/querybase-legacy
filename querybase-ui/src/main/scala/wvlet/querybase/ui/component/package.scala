@@ -3,6 +3,8 @@ package wvlet.querybase.ui
 import org.scalajs.dom
 import org.scalajs.dom.MouseEvent
 import org.scalajs.dom.raw.HTMLElement
+import wvlet.airframe.rx.Rx
+import wvlet.airframe.rx.html.RxElement
 
 /**
   */
@@ -29,4 +31,7 @@ package object component {
       }
     }
   }
+
+  // TODO Move to airframe-rx-html
+  implicit def elemToRx(e: RxElement): Rx[RxElement] = Rx.const(e)
 }
