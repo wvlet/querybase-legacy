@@ -31,7 +31,6 @@ class QueryManager(
   threadManager.submit(processQueries)
 
   def newQuery(request: NewQueryRequest): QueryInfo = {
-
     val queryId: QueryId = queryIdGenerator.newQueryId
 
     // Find the target service from the catalog
@@ -57,6 +56,10 @@ class QueryManager(
     startNewQuery(qi)
     // TODO Process query
     qi
+  }
+
+  def getQueryInfo(queryId: String): Option[QueryInfo] = {
+    queryList.get(queryId)
   }
 
   def listQueries: Seq[QueryInfo] = {

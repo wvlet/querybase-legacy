@@ -11,6 +11,8 @@ import wvlet.querybase.ui.RPCService
 import wvlet.querybase.ui.component._
 import wvlet.querybase.ui.component.editor.TextEditor
 
+import scala.concurrent.Future
+
 /**
   */
 class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
@@ -53,13 +55,16 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
     cells.filter(_.index != cellIndex).foreach(_.unfocus)
   }
 
-  private def submitQuery(query: String): Unit = {
+  /** Submit a query and get a query Id
+    */
+  private def submitQuery(query: String): Future[String] = {
     val selectedService = serviceSelector.selectedService
     info(s"Submit to ${selectedService.name}: ${query}")
     rpcService
       .rpc(_.FrontendApi.submitQuery(SubmitQueryRequest(query = query, serviceName = selectedService.name))).map {
         resp =>
           info(s"query_id: ${resp.queryId}")
+          resp.queryId
       }
   }
 
@@ -68,7 +73,7 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
     private val result: RxOptionVar[Seq[Map[Any, Any]]] = Rx.optionVariable(None)
 
     private def run: Unit = {
-      submitQuery(editor.getTextValue)
+      submitQuery(editor.getTextValue).foreach { queryId => }
       focusOnCell((index + 1).max(0), create = true)
     }
 
@@ -105,18 +110,14 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
         table(
           id  -> cellId,
           cls -> "w-100",
+          onclick -> { e: MouseEvent =>
+            focusOnCell(index)
+          },
           tr(
             cls -> "mt-1",
-            onclick -> { e: MouseEvent =>
-              focusOnCell(index)
-            },
             td(
               cls -> "align-top bg-light",
-              small(
-                cls -> "text-monospace",
-                new PlayIcon(onClick = { e: MouseEvent => run })
-                //s"[${index}] "
-              )
+              new PlayIcon(onClick = { e: MouseEvent => run })
             ),
             td(
               cls -> "align-bottom",
@@ -132,10 +133,12 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
 }
 
 class ResultWindow(output: Seq[Map[Any, Any]]) extends RxElement {
+
   override def render: RxElement = output.flatMap(_.get("text")).map { text =>
     tr(
       td(),
       td(
+        cls -> "border",
         pre(code(text.toString))
       )
     )
@@ -152,7 +155,7 @@ class PlayIcon(onClick: MouseEvent => Unit) extends RxElement with LogSupport {
       onclick -> { e: MouseEvent => onClick(e) },
       onmouseover -> { e: MouseEvent =>
         e.getCurrentTarget.foreach { el =>
-          el.className = s"${baseCls} text-info"
+          el.className = s"${baseCls} text-primary"
         }
       },
       onmouseout -> { e: MouseEvent =>

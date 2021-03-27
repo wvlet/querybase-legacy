@@ -16,6 +16,7 @@ trait CoordinatorApi {
   def register(node: Node): RegisterResponse
 
   def newQuery(queryRequest: NewQueryRequest): NewQueryResponse
+  def getQueryInfo(queryId: String): Option[QueryInfo]
   def listQueries: Seq[QueryInfo]
 
   def updateQueryStatus(queryId: String, status: QueryStatus, completedAt: Option[Instant] = None): Int
@@ -43,7 +44,8 @@ object CoordinatorApi {
       createdAt: Instant = Instant.now(),
       completedAt: Option[Instant] = None,
       errorCode: Option[String] = None,
-      errorMessage: Option[String] = None
+      errorMessage: Option[String] = None,
+      result: Option[Seq[Seq[Any]]] = None
   ) {
     def elapsed: ElapsedTime = {
       completedAt match {
