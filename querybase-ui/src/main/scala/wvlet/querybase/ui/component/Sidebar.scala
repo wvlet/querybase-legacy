@@ -75,6 +75,7 @@ class Sidebar(router: RxRouter) extends RxElement {
         navFrame(
           navItem("Home", "fa-home", "/home"),
           navItem("Explore", "fas fa-book-open", "/explore"),
+          navItem("Jobs", "fas fa-list", "/jobs"),
           navItem("Services", "fa-project-diagram", "/services"),
           navItem("System", "fa-server", "/system")
         ),

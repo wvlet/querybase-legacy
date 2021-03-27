@@ -33,10 +33,13 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
 
   override def render: RxElement = {
     div(
-      rpcService.rpcRx(_.FrontendApi.serviceCatalog()).map { lst =>
-        serviceSelector.updateList(lst)
-        serviceSelector
-      },
+      div(
+        style -> "min-height: 30px;",
+        rpcService.rpcRx(_.FrontendApi.serviceCatalog()).map { lst =>
+          serviceSelector.updateList(lst)
+          serviceSelector
+        }
+      ),
       updated.map { x =>
         cells
       }
@@ -131,10 +134,10 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
             )
           ),
           tr(
-            style -> "min-height: 20px; ",
             td(),
             td(
               div(
+                style -> "min-height: 18px; ",
                 Rx.join(currentQueryInfo, currentQueryId).map[RxElement] {
                   case (Some(qi), _) =>
                     renderQueryInfo(qi)
