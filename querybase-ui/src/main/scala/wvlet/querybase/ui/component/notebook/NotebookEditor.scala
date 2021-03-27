@@ -134,12 +134,12 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
             style -> "min-height: 20px; ",
             td(),
             td(
-              code(
+              div(
                 Rx.join(currentQueryInfo, currentQueryId).map[RxElement] {
                   case (Some(qi), _) =>
-                    span(qi.toString)
+                    renderQueryInfo(qi)
                   case (None, Some(queryId)) =>
-                    span(Rx.intervalMillis(500).flatMap { i =>
+                    span(Rx.intervalMillis(800).flatMap { i =>
                       rpcService
                         .rpcRx(_.FrontendApi.getQueryInfo(queryId))
                         .map {
@@ -147,9 +147,9 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
                             if (qi.queryStatus.isFinished) {
                               currentQueryInfo := Some(qi)
                             }
-                            qi.toString
+                            renderQueryInfo(qi)
                           case None =>
-                            "Loading ..."
+                            span("Loading ...")
                         }
                     })
                   case (None, None) =>
@@ -161,6 +161,15 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
         )
       )
     }
+  }
+
+  private def renderQueryInfo(qi: QueryInfo): RxElement = {
+    small(
+      QueryListPanel.renderStatus(qi.queryStatus)(cls += "mr-2"),
+      span(
+        s"[${qi.serviceType}] ${qi.queryId}: ${qi.elapsed}"
+      )
+    )
   }
 
 }

@@ -12,18 +12,6 @@ trait QueryListPanel extends RxElement with RPCService {
   private val queryList =
     repeatRpc(1500, TimeUnit.MILLISECONDS)(_.FrontendApi.listQueries()).cache
 
-  private def renderStatus(s: QueryStatus): RxElement = {
-    val color = s match {
-      case QueryStatus.RUNNING  => "success"
-      case QueryStatus.FINISHED => "info"
-      case QueryStatus.FAILED   => "danger"
-      case QueryStatus.CANCELED => "warning"
-      case QueryStatus.QUEUED   => "secondary"
-      case _                    => "light"
-    }
-    span(cls -> s"badge badge-${color}", s.toString)
-  }
-
   private def sortQueryList(ql: Seq[QueryInfo]): Seq[QueryInfo] = {
     ql.sortBy { q =>
       (
@@ -44,7 +32,7 @@ trait QueryListPanel extends RxElement with RPCService {
               td(q.serviceName),
               td(q.serviceType),
               td(
-                renderStatus(q.queryStatus)
+                QueryListPanel.renderStatus(q.queryStatus)
               ),
               td(cls -> "text-center", q.elapsed.toString()),
               td(q.query)
@@ -52,5 +40,19 @@ trait QueryListPanel extends RxElement with RPCService {
           }
       }
     )
+  }
+}
+
+object QueryListPanel {
+  def renderStatus(s: QueryStatus): RxElement = {
+    val color = s match {
+      case QueryStatus.RUNNING  => "success"
+      case QueryStatus.FINISHED => "info"
+      case QueryStatus.FAILED   => "danger"
+      case QueryStatus.CANCELED => "warning"
+      case QueryStatus.QUEUED   => "secondary"
+      case _                    => "light"
+    }
+    span(cls -> s"badge badge-${color}", s.toString)
   }
 }
