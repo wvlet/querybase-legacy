@@ -45,7 +45,7 @@ object CoordinatorApi {
       completedAt: Option[Instant] = None,
       errorCode: Option[String] = None,
       errorMessage: Option[String] = None,
-      result: Option[Seq[Seq[Any]]] = None
+      result: Option[QueryResult] = None
   ) {
     def elapsed: ElapsedTime = {
       completedAt match {
@@ -59,6 +59,13 @@ object CoordinatorApi {
     def withQueryStatus(newQueryStatus: QueryStatus): QueryInfo     = this.copy(queryStatus = newQueryStatus)
     def withCompletedAt(newCompletedAt: Option[Instant]): QueryInfo = this.copy(completedAt = newCompletedAt)
   }
+
+  case class QueryResult(
+      schema: Seq[Column],
+      rows: Seq[Seq[Any]] = Seq.empty
+  )
+
+  case class Column(name: String, typeName: String)
 }
 
 object RequestStatus {

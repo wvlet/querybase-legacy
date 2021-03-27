@@ -78,10 +78,9 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
     private val currentQueryInfo: RxOptionVar[QueryInfo] = Rx.optionVariable(None)
 
     private def run: Unit = {
-      currentQueryId := None
-      currentQueryInfo := None
       submitQuery(editor.getTextValue).foreach { queryId =>
         currentQueryId := Some(queryId)
+        currentQueryInfo := None
       }
       focusOnCell((index + 1).max(0), create = true)
     }
@@ -137,7 +136,7 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
             td(),
             td(
               div(
-                style -> "min-height: 18px; ",
+                style -> "min-height: 22px; ",
                 Rx.join(currentQueryInfo, currentQueryId).map[RxElement] {
                   case (Some(qi), _) =>
                     renderQueryInfo(qi)
