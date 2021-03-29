@@ -13,6 +13,7 @@ import wvlet.querybase.server.backend.api.{CoordinatorApiImpl, ServiceCatalog, S
 
 import java.io.File
 import java.net.ServerSocket
+import java.util.concurrent.Executors
 
 case class CoordinatorConfig(
     name: String = "coordinator",
@@ -51,12 +52,14 @@ object BackendServer extends LogSupport {
     gRPC.server
       .withName(config.name)
       .withPort(config.port)
+      .withExecutorServiceProvider { config => Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors()) }
       .withRouter(coordinatorRouter)
 
   private def workerServer(config: WorkerConfig): GrpcServerConfig =
     gRPC.server
       .withName(config.name)
       .withPort(config.port)
+      .withExecutorServiceProvider { config => Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors()) }
       .withRouter(workerRouter)
 
   def coordinatorDesign(config: CoordinatorConfig): Design = {
