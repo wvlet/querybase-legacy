@@ -2,7 +2,10 @@ package wvlet.querybase.ui.test
 
 import wvlet.airframe.rx.{Rx, RxOption}
 import wvlet.log.LogSupport
+import wvlet.querybase.api.frontend.{ServiceJSClient, ServiceJSClientRx}
 import wvlet.querybase.ui.RPCService
+
+import scala.concurrent.Future
 
 case class RxTestCase(suite: String, testName: String, body: () => Rx[_])
 
@@ -11,8 +14,10 @@ trait RxTest extends LogSupport {
 
   private[ui] var tests: List[RxTestCase] = List.empty[RxTestCase]
 
-  def test(testName: String)(result: => Rx[_]): Unit = {
-    tests = RxTestCase(name, testName, { () => result }) :: tests
+  implicit protected val queue = scalajs.concurrent.JSExecutionContext.queue
+
+  def test(testName: String)(result: => Future[_]): Unit = {
+    tests = RxTestCase(name, testName, { () => Rx.fromFuture(result) }) :: tests
   }
 
   def assert(cond: Boolean): Unit = {
@@ -23,17 +28,17 @@ trait RxTest extends LogSupport {
 
 }
 
-class RPCTest(rpcService: RPCService) extends RxTest {
+class RPCTest(rpcClient: ServiceJSClient) extends RxTest {
   def name: String = "RPCTest"
 
   test("Read ServerInfo") {
-    rpcService.rpcRx(_.FrontendApi.serverInfo()).map { i =>
+    rpcClient.FrontendApi.serverInfo().map { i =>
       assert(i.name == "querybase")
     }
   }
 
   test("List server nodes") {
-    rpcService.rpcRx(_.FrontendApi.serverNodes()).map { lst =>
+    rpcClient.FrontendApi.serverNodes().map { lst =>
       assert(lst.size >= 2)
     }
   }
