@@ -13,6 +13,11 @@ class Selector(name: String, items: Seq[SelectorItem]) extends RxElement {
 
   def getSelectedIndex: Int = selectedIndex
 
+  def selectAt(index: Int): Unit = {
+    val maxIndex = (items.size - 1).max(0)
+    selectedIndex = index.min(maxIndex)
+  }
+
   override def render: RxElement = {
     form(
       cls -> "form-inline",
