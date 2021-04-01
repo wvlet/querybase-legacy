@@ -65,7 +65,7 @@ val noPublish = Seq(
 )
 
 lazy val jvmProjects = Seq[ProjectReference](apiJVM, server, apiClient, sql, frontendClientJVM)
-lazy val jsProjects  = Seq[ProjectReference](apiJS, ui, uiTest, frontendClientJS)
+lazy val jsProjects  = Seq[ProjectReference](apiJS, ui, frontendClientJS)
 
 lazy val projectJVM = project.aggregate(jvmProjects: _*)
 lazy val projectJS  = project.aggregate(jsProjects: _*)

@@ -57,5 +57,5 @@ jobs:
           path: ~/.cache
           key: ${{ runner.os }}-scala-js-${{ hashFiles('**/*.sbt') }}
           restore-keys: ${{ runner.os }}-scala-js-
-      - name: Scala.js test
-        run: ./sbt ui/fastOptJS::webpack
+      - name: Scala.js build and test
+        run: ./sbt "ui/fastOptJS::webpack; uiTest/test"
