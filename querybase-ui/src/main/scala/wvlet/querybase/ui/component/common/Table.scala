@@ -1,7 +1,7 @@
-package wvlet.querybase.ui.component
+package wvlet.querybase.ui.component.common
 
-import wvlet.airframe.rx.html.all.{cls, small, style, table, tbody, th, thead, tr}
-import wvlet.airframe.rx.html.{RxComponent, RxElement}
+import wvlet.airframe.rx.html.RxElement
+import wvlet.airframe.rx.html.all._
 
 class Table(columnNames: Seq[String])(body: RxElement*) extends RxElement {
   override def render: RxElement = {

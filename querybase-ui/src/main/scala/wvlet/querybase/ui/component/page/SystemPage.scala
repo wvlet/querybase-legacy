@@ -5,7 +5,7 @@ import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all.{cls, div, span, style, table, tbody, td, th, thead, tr}
 import wvlet.querybase.api.frontend.FrontendApi.ServerNode
 import wvlet.querybase.ui.RPCService
-import wvlet.querybase.ui.component.Table
+import wvlet.querybase.ui.component.common.Table
 
 import java.util.concurrent.TimeUnit
 

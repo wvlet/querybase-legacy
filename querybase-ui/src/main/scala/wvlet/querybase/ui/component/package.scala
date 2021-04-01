@@ -1,7 +1,7 @@
 package wvlet.querybase.ui
 
 import org.scalajs.dom
-import org.scalajs.dom.MouseEvent
+import org.scalajs.dom.{Event, MouseEvent}
 import org.scalajs.dom.raw.HTMLElement
 import wvlet.airframe.rx.Rx
 import wvlet.airframe.rx.html.RxElement
@@ -17,7 +17,7 @@ package object component {
     }
   }
 
-  implicit class RichMouseEvent(val e: MouseEvent) extends AnyVal {
+  implicit class RichEvent(val e: Event) extends AnyVal {
     def getSourceElement: Option[HTMLElement] = {
       e.target match {
         case h: HTMLElement => Some(h)

@@ -3,7 +3,7 @@ addSbtPlugin("com.jsuereth"       % "sbt-pgp"       % "2.1.1")
 addSbtPlugin("org.scoverage"      % "sbt-scoverage" % "1.6.1")
 addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo" % "0.10.0")
 addSbtPlugin("org.scalameta"      % "sbt-scalafmt"  % "2.4.2")
-addSbtPlugin("org.wvlet.airframe" % "sbt-airframe"  % "21.3.0")
+addSbtPlugin("org.wvlet.airframe" % "sbt-airframe"  % "21.3.1-8-e3eaefa5-SNAPSHOT")
 addSbtPlugin("com.dwijnand"       % "sbt-dynver"    % "4.1.1")
 
 // For Scala.js

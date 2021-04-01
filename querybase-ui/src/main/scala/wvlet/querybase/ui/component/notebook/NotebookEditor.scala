@@ -3,10 +3,11 @@ package wvlet.querybase.ui.component.notebook
 import org.scalajs.dom.raw.MouseEvent
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
-import wvlet.airframe.rx.{Rx, RxOption, RxOptionVar}
+import wvlet.airframe.rx.{Rx, RxOption, RxOptionVar, RxStream}
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
 import wvlet.querybase.api.frontend.FrontendApi.SubmitQueryRequest
+import wvlet.querybase.api.frontend.{ServiceJSClient, ServiceJSClientRx}
 import wvlet.querybase.api.frontend.code.NotebookApi.Cell
 import wvlet.querybase.ui.RPCService
 import wvlet.querybase.ui.component._
@@ -16,10 +17,10 @@ import scala.concurrent.Future
 
 /**
   */
-class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
+class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSClientRx, rpcClient: ServiceJSClient)
+    extends RxElement
+    with LogSupport {
   private implicit val queue = scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-
-  private val serviceSelector = new ServiceSelector(Seq.empty)
 
   private var cells: Seq[NotebookCell] = Seq(
     new NotebookCell(
@@ -35,10 +36,7 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
     div(
       div(
         style -> "min-height: 30px;",
-        rpcService.rpcRx(_.FrontendApi.serviceCatalog()).map { lst =>
-          serviceSelector.updateList(lst)
-          serviceSelector
-        }
+        serviceSelector
       ),
       updated.map { x =>
         cells
@@ -64,12 +62,11 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
   private def submitQuery(query: String): Future[String] = {
     val selectedService = serviceSelector.selectedService
     info(s"Submit to ${selectedService.name}: ${query}")
-    rpcService
-      .rpc(_.FrontendApi.submitQuery(SubmitQueryRequest(query = query, serviceName = selectedService.name))).map {
-        resp =>
-          info(s"query_id: ${resp.queryId}")
-          resp.queryId
-      }
+    rpcClient.FrontendApi.submitQuery(SubmitQueryRequest(query = query, serviceName = selectedService.name)).map {
+      resp =>
+        info(s"query_id: ${resp.queryId}")
+        resp.queryId
+    }
   }
 
   class NotebookCell(val index: Int, cell: Cell, focused: Boolean = false) extends RxElement with LogSupport {
@@ -100,9 +97,11 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
 
     private val cellId = s"cell-${index}"
 
+    private val defaultStyle = "w-100 shadow-none border border-white"
+
     def unfocus: Unit = {
       findHTMLElement(cellId).foreach {
-        _.className = "w-100 shadow-none border border-white"
+        _.className = defaultStyle
       }
     }
     def focus: Unit = {
@@ -114,10 +113,10 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
 
     override def render: RxElement = {
       div(
-        cls -> "w-100 mb-1",
+        cls -> "w-100",
         table(
           id  -> cellId,
-          cls -> "w-100",
+          cls -> defaultStyle,
           onclick -> { e: MouseEvent =>
             focusOnCell(index)
           },
@@ -142,8 +141,8 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
                     renderQueryInfo(qi)
                   case (None, Some(queryId)) =>
                     span(Rx.intervalMillis(800).flatMap { i =>
-                      rpcService
-                        .rpcRx(_.FrontendApi.getQueryInfo(queryId))
+                      rpcRxClient.FrontendApi
+                        .getQueryInfo(queryId)
                         .map {
                           case Some(qi) =>
                             if (qi.queryStatus.isFinished) {
@@ -169,7 +168,7 @@ class NotebookEditor(rpcService: RPCService) extends RxElement with LogSupport {
     small(
       QueryListPanel.renderStatus(qi.queryStatus)(cls += "mr-2"),
       span(
-        s"[${qi.serviceType}] ${qi.queryId}: ${qi.elapsed}"
+        s"[${qi.serviceType}:${qi.serviceName}] ${qi.queryId}: ${qi.elapsed}"
       )
     )
   }

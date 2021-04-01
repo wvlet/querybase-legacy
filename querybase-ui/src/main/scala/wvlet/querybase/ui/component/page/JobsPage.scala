@@ -2,7 +2,8 @@ package wvlet.querybase.ui.component.page
 
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all.div
-import wvlet.querybase.ui.component.{QueryListPanel, VerticalSplitPanel}
+import wvlet.querybase.ui.component.QueryListPanel
+import wvlet.querybase.ui.component.common.VerticalSplitPanel
 
 /**
   */
