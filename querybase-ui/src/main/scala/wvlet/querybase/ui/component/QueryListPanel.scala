@@ -58,6 +58,7 @@ object QueryListPanel {
       case QueryStatus.FAILED   => "danger"
       case QueryStatus.CANCELED => "warning"
       case QueryStatus.QUEUED   => "secondary"
+      case QueryStatus.STARTING => "secondary"
       case _                    => "light"
     }
     span(cls -> s"badge badge-${color}", s.toString)

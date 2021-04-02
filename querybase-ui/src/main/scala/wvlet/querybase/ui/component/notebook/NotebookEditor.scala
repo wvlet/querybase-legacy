@@ -1,11 +1,12 @@
 package wvlet.querybase.ui.component.notebook
 
 import org.scalajs.dom.raw.MouseEvent
-import wvlet.airframe.rx.html.RxElement
+import wvlet.airframe.rx.html.{RxElement, tag}
 import wvlet.airframe.rx.html.all._
 import wvlet.airframe.rx.{Rx, RxOption, RxOptionVar, RxStream}
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
+import wvlet.querybase.api.backend.v1.query.QueryStatus
 import wvlet.querybase.api.frontend.FrontendApi.SubmitQueryRequest
 import wvlet.querybase.api.frontend.{ServiceJSClient, ServiceJSClientRx}
 import wvlet.querybase.api.frontend.code.NotebookApi.Cell
@@ -60,12 +61,16 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
   /** Submit a query and get a query Id
     */
   private def submitQuery(query: String): Future[String] = {
-    val selectedService = serviceSelector.selectedService
-    info(s"Submit to ${selectedService.name}: ${query}")
-    rpcClient.FrontendApi.submitQuery(SubmitQueryRequest(query = query, serviceName = selectedService.name)).map {
-      resp =>
-        info(s"query_id: ${resp.queryId}")
-        resp.queryId
+    serviceSelector.getSelectedService match {
+      case Some(selectedService) =>
+        info(s"Submit to ${selectedService.name}: ${query}")
+        rpcClient.FrontendApi.submitQuery(SubmitQueryRequest(query = query, serviceName = selectedService.name)).map {
+          resp =>
+            info(s"query_id: ${resp.queryId}")
+            resp.queryId
+        }
+      case None =>
+        Future.failed(new IllegalStateException("No service is selected"))
     }
   }
 
@@ -84,7 +89,11 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
 
     private val editor = new TextEditor(
       cell.source,
-      onEnter = { text: String => run },
+      onEnter = { text: String =>
+        if (text.trim.nonEmpty) {
+          run
+        }
+      },
       onExitUp = { () =>
         //info(s"Exit up cell: ${index}")
         focusOnCell((index - 1).max(1))
@@ -98,6 +107,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     private val cellId = s"cell-${index}"
 
     private val defaultStyle = "w-100 shadow-none border border-white"
+    private val focusedStyle = "w-100 shadow-sm border"
 
     def unfocus: Unit = {
       findHTMLElement(cellId).foreach {
@@ -107,7 +117,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     def focus: Unit = {
       editor.focus
       findHTMLElement(cellId).foreach {
-        _.className = "w-100 shadow-sm border"
+        _.className = focusedStyle
       }
     }
 
@@ -138,21 +148,23 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
                 style -> "min-height: 22px; ",
                 Rx.join(currentQueryInfo, currentQueryId).map[RxElement] {
                   case (Some(qi), _) =>
-                    renderQueryInfo(qi)
+                    new QueryStatusLine(Some(qi))
                   case (None, Some(queryId)) =>
-                    span(Rx.intervalMillis(800).flatMap { i =>
-                      rpcRxClient.FrontendApi
-                        .getQueryInfo(queryId)
-                        .map {
-                          case Some(qi) =>
-                            if (qi.queryStatus.isFinished) {
-                              currentQueryInfo := Some(qi)
+                    span(
+                      Rx.intervalMillis(800).flatMap { i =>
+                          rpcRxClient.FrontendApi
+                            .getQueryInfo(queryId)
+                            .map {
+                              case Some(qi) =>
+                                if (qi.queryStatus.isFinished) {
+                                  currentQueryInfo := Some(qi)
+                                }
+                                new QueryStatusLine(Some(qi))
+                              case None =>
+                                small("Query not found")
                             }
-                            renderQueryInfo(qi)
-                          case None =>
-                            span("Loading ...")
-                        }
-                    })
+                        }.startWith(small("Loading"))
+                    )
                   case (None, None) =>
                     span("> ")
                 }
@@ -163,16 +175,23 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
       )
     }
   }
+}
 
-  private def renderQueryInfo(qi: QueryInfo): RxElement = {
-    small(
-      QueryListPanel.renderStatus(qi.queryStatus)(cls += "mr-2"),
-      span(
-        s"[${qi.serviceType}:${qi.serviceName}] ${qi.queryId}: ${qi.elapsed}"
+class QueryStatusLine(queryInfo: Option[QueryInfo]) extends RxElement {
+  override def render: RxElement = queryInfo match {
+    case Some(qi) =>
+      small(
+        QueryListPanel.renderStatus(qi.queryStatus)(cls += "mr-2"),
+        span(
+          s"[${qi.serviceType}:${qi.serviceName}] ${qi.queryId}: ${qi.elapsed}"
+        )
       )
-    )
+    case None =>
+      small(
+        QueryListPanel.renderStatus(QueryStatus.STARTING)(cls += "mr-2"),
+        "running..."
+      )
   }
-
 }
 
 class ResultWindow(output: Seq[Map[Any, Any]]) extends RxElement {
