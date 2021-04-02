@@ -2,7 +2,7 @@ val SCALA_2_12          = "2.12.12"
 val SCALA_2_13          = "2.13.4"
 val targetScalaVersions = SCALA_2_13 :: Nil
 
-val AIRFRAME_VERSION    = "21.3.0"
+val AIRFRAME_VERSION    = "21.3.1-13-af51f916-SNAPSHOT"
 val SCALAJS_DOM_VERSION = "1.1.0"
 val SPARK_VERSION       = "3.0.1"
 val TRINO_VERSION       = "352"
@@ -116,7 +116,8 @@ lazy val ui =
       ),
       scalaJSUseMainModuleInitializer := true,
       jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
-      webpackConfigFile := Some(baseDirectory.value / "webpack.config.js"),
+      requireJsDomEnv in Test := true,
+      webpackConfigFile in Compile := Some(baseDirectory.value / "webpack.config.js"),
       version in startWebpackDevServer := "3.11.0",
       npmDependencies in Compile += "monaco-editor" -> "0.21.3",
       npmDevDependencies in Compile ++= Seq(
@@ -129,15 +130,28 @@ lazy val ui =
         "webpack-merge"                -> "4.2.2"
       ),
       useYarn := true,
-      webpackEmitSourceMaps := false,
-      webpackBundlingMode := BundlingMode.LibraryOnly(),
-      requireJsDomEnv in Test := true,
-      npmDependencies in Test += "node" -> "14.4.0",
-      useYarn := true,
       //webpackEmitSourceMaps := false,
-      webpackBundlingMode := BundlingMode.LibraryOnly()
+      webpackBundlingMode in Compile := BundlingMode.LibraryOnly()
     )
-    .dependsOn(frontendClientJS)
+    .dependsOn(apiJS, frontendClientJS)
+
+/** Unit test for UI components. Spliting a test module is a workaround because
+  * using ScalaJSBundler for tests had a lot of troubles..
+  */
+lazy val uiTest =
+  project
+    .in(file("querybase-ui-test"))
+    .enablePlugins(ScalaJSPlugin)
+    .settings(buildSettings)
+    .settings(jsBuildSettings)
+    .settings(
+      noPublish,
+      name := "querybase-ui-test",
+      description := "UI test for Querybase",
+      jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
+      requireJsDomEnv in Test := true
+    )
+    .dependsOn(ui)
 
 lazy val server =
   project

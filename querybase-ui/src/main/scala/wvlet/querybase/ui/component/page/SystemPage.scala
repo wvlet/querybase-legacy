@@ -5,16 +5,18 @@ import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all.{cls, div, span, style, table, tbody, td, th, thead, tr}
 import wvlet.querybase.api.frontend.FrontendApi.ServerNode
 import wvlet.querybase.ui.RPCService
-import wvlet.querybase.ui.component.Table
+import wvlet.querybase.ui.component.common.Table
 
-trait SystemPage extends RxElement with RPCService {
+import java.util.concurrent.TimeUnit
 
-  private val nodeList: RxStream[Seq[ServerNode]] = Rx
-    .intervalMillis(1500)
-    .andThen { i =>
-      rpc(_.FrontendApi.serverNodes())
-    }
-    .cache
+class SystemPage(rpcService: RPCService) extends RxElement {
+
+  private val nodeList: RxStream[Seq[ServerNode]] =
+    rpcService
+      .repeatRpc(1500, TimeUnit.MILLISECONDS) {
+        _.FrontendApi.serverNodes()
+      }
+      .cache
 
   override def render: RxElement = {
     new Table(Seq("name", "address", "uptime"))(

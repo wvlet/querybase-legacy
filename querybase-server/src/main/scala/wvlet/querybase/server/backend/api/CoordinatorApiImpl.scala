@@ -27,6 +27,10 @@ class CoordinatorApiImpl(nodeManager: NodeManager, queryManager: QueryManager) e
     NewQueryResponse(qi.queryId)
   }
 
+  override def getQueryInfo(queryId: String): Option[QueryInfo] = {
+    queryManager.getQueryInfo(queryId)
+  }
+
   override def listQueries: Seq[QueryInfo] = {
     queryManager.listQueries
   }
@@ -42,4 +46,5 @@ class CoordinatorApiImpl(nodeManager: NodeManager, queryManager: QueryManager) e
     //}
     0
   }
+
 }

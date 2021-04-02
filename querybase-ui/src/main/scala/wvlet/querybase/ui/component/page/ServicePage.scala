@@ -3,7 +3,7 @@ package wvlet.querybase.ui.component.page
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.querybase.ui.RPCService
-import wvlet.querybase.ui.component.Table
+import wvlet.querybase.ui.component.common.Table
 
 class ServicePage(rpcService: RPCService) extends RxElement {
 

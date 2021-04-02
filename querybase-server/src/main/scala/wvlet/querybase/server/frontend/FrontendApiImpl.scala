@@ -1,6 +1,6 @@
 package wvlet.querybase.server.frontend
 
-import wvlet.querybase.api.backend.v1.CoordinatorApi.NewQueryRequest
+import wvlet.querybase.api.backend.v1.CoordinatorApi.{NewQueryRequest, QueryInfo}
 import wvlet.querybase.api.backend.v1.{CoordinatorApi, ServiceCatalogApi}
 import wvlet.querybase.api.frontend.FrontendApi
 import wvlet.querybase.api.frontend.FrontendApi.{ServerNode, SubmitQueryRequest, SubmitQueryResponse}
@@ -26,6 +26,10 @@ class FrontendApiImpl(coordinatorClient: CoordinatorClient) extends FrontendApi 
   override def submitQuery(request: SubmitQueryRequest): SubmitQueryResponse = {
     val r = coordinatorClient.v1.CoordinatorApi.newQuery(NewQueryRequest(request.query, request.serviceName))
     SubmitQueryResponse(r.queryId)
+  }
+
+  override def getQueryInfo(queryId: String): Option[QueryInfo] = {
+    coordinatorClient.v1.CoordinatorApi.getQueryInfo(queryId)
   }
 
   override def listQueries(): Seq[CoordinatorApi.QueryInfo] = {

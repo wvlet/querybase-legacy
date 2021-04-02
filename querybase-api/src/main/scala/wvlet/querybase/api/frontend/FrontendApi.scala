@@ -22,6 +22,7 @@ trait FrontendApi {
   def serviceCatalog: Seq[ServiceCatalogApi.Service]
 
   def submitQuery(request: SubmitQueryRequest): SubmitQueryResponse
+  def getQueryInfo(queryId: String): Option[QueryInfo]
   def listQueries(): Seq[QueryInfo]
 }
 
@@ -39,5 +40,4 @@ object FrontendApi {
 
   case class SubmitQueryRequest(query: String, serviceName: String, uuid: UUID = UUID.randomUUID())
   case class SubmitQueryResponse(queryId: String)
-
 }

@@ -1,4 +1,4 @@
-package wvlet.querybase.ui.component
+package wvlet.querybase.ui.component.common
 
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all.{cls, div, style}

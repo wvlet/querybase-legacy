@@ -36,17 +36,13 @@ class Sidebar(router: RxRouter) extends RxElement {
     li(
       cls -> "nav-item pl-3",
       onmouseover -> { e: MouseEvent =>
-        e.currentTarget match {
-          case el: HTMLElement =>
-            el.style.backgroundColor = "#ddd0ff"
-          case _ =>
+        e.getCurrentTarget.foreach {
+          _.style.backgroundColor = "#ddd0ff"
         }
       },
       onmouseout -> { e: MouseEvent =>
-        e.currentTarget match {
-          case el: HTMLElement =>
-            el.style.backgroundColor = ""
-          case _ =>
+        e.getCurrentTarget.foreach {
+          _.style.backgroundColor = ""
         }
       },
       onclick -> { e: MouseEvent =>
@@ -79,6 +75,7 @@ class Sidebar(router: RxRouter) extends RxElement {
         navFrame(
           navItem("Home", "fa-home", "/home"),
           navItem("Explore", "fas fa-book-open", "/explore"),
+          navItem("Jobs", "fas fa-list", "/jobs"),
           navItem("Services", "fa-project-diagram", "/services"),
           navItem("System", "fa-server", "/system")
         ),

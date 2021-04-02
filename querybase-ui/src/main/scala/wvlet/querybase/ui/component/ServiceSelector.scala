@@ -1,47 +1,31 @@
 package wvlet.querybase.ui.component
 
-import org.scalajs.dom.raw.{Event, HTMLElement, HTMLSelectElement}
+import wvlet.airframe.rx.RxStream
 import wvlet.airframe.rx.html.RxElement
-import wvlet.airframe.rx.html.all._
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.ServiceCatalogApi.Service
-import wvlet.querybase.ui.RPCService
+import wvlet.querybase.api.frontend.ServiceJSClientRx
+import wvlet.querybase.ui.component.common.{Selector, SelectorItem}
 
-class ServiceSelector(private var serviceList: Seq[Service], private var selectedIndex: Int = 0)
-    extends RxElement
-    with LogSupport {
-  def updateList(newList: Seq[Service]): Unit = {
-    serviceList = newList
-  }
+class ServiceSelector(rpcRxClient: ServiceJSClientRx) extends RxElement with LogSupport {
+
+  private var serviceList: Seq[Service] = Seq.empty
+  private var selector                  = new Selector("Service", Seq.empty)
+
+  private val serviceListCache: RxStream[Seq[Service]] = rpcRxClient.FrontendApi
+    .serviceCatalog().map { lst =>
+      serviceList = lst
+      lst
+    }.cache
 
   def selectedService: Service = {
-    serviceList(selectedIndex)
+    serviceList(selector.getSelectedIndex)
   }
 
-  override def render: RxElement = form(
-    cls -> "form-inline",
-    div(
-      cls -> "form-group",
-      label(cls -> "mr-2", small("Service")),
-      div(
-        select(
-          onchange -> { e: Event =>
-            e.target match {
-              case e: HTMLSelectElement =>
-                info(s"Selected: ${serviceList(e.selectedIndex)}")
-                selectedIndex = e.selectedIndex
-              case _ =>
-            }
-          },
-          cls -> "form-control form-control-sm",
-          serviceList.map { s =>
-            option(
-              value -> s.name,
-              s.name
-            )
-          }
-        )
-      )
-    )
-  )
+  override def render: RxElement = {
+    serviceListCache.map { lst =>
+      selector = new Selector("Service", lst.map(x => SelectorItem(x.name, x.name)))
+      selector
+    }
+  }
 }

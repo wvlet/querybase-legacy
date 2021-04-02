@@ -15,7 +15,7 @@ object NotebookApi {
       // The note book name
       name: String,
       // The description of the notebook
-      description: String,
+      description: String = "",
       // The time when the notebook was created
       createdAt: Instant = Instant.now(),
       // The time when the notebook was updated

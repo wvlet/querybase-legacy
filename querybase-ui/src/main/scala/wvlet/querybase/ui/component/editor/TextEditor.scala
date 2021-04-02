@@ -14,7 +14,9 @@ import wvlet.airframe.rx.html.widget.editor.monaco.editor.{
   IEditorScrollbarOptions,
   IModelDecorationsChangedEvent,
   IStandaloneEditorConstructionOptions,
+  IStandaloneThemeData,
   ITextModel,
+  ITokenThemeRule,
   RenderLineNumbersType
 }
 
@@ -37,15 +39,36 @@ class TextEditor(
     val editorNode: HTMLElement = document.createElement("div").asInstanceOf[HTMLElement]
     editorNode.setAttribute("id", editorId)
     editorNode.setAttribute("class", "query-editor")
-    editorNode.setAttribute("style", s"width: 99%; max-height: ${maxHeight}px;")
+    editorNode.setAttribute("style", s"width: 99%; min-height: 18px; max-height: ${maxHeight}px;")
     editorNode
   }
 
   private val editor = {
+    val editorTheme = new js.Object().asInstanceOf[IStandaloneThemeData]
+    editorTheme.base = "vs-dark"
+    editorTheme.inherit = true
+
+    import js.JSConverters._
+
+    def newRule = new js.Object().asInstanceOf[ITokenThemeRule]
+
+    val r1 = newRule
+    r1.token = "keyword"
+    r1.foreground = "#aa99dd"
+//    val r2 = newRule
+//    r2.token = "string"
+//    r2.foreground = "#eeeeee"
+    val rules = Seq[ITokenThemeRule](
+      r1
+//      r2
+    ).toJSArray
+    editorTheme.rules = rules
+    Editor.defineTheme("vs-querybase", editorTheme)
+
     val option = new scalajs.js.Object().asInstanceOf[IStandaloneEditorConstructionOptions]
     option.value = initialValue
     option.language = "sql"
-    option.theme = "vs-dark"
+    option.theme = "vs-querybase" // "vs-dark"
     option.lineNumbers = "on"
     option.renderLineHighlight = "none"
     option.glyphMargin = false
@@ -133,7 +156,7 @@ class TextEditor(
       updateLayout()
     }
 
-    updateLayout(isInit = true)
+    //updateLayout(isInit = true)
     editorNode
   }
 }
