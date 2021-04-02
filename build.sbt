@@ -169,7 +169,8 @@ lazy val server =
         "org.wvlet.airframe" %% "airframe-http-grpc"    % AIRFRAME_VERSION,
         "io.trino"            % "trino-cli"             % TRINO_VERSION,
         "io.trino"            % "trino-jdbc"            % TRINO_VERSION,
-        "org.slf4j"           % "slf4j-jdk14"           % "1.8.0-beta4"
+        "org.slf4j"           % "slf4j-jdk14"           % "1.8.0-beta4",
+        "org.xerial.snappy"   % "snappy-java"           % "1.1.8.4"
       )
     )
     .dependsOn(apiJVM, sql, store, apiClient, frontendClientJVM)

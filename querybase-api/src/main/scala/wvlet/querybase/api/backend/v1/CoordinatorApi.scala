@@ -58,6 +58,7 @@ object CoordinatorApi {
 
     def withQueryStatus(newQueryStatus: QueryStatus): QueryInfo     = this.copy(queryStatus = newQueryStatus)
     def withCompletedAt(newCompletedAt: Option[Instant]): QueryInfo = this.copy(completedAt = newCompletedAt)
+    def withQueryResult(newQueryResult: QueryResult): QueryInfo     = this.copy(result = Some(newQueryResult))
   }
 
   case class QueryResult(
