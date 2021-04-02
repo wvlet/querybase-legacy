@@ -8,8 +8,8 @@ case class SelectorItem(name: String, value: String)
 
 /**
   */
-class Selector(name: String, private var items: Seq[SelectorItem]) extends RxElement {
-  private var _selectedIndex: Int = 0
+class Selector(name: String, private var items: Seq[SelectorItem], private var _selectedIndex: Int = 0)
+    extends RxElement {
 
   def selectedIndex: Int = _selectedIndex
   def getSelectedItem: Option[SelectorItem] = {
@@ -49,7 +49,7 @@ class Selector(name: String, private var items: Seq[SelectorItem]) extends RxEle
             onchange -> { e: Event =>
               e.target match {
                 case e: HTMLSelectElement =>
-                  _selectedIndex = e.selectedIndex
+                  selectAt(e.selectedIndex)
                 case _ =>
               }
             },
