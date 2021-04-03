@@ -14,14 +14,6 @@ import wvlet.querybase.ui.component._
 import wvlet.querybase.ui.component.editor.TextEditor
 
 import scala.concurrent.Future
-import org.scalajs.jquery._
-
-import scala.scalajs.js
-import scala.scalajs.js.annotation.JSImport
-
-@js.native
-@JSImport("jquery", JSImport.Namespace)
-object jquery extends JQueryStatic
 
 /**
   */
