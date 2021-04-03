@@ -128,8 +128,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
 
     override def render: RxElement = {
       div(
-        cls   -> "w-100",
-        style -> "overflow-x: scroll;",
+        cls -> "w-100",
         table(
           id  -> cellId,
           cls -> defaultStyle,
@@ -202,10 +201,10 @@ class QueryStatusLine(queryInfo: Option[QueryInfo]) extends RxElement with LogSu
     val columnNames: Seq[String] = r.schema.map(_.name)
     info(r)
     div(
-      style -> "overflow-x: scroll;",
+      style -> "overflow-x: scroll; width: calc(100vw - 270px); ",
       table(
         cls   -> "table table-sm",
-        style -> "font-size: 11px;",
+        style -> "font-size: 12px;",
         thead(
           cls -> "thead-light",
           tr(
@@ -220,8 +219,8 @@ class QueryStatusLine(queryInfo: Option[QueryInfo]) extends RxElement with LogSu
               row.map { col =>
                 val v: String = Option(col).map(_.toString).getOrElse("")
                 td(
-                  cls -> "text-truncate",
-                  //style -> "max-width: 80px;",
+                  cls   -> "text-truncate",
+                  style -> "max-width: 150px;",
                   title -> v,
                   v
                 )
