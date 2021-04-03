@@ -42,7 +42,10 @@ class QueryListPanel(rpcRxClient: ServiceJSClientRx) extends RxElement {
                 QueryListPanel.renderStatus(q.queryStatus)
               ),
               td(cls -> "text-center", q.elapsed.toString()),
-              td(q.query)
+              td(
+                cls -> "text-truncate",
+                q.query
+              )
             )
           }
       }

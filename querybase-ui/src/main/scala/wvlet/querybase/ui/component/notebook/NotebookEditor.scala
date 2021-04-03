@@ -203,7 +203,7 @@ class QueryStatusLine(queryInfo: Option[QueryInfo]) extends RxElement with LogSu
     div(
       style -> "overflow-x: scroll; width: calc(100vw - 270px); ",
       table(
-        cls   -> "table table-sm",
+        cls   -> "table table-sm table-bordered",
         style -> "font-size: 12px;",
         thead(
           cls -> "thead-light",
