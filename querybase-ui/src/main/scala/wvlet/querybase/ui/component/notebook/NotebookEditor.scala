@@ -157,10 +157,10 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
             cls -> "mt-1",
             td(
               cls -> "align-top bg-light",
-              new EditorIcon("Run Cell", "fa-circle-play", onClick = { e: MouseEvent => run })
+              new EditorIcon("Run Cell", "fa-play-circle", onClick = { e: MouseEvent => run })
             ),
             td(
-              cls -> "align-bottom",
+              cls -> "align-middle",
               editor
             )
           ),
@@ -197,71 +197,5 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
         )
       )
     }
-  }
-}
-
-class QueryStatusLine(queryInfo: Option[QueryInfo]) extends RxElement with LogSupport {
-
-  private def status(s: QueryStatus): RxElement = {
-    QueryListPanel.renderStatus(s)(cls += "mr-2")
-  }
-
-  private def queryStatusLine(qi: QueryInfo): RxElement = {
-    small(
-      status(qi.queryStatus),
-      span(
-        s"[${qi.serviceType}:${qi.serviceName}] ${qi.queryId}: ${qi.elapsed}"
-      )
-    )
-  }
-
-  private def renderQueryResult(r: QueryResult): RxElement = {
-    val columnNames: Seq[String] = r.schema.map(_.name)
-    info(r)
-    div(
-      style -> "overflow-x: scroll; width: calc(100vw - 270px); ",
-      table(
-        cls   -> "table table-sm table-bordered",
-        style -> "font-size: 12px;",
-        thead(
-          cls -> "thead-light",
-          tr(
-            columnNames.map { x =>
-              th(cls -> "font-weight-normal text-truncate", x)
-            }
-          )
-        ),
-        tbody(
-          r.rows.map { row =>
-            tr(
-              row.map { col =>
-                val v: String = Option(col).map(_.toString).getOrElse("")
-                td(
-                  cls   -> "text-truncate",
-                  style -> "max-width: 150px;",
-                  title -> v,
-                  v
-                )
-              }
-            )
-          }
-        )
-      )
-    )
-  }
-
-  override def render: RxElement = queryInfo match {
-    case Some(qi) if qi.result.nonEmpty =>
-      div(
-        queryStatusLine(qi),
-        renderQueryResult(qi.result.get)
-      )
-    case Some(qi) =>
-      queryStatusLine(qi)
-    case None =>
-      small(
-        status(QueryStatus.STARTING),
-        "running..."
-      )
   }
 }
