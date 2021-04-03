@@ -265,25 +265,3 @@ class QueryStatusLine(queryInfo: Option[QueryInfo]) extends RxElement with LogSu
       )
   }
 }
-
-class EditorIcon(name: String, iconClass: String, onClick: MouseEvent => Unit) extends RxElement with LogSupport {
-
-  private val baseCls = s"fa ${iconClass} p-1"
-
-  override def render: RxElement =
-    i(
-      cls     -> s"${baseCls} text-secondary",
-      title   -> name,
-      onclick -> { e: MouseEvent => onClick(e) },
-      onmouseover -> { e: MouseEvent =>
-        e.getCurrentTarget.foreach { el =>
-          el.className = s"${baseCls} text-white bg-primary"
-        }
-      },
-      onmouseout -> { e: MouseEvent =>
-        e.getCurrentTarget.foreach { el =>
-          el.className = s"${baseCls} text-secondary"
-        }
-      }
-    )
-}
