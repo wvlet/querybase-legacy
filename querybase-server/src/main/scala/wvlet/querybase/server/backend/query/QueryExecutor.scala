@@ -22,19 +22,11 @@ case class QueryExecutorConfig(
 )
 
 class QueryExecutor(
-    queryExecutorConfig: QueryExecutorConfig,
+    queryResultStore: QueryResultStore,
     threadManager: QueryExecutorThreadManager,
     coordinatorClient: CoordinatorClient,
     trinoJDBCRunner: TrinoJDBCRunner
 ) extends LogSupport {
-
-  init
-
-  private def init: Unit = {
-    if (!queryExecutorConfig.queryResultStorePath.exists()) {
-      queryExecutorConfig.queryResultStorePath.mkdirs()
-    }
-  }
 
   def executeQuery(request: QueryExecutionRequest): Unit = {
     threadManager.submit(execute(request))
@@ -51,9 +43,7 @@ class QueryExecutor(
     )
 
     // Prepare query result store
-    val queryResultDir = new File(queryExecutorConfig.queryResultStorePath, request.queryId)
-    queryResultDir.mkdirs()
-    val queryResultFile = new File(queryResultDir, "result.msgpack.snappy")
+    val queryResultFile = queryResultStore.createNewResultFile(request.queryId)
 
     Control.withResource(MessagePack.newPacker(new SnappyOutputStream(new FileOutputStream(queryResultFile)))) {
       packer =>

@@ -4,14 +4,14 @@ import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.{CoordinatorApi, RequestStatus}
 import wvlet.querybase.api.backend.v1.query.QueryStatus
 import wvlet.querybase.server.backend.NodeManager
-import wvlet.querybase.server.backend.query.{QueryExecutorConfig, QueryManager, QueryResultFileReader}
+import wvlet.querybase.server.backend.query.{QueryExecutorConfig, QueryManager, QueryResultFileReader, QueryResultStore}
 
 import java.io.File
 import java.time.Instant
 
 /**
   */
-class CoordinatorApiImpl(nodeManager: NodeManager, queryManager: QueryManager, queryExecutorConfig: QueryExecutorConfig)
+class CoordinatorApiImpl(nodeManager: NodeManager, queryManager: QueryManager, queryResultStore: QueryResultStore)
     extends CoordinatorApi
     with LogSupport {
   import CoordinatorApi._
@@ -34,7 +34,7 @@ class CoordinatorApiImpl(nodeManager: NodeManager, queryManager: QueryManager, q
     queryManager.getQueryInfo(queryId) match {
       case Some(qi) if qi.queryStatus == QueryStatus.FINISHED =>
         // Read query result preview
-        val resultFile = new File(new File(queryExecutorConfig.queryResultStorePath, queryId), "result.msgpack.snappy")
+        val resultFile = queryResultStore.getResultFile(queryId)
         info(s"Reading ${resultFile}")
         val reader = new QueryResultFileReader(resultFile)
         val result = reader.readRows(10)
