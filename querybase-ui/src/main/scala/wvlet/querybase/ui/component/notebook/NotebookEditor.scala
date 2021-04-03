@@ -46,12 +46,22 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
       ),
       div(
         new EditorIcon(
+          name = "Add Cell",
           "fa-plus",
           onClick = { e: MouseEvent =>
             focusOnCell((cells.size + 1).max(0), create = true)
           }
         ),
-        new EditorIcon("fa-cut", onClick = { e: MouseEvent => })
+        new EditorIcon(
+          name = "Delete Cell",
+          "fa-cut",
+          onClick = { e: MouseEvent => }
+        ),
+        new EditorIcon(
+          name = "Run Cell",
+          "fa-play",
+          onClick = { e: MouseEvent => }
+        )
       ),
       updated.map { x =>
         cells
@@ -147,7 +157,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
             cls -> "mt-1",
             td(
               cls -> "align-top bg-light",
-              new PlayIcon(onClick = { e: MouseEvent => run })
+              new EditorIcon("Run Cell", "fa-circle-play", onClick = { e: MouseEvent => run })
             ),
             td(
               cls -> "align-bottom",
@@ -256,43 +266,23 @@ class QueryStatusLine(queryInfo: Option[QueryInfo]) extends RxElement with LogSu
   }
 }
 
-class PlayIcon(onClick: MouseEvent => Unit) extends RxElement with LogSupport {
+class EditorIcon(name: String, iconClass: String, onClick: MouseEvent => Unit) extends RxElement with LogSupport {
 
-  private val baseCls = "fa fa-play-circle"
-
-  override def render: RxElement =
-    i(
-      cls     -> s"${baseCls} text-secondary",
-      onclick -> { e: MouseEvent => onClick(e) },
-      onmouseover -> { e: MouseEvent =>
-        e.getCurrentTarget.foreach { el =>
-          el.className = s"${baseCls} text-primary"
-        }
-      },
-      onmouseout -> { e: MouseEvent =>
-        e.getCurrentTarget.foreach {
-          _.className = s"${baseCls} text-secondary"
-        }
-      }
-    )
-}
-
-class EditorIcon(iconClass: String, onClick: MouseEvent => Unit) extends RxElement with LogSupport {
-
-  private val baseCls = s"fa ${iconClass} mx-1"
+  private val baseCls = s"fa ${iconClass} p-1"
 
   override def render: RxElement =
     i(
       cls     -> s"${baseCls} text-secondary",
+      title   -> name,
       onclick -> { e: MouseEvent => onClick(e) },
       onmouseover -> { e: MouseEvent =>
         e.getCurrentTarget.foreach { el =>
-          el.className = s"${baseCls} text-primary"
+          el.className = s"${baseCls} text-white bg-primary"
         }
       },
       onmouseout -> { e: MouseEvent =>
-        e.getCurrentTarget.foreach {
-          _.className = s"${baseCls} text-secondary"
+        e.getCurrentTarget.foreach { el =>
+          el.className = s"${baseCls} text-secondary"
         }
       }
     )
