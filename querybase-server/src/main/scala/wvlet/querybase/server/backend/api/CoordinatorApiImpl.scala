@@ -37,7 +37,7 @@ class CoordinatorApiImpl(nodeManager: NodeManager, queryManager: QueryManager, q
         val resultFile = queryResultStore.getResultFile(queryId)
         info(s"Reading ${resultFile}")
         val reader = new QueryResultFileReader(resultFile)
-        val result = reader.readRows(10)
+        val result = reader.readRows(100)
         Some(qi.withQueryResult(result))
       case Some(qi) =>
         // Just return status only

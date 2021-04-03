@@ -112,7 +112,8 @@ lazy val ui =
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %%% "airframe-rx-html"   % AIRFRAME_VERSION,
         "org.wvlet.airframe" %%% "airframe-rx-widget" % AIRFRAME_VERSION,
-        "org.scala-js"       %%% "scalajs-dom"        % SCALAJS_DOM_VERSION
+        "org.scala-js"       %%% "scalajs-dom"        % SCALAJS_DOM_VERSION,
+        "be.doeraene"        %%% "scalajs-jquery"     % "1.0.0"
       ),
       scalaJSUseMainModuleInitializer := true,
       jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),

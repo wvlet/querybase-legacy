@@ -10,7 +10,8 @@ class QueryResultViewer(r: QueryResult) extends RxElement {
   override def render: RxElement = {
     val columnNames: Seq[String] = r.schema.map(_.name)
     div(
-      style -> "overflow-x: scroll; width: calc(100vw - 270px); ",
+      // width must be set to properly enable horizontal scroll
+      style -> "overflow-x: scroll; width: calc(100vw - 280px); ",
       table(
         cls   -> "table table-sm table-bordered",
         style -> "font-size: 12px;",
@@ -29,7 +30,7 @@ class QueryResultViewer(r: QueryResult) extends RxElement {
                 val v: String = Option(col).map(_.toString).getOrElse("")
                 td(
                   cls   -> "text-truncate",
-                  style -> "max-width: 150px;",
+                  style -> "max-width: 250px;",
                   title -> v,
                   v
                 )

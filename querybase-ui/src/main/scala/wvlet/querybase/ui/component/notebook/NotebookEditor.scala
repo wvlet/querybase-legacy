@@ -1,21 +1,27 @@
 package wvlet.querybase.ui.component.notebook
 
+import org.scalajs.dom
 import org.scalajs.dom.raw.MouseEvent
-import wvlet.airframe.rx.html.{RxElement, tag}
+import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
-import wvlet.airframe.rx.{Rx, RxOption, RxOptionVar, RxStream}
+import wvlet.airframe.rx.{Rx, RxOptionVar}
 import wvlet.log.LogSupport
-import wvlet.querybase.api.backend.v1.CoordinatorApi.{QueryInfo, QueryResult}
-import wvlet.querybase.api.backend.v1.query.QueryStatus
+import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
 import wvlet.querybase.api.frontend.FrontendApi.SubmitQueryRequest
-import wvlet.querybase.api.frontend.{ServiceJSClient, ServiceJSClientRx}
 import wvlet.querybase.api.frontend.code.NotebookApi.Cell
-import wvlet.querybase.ui.RPCService
+import wvlet.querybase.api.frontend.{ServiceJSClient, ServiceJSClientRx}
 import wvlet.querybase.ui.component._
-import wvlet.querybase.ui.component.common.Table
 import wvlet.querybase.ui.component.editor.TextEditor
 
 import scala.concurrent.Future
+import org.scalajs.jquery._
+
+import scala.scalajs.js
+import scala.scalajs.js.annotation.JSImport
+
+@js.native
+@JSImport("jquery", JSImport.Namespace)
+object jquery extends JQueryStatic
 
 /**
   */
@@ -114,6 +120,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
       cell.source,
       onEnter = { text: String =>
         if (text.trim.nonEmpty) {
+          showResult := true
           run
         }
       },
@@ -127,7 +134,8 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
       }
     )
 
-    private val cellId = s"cell-${index}"
+    private val cellId       = s"cell-${index}"
+    private val resultCellId = s"${cellId}-result"
 
     private val defaultStyle = "w-100 shadow-none border border-white"
     private val focusedStyle = "w-100 shadow-sm border"
@@ -144,6 +152,8 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
       }
     }
 
+    private val showResult = Rx.variable(true)
+
     override def render: RxElement = {
       div(
         cls -> "w-100",
@@ -157,7 +167,15 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
             cls -> "mt-1",
             td(
               cls -> "align-top bg-light",
-              new EditorIcon("Run Cell", "fa-play-circle", onClick = { e: MouseEvent => run })
+              span(
+                new EditorIcon(
+                  "Fold",
+                  "fa-caret-down",
+                  onClick = { e: MouseEvent =>
+                    showResult.update(prev => !prev)
+                  }
+                )
+              )
             ),
             td(
               cls -> "align-middle",
@@ -165,9 +183,18 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
             )
           ),
           tr(
-            td(),
+            td(
+              cls -> "align-top bg-light"
+            ),
             td(
               div(
+                showResult.map {
+                  case true =>
+                    cls -> "collapse show"
+                  case false =>
+                    cls -> "collapse hide"
+                },
+                id    -> s"${resultCellId}",
                 style -> "min-height: 22px; ",
                 Rx.join(currentQueryInfo, currentQueryId).map[RxElement] {
                   case (Some(qi), _) =>
@@ -189,7 +216,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
                         }.startWith(small("Loading ..."))
                     )
                   case (None, None) =>
-                    span("> ")
+                    span()
                 }
               )
             )
