@@ -29,7 +29,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
       1,
       Cell(
         cellType = "sql",
-        source = "select * from sample_datasets.www_access limit 10",
+        source = "select 1",
         outputs = Seq("""{"text":"(query results)"}""")
       ),
       focused = true
@@ -43,6 +43,15 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
       div(
         style -> "min-height: 30px;",
         serviceSelector
+      ),
+      div(
+        new EditorIcon(
+          "fa-plus",
+          onClick = { e: MouseEvent =>
+            focusOnCell((cells.size + 1).max(0), create = true)
+          }
+        ),
+        new EditorIcon("fa-cut", onClick = { e: MouseEvent => })
       ),
       updated.map { x =>
         cells
@@ -89,7 +98,6 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
         currentQueryId := Some(queryId)
         currentQueryInfo := None
       }
-      focusOnCell((index + 1).max(0), create = true)
     }
 
     private val editor = new TextEditor(
@@ -168,7 +176,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
                               case None =>
                                 small("Query not found")
                             }
-                        }.startWith(small("Loading"))
+                        }.startWith(small("Loading ..."))
                     )
                   case (None, None) =>
                     span("> ")
@@ -267,5 +275,25 @@ class PlayIcon(onClick: MouseEvent => Unit) extends RxElement with LogSupport {
         }
       }
     )
+}
 
+class EditorIcon(iconClass: String, onClick: MouseEvent => Unit) extends RxElement with LogSupport {
+
+  private val baseCls = s"fa ${iconClass} mx-1"
+
+  override def render: RxElement =
+    i(
+      cls     -> s"${baseCls} text-secondary",
+      onclick -> { e: MouseEvent => onClick(e) },
+      onmouseover -> { e: MouseEvent =>
+        e.getCurrentTarget.foreach { el =>
+          el.className = s"${baseCls} text-primary"
+        }
+      },
+      onmouseout -> { e: MouseEvent =>
+        e.getCurrentTarget.foreach {
+          _.className = s"${baseCls} text-secondary"
+        }
+      }
+    )
 }
