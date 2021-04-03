@@ -5,13 +5,14 @@ import wvlet.airframe.rx.html.{RxElement, tag}
 import wvlet.airframe.rx.html.all._
 import wvlet.airframe.rx.{Rx, RxOption, RxOptionVar, RxStream}
 import wvlet.log.LogSupport
-import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
+import wvlet.querybase.api.backend.v1.CoordinatorApi.{QueryInfo, QueryResult}
 import wvlet.querybase.api.backend.v1.query.QueryStatus
 import wvlet.querybase.api.frontend.FrontendApi.SubmitQueryRequest
 import wvlet.querybase.api.frontend.{ServiceJSClient, ServiceJSClientRx}
 import wvlet.querybase.api.frontend.code.NotebookApi.Cell
 import wvlet.querybase.ui.RPCService
 import wvlet.querybase.ui.component._
+import wvlet.querybase.ui.component.common.Table
 import wvlet.querybase.ui.component.editor.TextEditor
 
 import scala.concurrent.Future
@@ -26,7 +27,11 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
   private var cells: Seq[NotebookCell] = Seq(
     new NotebookCell(
       1,
-      Cell(cellType = "sql", source = "select 1", outputs = Seq("""{"text":"(query results)"}""")),
+      Cell(
+        cellType = "sql",
+        source = "select * from sample_datasets.www_access limit 10",
+        outputs = Seq("""{"text":"(query results)"}""")
+      ),
       focused = true
     )
   )
@@ -123,7 +128,8 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
 
     override def render: RxElement = {
       div(
-        cls -> "w-100",
+        cls   -> "w-100",
+        style -> "overflow-x: scroll;",
         table(
           id  -> cellId,
           cls -> defaultStyle,
@@ -177,33 +183,69 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
   }
 }
 
-class QueryStatusLine(queryInfo: Option[QueryInfo]) extends RxElement {
-  override def render: RxElement = queryInfo match {
-    case Some(qi) =>
-      small(
-        QueryListPanel.renderStatus(qi.queryStatus)(cls += "mr-2"),
-        span(
-          s"[${qi.serviceType}:${qi.serviceName}] ${qi.queryId}: ${qi.elapsed}"
-        )
-      )
-    case None =>
-      small(
-        QueryListPanel.renderStatus(QueryStatus.STARTING)(cls += "mr-2"),
-        "running..."
-      )
+class QueryStatusLine(queryInfo: Option[QueryInfo]) extends RxElement with LogSupport {
+
+  private def status(s: QueryStatus): RxElement = {
+    QueryListPanel.renderStatus(s)(cls += "mr-2")
   }
-}
 
-class ResultWindow(output: Seq[Map[Any, Any]]) extends RxElement {
-
-  override def render: RxElement = output.flatMap(_.get("text")).map { text =>
-    tr(
-      td(),
-      td(
-        cls -> "border",
-        pre(code(text.toString))
+  private def queryStatusLine(qi: QueryInfo): RxElement = {
+    small(
+      status(qi.queryStatus),
+      span(
+        s"[${qi.serviceType}:${qi.serviceName}] ${qi.queryId}: ${qi.elapsed}"
       )
     )
+  }
+
+  private def renderQueryResult(r: QueryResult): RxElement = {
+    val columnNames: Seq[String] = r.schema.map(_.name)
+    info(r)
+    div(
+      style -> "overflow-x: scroll;",
+      table(
+        cls   -> "table table-sm",
+        style -> "font-size: 11px;",
+        thead(
+          cls -> "thead-light",
+          tr(
+            columnNames.map { x =>
+              th(cls -> "font-weight-normal text-truncate", x)
+            }
+          )
+        ),
+        tbody(
+          r.rows.map { row =>
+            tr(
+              row.map { col =>
+                val v: String = Option(col).map(_.toString).getOrElse("")
+                td(
+                  cls -> "text-truncate",
+                  //style -> "max-width: 80px;",
+                  title -> v,
+                  v
+                )
+              }
+            )
+          }
+        )
+      )
+    )
+  }
+
+  override def render: RxElement = queryInfo match {
+    case Some(qi) if qi.result.nonEmpty =>
+      div(
+        queryStatusLine(qi),
+        renderQueryResult(qi.result.get)
+      )
+    case Some(qi) =>
+      queryStatusLine(qi)
+    case None =>
+      small(
+        status(QueryStatus.STARTING),
+        "running..."
+      )
   }
 }
 
