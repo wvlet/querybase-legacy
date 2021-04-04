@@ -29,11 +29,14 @@ object FrontendServer extends LogSupport {
 
   private[server] def router =
     Router
+      .add[GoogleAuthFilter].andThen(
+        Router
+          .add[FrontendApiImpl]
+          .add[QueryLogApiImpl]
+          .add[ProjectApiImpl]
+          .add[NotebookApiImpl]
+      )
       .add[StaticContentApi]
-      .add[FrontendApiImpl]
-      .add[QueryLogApiImpl]
-      .add[ProjectApiImpl]
-      .add[NotebookApiImpl]
 
   type FrontendClient = ServiceSyncClient[Request, Response]
 

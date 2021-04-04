@@ -162,15 +162,16 @@ lazy val server =
       // For using project root as a working folder
       reStart / baseDirectory := (ThisBuild / baseDirectory).value,
       libraryDependencies ++= Seq(
-        "org.wvlet.airframe" %% "airframe"              % AIRFRAME_VERSION,
-        "org.wvlet.airframe" %% "airframe-config"       % AIRFRAME_VERSION,
-        "org.wvlet.airframe" %% "airframe-launcher"     % AIRFRAME_VERSION,
-        "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION,
-        "org.wvlet.airframe" %% "airframe-http-grpc"    % AIRFRAME_VERSION,
-        "io.trino"            % "trino-cli"             % TRINO_VERSION,
-        "io.trino"            % "trino-jdbc"            % TRINO_VERSION,
-        "org.slf4j"           % "slf4j-jdk14"           % "1.8.0-beta4",
-        "org.xerial.snappy"   % "snappy-java"           % "1.1.8.4"
+        "org.wvlet.airframe"   %% "airframe"              % AIRFRAME_VERSION,
+        "org.wvlet.airframe"   %% "airframe-config"       % AIRFRAME_VERSION,
+        "org.wvlet.airframe"   %% "airframe-launcher"     % AIRFRAME_VERSION,
+        "org.wvlet.airframe"   %% "airframe-http-finagle" % AIRFRAME_VERSION,
+        "org.wvlet.airframe"   %% "airframe-http-grpc"    % AIRFRAME_VERSION,
+        "io.trino"              % "trino-cli"             % TRINO_VERSION,
+        "io.trino"              % "trino-jdbc"            % TRINO_VERSION,
+        "org.slf4j"             % "slf4j-jdk14"           % "1.8.0-beta4",
+        "org.xerial.snappy"     % "snappy-java"           % "1.1.8.4",
+        "com.google.api-client" % "google-api-client"     % "1.31.3"
       )
     )
     .dependsOn(apiJVM, sql, store, apiClient, frontendClientJVM)
