@@ -27,7 +27,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
       1,
       Cell(
         cellType = "sql",
-        source = "select 1",
+        source = "show functions",
         outputs = Seq("""{"text":"(query results)"}""")
       ),
       focused = true
@@ -114,6 +114,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
         if (text.trim.nonEmpty) {
           showResult := true
           run
+          focusOnCell(index + 1, create = true)
         }
       },
       onExitUp = { () =>
