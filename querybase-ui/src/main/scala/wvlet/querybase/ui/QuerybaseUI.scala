@@ -2,8 +2,10 @@ package wvlet.querybase.ui
 
 import org.scalajs.dom
 import wvlet.airframe.Design
+import wvlet.airframe.http.js.JSHttpClient
+import wvlet.airframe.rx.RxOptionVar
 import wvlet.airframe.rx.html.DOMRenderer
-import wvlet.airframe.rx.html.widget.auth.GoogleAuthConfig
+import wvlet.airframe.rx.html.widget.auth.{GoogleAuth, GoogleAuthConfig, GoogleAuthProfile}
 import wvlet.airframe.surface.Surface
 import wvlet.log.{LogLevel, LogSupport, Logger}
 import wvlet.querybase.ui.component.page.{ExplorePage, HomePage, JobsPage, MainPage, ServicePage, SystemPage, TestPage}
@@ -42,6 +44,19 @@ object QuerybaseUI extends LogSupport {
       .bind[RPCService].toSingleton
       .bind[QueryListPanel].toSingleton
       .bind[TestPage].toSingleton
+      .bind[JSHttpClient].toProvider { auth: GoogleAuth =>
+        JSHttpClient.defaultClient.withConfig { config =>
+          config.withRequestFilter { req =>
+            val user = auth.getCurrentUser.asInstanceOf[RxOptionVar[GoogleAuthProfile]].get
+            if (user.isDefined) {
+              req.withHeader("Authorization", s"Bearer ${user.get.id_token}")
+            } else {
+              req
+            }
+          }
+        }
+      }
+
   }
 
   @JSExport
