@@ -3,6 +3,7 @@ package wvlet.querybase.ui.component.notebook
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryResult
+import wvlet.querybase.ui.component.Sidebar
 
 /**
   */
@@ -11,7 +12,7 @@ class QueryResultViewer(r: QueryResult) extends RxElement {
     val columnNames: Seq[String] = r.schema.map(_.name)
     div(
       // width must be set to properly enable horizontal scroll
-      style -> "overflow-x: scroll; width: calc(100vw - 280px); max-height: 300px; ",
+      style -> s"overflow-x: scroll; width: calc(100vw - ${Sidebar.sidebarWidth + 40}px); max-height: 300px; ",
       table(
         cls   -> "table table-sm table-bordered",
         style -> "font-size: 12px;",

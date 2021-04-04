@@ -6,6 +6,10 @@ import org.scalajs.dom.raw.{HTMLElement, MouseEvent}
 import wvlet.airframe.rx.html.{RxComponent, RxElement}
 import wvlet.airframe.rx.html.all.{id, _}
 
+object Sidebar {
+  val sidebarWidth = 240;
+}
+
 /**
   */
 class Sidebar(router: RxRouter) extends RxElement {
@@ -13,7 +17,7 @@ class Sidebar(router: RxRouter) extends RxElement {
   private def layout: RxElement =
     div(
       cls   -> "flex-column flex-grow-0 flex-shrink-0 bg-light",
-      style -> "width: 240px; ",
+      style -> s"width: ${Sidebar.sidebarWidth}px; ",
       nav(
         cls   -> "navbar navbar-dark bg-primary",
         style -> "height: 60px;",

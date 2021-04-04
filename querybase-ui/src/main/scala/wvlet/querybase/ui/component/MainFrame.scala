@@ -12,7 +12,7 @@ class MainFrame(topbar: Navbar, router: RxRouter, sidebar: Sidebar, session: Ses
       cls -> "flex-column flex-fill flex-grow-1 flex-shrink-1",
       topbar,
       div(
-        style -> "height: calc(100vh - 60px); width: 100%;",
+        style -> s"height: calc(100vh - ${Navbar.navbarHeight}px); width: 100%;",
         router.current.transform {
           case Some(m) => session.getInstanceOf(m.route.pageSurface).asInstanceOf[RxElement]
           case None    => div("N/A")
