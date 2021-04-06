@@ -43,18 +43,6 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
         style -> "min-height: 30px;",
         serviceSelector
       ),
-      div(
-        new EditorIcon(
-          name = "Delete Cell",
-          "fa-cut",
-          onClick = { e: MouseEvent => }
-        ),
-        new EditorIcon(
-          name = "Run Cell",
-          "fa-play",
-          onClick = { e: MouseEvent => }
-        )
-      ),
       updated.map { x =>
         cells
       }
@@ -220,6 +208,17 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
         visible := isVisible
       }
 
+      def dropdownItem = a(
+        cls -> "dropdown-item px-3"
+      )
+
+      def menuIcon(faStyle: String) = small(
+        i(
+          cls   -> s"fa ${faStyle} mr-1 text-secondary",
+          style -> "width: 11px;"
+        )
+      )
+
       override def render: RxElement =
         span(
           cls -> "dropdown text-nowrap",
@@ -242,20 +241,12 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
             aria.expanded  -> false,
             data("toggle") -> "dropdown",
             new EditorIcon(
-              "Fold",
+              "Menu",
               "fa-caret-down",
               onClick = { e: MouseEvent =>
                 //showResult.update(prev => !prev)
               }
-            ) {
-              onmouseover -> { e: MouseEvent =>
-                dom.document.getElementById(s"dropdown-menu-${cellId}") match {
-                  case e: HTMLElement =>
-                    e.style = "display: block;"
-                  case _ =>
-                }
-              }
-            }
+            )
           ),
           span(
             id  -> s"dropdown-menu-${cellId}",
@@ -263,36 +254,36 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
             // Need to set a higher z-index than query result table header (1020)
             style           -> "z-index: 1070; ",
             aria.labelledby -> s"dropdown-${cellId}",
-            a(
-              cls -> "dropdown-item",
+            dropdownItem(
+              menuIcon("fa-caret-square-down"),
               "Fold/Unfold",
               onclick -> { e: MouseEvent =>
                 showResult.update(prev => !prev)
               }
             ),
-            a(
-              cls -> "dropdown-item",
-              "Delete",
-              onclick -> { e: MouseEvent =>
-                deleteCell(thisCell)
-              }
-            ),
-            a(
-              cls -> "dropdown-item",
+            dropdownItem(
+              menuIcon("fa-play"),
               "Run Cell",
               onclick -> { e: MouseEvent =>
                 run
               }
             ),
-            a(
-              cls -> "dropdown-item",
+            dropdownItem(
+              menuIcon("fa-cut"),
+              "Delete",
+              onclick -> { e: MouseEvent =>
+                deleteCell(thisCell)
+              }
+            ),
+            dropdownItem(
+              menuIcon("fa-angle-up"),
               "Move Up",
               onclick -> { e: MouseEvent =>
                 moveUp(thisCell)
               }
             ),
-            a(
-              cls -> "dropdown-item",
+            dropdownItem(
+              menuIcon("fa-angle-down"),
               "Move Down",
               onclick -> { e: MouseEvent =>
                 moveDown(thisCell)
