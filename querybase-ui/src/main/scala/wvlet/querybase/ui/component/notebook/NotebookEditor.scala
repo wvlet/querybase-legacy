@@ -82,12 +82,30 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     cells.zipWithIndex.find { case (c, i) => c eq cell }.map(_._2)
   }
 
+  protected def deleteCell(cell: NotebookCell): Unit = {
+    getCellIndex(cell: NotebookCell).foreach { cellIndex =>
+      val newCells = Seq.newBuilder[NotebookCell]
+      newCells ++= cells.slice(0, cellIndex)
+      newCells ++= cells.slice(cellIndex + 1, cells.size)
+      cells = newCells.result()
+
+      if (cells.isEmpty) {
+        cells = Seq(newCell)
+      }
+      updated.forceSet(true)
+    }
+  }
+
+  private def newCell: NotebookCell = {
+    new NotebookCell(UUID.randomUUID(), Cell("sql", source = "", outputs = Seq.empty))
+  }
+
   protected def insertCellAfter(cell: NotebookCell): Unit = {
     val targetCellIndex = getCellIndex(cell)
     val ci              = targetCellIndex.map(_ + 1).getOrElse(cells.size).min(cells.size)
     val newCells        = Seq.newBuilder[NotebookCell]
     newCells ++= cells.slice(0, ci)
-    newCells += new NotebookCell(UUID.randomUUID(), Cell("sql", source = "", outputs = Seq.empty))
+    newCells += newCell
     newCells ++= cells.slice(ci, cells.size)
     cells = newCells.result()
     updated.forceSet(true)
@@ -220,7 +238,20 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
                 showResult.update(prev => !prev)
               }
             ),
-            a(cls -> "dropdown-item", "Delete"),
+            a(
+              cls -> "dropdown-item",
+              "Delete",
+              onclick -> { e: MouseEvent =>
+                deleteCell(thisCell)
+              }
+            ),
+            a(
+              cls -> "dropdown-item",
+              "Run Cell",
+              onclick -> { e: MouseEvent =>
+                run
+              }
+            ),
             a(cls -> "dropdown-item", "Move Up"),
             a(cls -> "dropdown-item", "Move Down")
           )
