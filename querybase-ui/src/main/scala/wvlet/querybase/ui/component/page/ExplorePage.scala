@@ -9,7 +9,7 @@ import wvlet.querybase.ui.component.notebook.NotebookEditor
 class ExplorePage(notebookEditor: NotebookEditor) extends RxElement {
   override def render: RxElement = {
     div(
-      style -> "height: calc(100vh - 60px); overflow-y: scroll;",
+      style -> "height: calc(100vh - 60px); overflow-y: auto;",
       notebookEditor
     )
   }

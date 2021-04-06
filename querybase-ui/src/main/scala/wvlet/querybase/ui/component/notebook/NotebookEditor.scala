@@ -45,7 +45,11 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
       ),
       updated.map { x =>
         cells
-      }
+      },
+      // footer-margin
+      div(
+        style -> "min-height: 500px;"
+      )
     )
   }
 
@@ -120,15 +124,17 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     new NotebookCell(UUID.randomUUID(), Cell("sql", source = "", outputs = Seq.empty))
   }
 
-  protected def insertCellAfter(cell: NotebookCell): Unit = {
+  protected def insertCellAfter(cell: NotebookCell): NotebookCell = {
     val targetCellIndex = getCellIndex(cell)
     val ci              = targetCellIndex.map(_ + 1).getOrElse(cells.size).min(cells.size)
+    val nc              = newCell
     val newCells        = Seq.newBuilder[NotebookCell]
     newCells ++= cells.slice(0, ci)
-    newCells += newCell
+    newCells += nc
     newCells ++= cells.slice(ci, cells.size)
     cells = newCells.result()
     updated.forceSet(true)
+    nc
   }
 
   /** Submit a query and get a query Id
@@ -156,8 +162,8 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     private def run: Unit = {
       submitQuery(editor.getTextValue).foreach { queryId =>
         currentQueryId := Some(queryId)
-        currentQueryInfo := None
         showResult := true
+        currentQueryInfo := None
       }
     }
 
@@ -176,7 +182,9 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
       },
       onExitDown = { () =>
         getCellIndex(thisCell).foreach { cellIndex =>
-          getCell(cellIndex + 1).foreach(focusOnCell(_))
+          getCell(cellIndex + 1).foreach { cell =>
+            focusOnCell(cell)
+          }
         }
       }
     )
@@ -232,7 +240,8 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
             "Add a new cell",
             "fa-plus",
             onClick = { e: MouseEvent =>
-              insertCellAfter(thisCell)
+              val newCell = insertCellAfter(thisCell)
+              focusOnCell(newCell)
             }
           ),
           span(
