@@ -1,7 +1,7 @@
 package wvlet.querybase.ui.component.notebook
 
 import org.scalajs.dom
-import org.scalajs.dom.raw.MouseEvent
+import org.scalajs.dom.raw.{HTMLElement, MouseEvent}
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.airframe.rx.{Rx, RxOptionVar}
@@ -172,7 +172,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
 
       override def render: RxElement =
         span(
-          cls -> "text-nowrap",
+          cls -> "dropdown text-nowrap",
           visible.map {
             case true =>
               style -> s"visibility: visible;"
@@ -186,12 +186,43 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
               insertCellAfter(thisCell)
             }
           ),
-          new EditorIcon(
-            "Fold",
-            "fa-caret-down",
-            onClick = { e: MouseEvent =>
-              showResult.update(prev => !prev)
+          span(
+            id             -> s"dropdown-${cellId}",
+            aria.haspopup  -> true,
+            aria.expanded  -> false,
+            data("toggle") -> "dropdown",
+            new EditorIcon(
+              "Fold",
+              "fa-caret-down",
+              onClick = { e: MouseEvent =>
+                //showResult.update(prev => !prev)
+              }
+            ) {
+              onmouseover -> { e: MouseEvent =>
+                dom.document.getElementById(s"dropdown-menu-${cellId}") match {
+                  case e: HTMLElement =>
+                    e.style = "display: block;"
+                  case _ =>
+                }
+              }
             }
+          ),
+          span(
+            id  -> s"dropdown-menu-${cellId}",
+            cls -> "dropdown-menu",
+            // Need to set a higher z-index than query result table header (1020)
+            style           -> "z-index: 1070; ",
+            aria.labelledby -> s"dropdown-${cellId}",
+            a(
+              cls -> "dropdown-item",
+              "Fold/Unfold",
+              onclick -> { e: MouseEvent =>
+                showResult.update(prev => !prev)
+              }
+            ),
+            a(cls -> "dropdown-item", "Delete"),
+            a(cls -> "dropdown-item", "Move Up"),
+            a(cls -> "dropdown-item", "Move Down")
           )
         )
     }
