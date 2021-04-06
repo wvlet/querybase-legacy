@@ -83,7 +83,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
   }
 
   protected def deleteCell(cell: NotebookCell): Unit = {
-    getCellIndex(cell: NotebookCell).foreach { cellIndex =>
+    getCellIndex(cell).foreach { cellIndex =>
       val newCells = Seq.newBuilder[NotebookCell]
       newCells ++= cells.slice(0, cellIndex)
       newCells ++= cells.slice(cellIndex + 1, cells.size)
@@ -93,6 +93,38 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
         cells = Seq(newCell)
       }
       updated.forceSet(true)
+    }
+  }
+
+  protected def moveUp(cell: NotebookCell): Unit = {
+    getCellIndex(cell).foreach { ci =>
+      val swapTargetCellIndex = (ci - 1).max(0)
+      if (ci != swapTargetCellIndex) {
+        val newCells = Seq.newBuilder[NotebookCell]
+        newCells ++= cells.slice(0, swapTargetCellIndex)
+        // Swap position
+        newCells += cells(ci)
+        newCells += cells(swapTargetCellIndex)
+        newCells ++= cells.slice(ci + 1, cells.length)
+        cells = newCells.result()
+        updated.forceSet(true)
+      }
+    }
+  }
+
+  protected def moveDown(cell: NotebookCell): Unit = {
+    getCellIndex(cell).foreach { ci =>
+      val swapTargetCellIndex = (ci + 1).min(cells.size - 1)
+      if (ci != swapTargetCellIndex) {
+        val newCells = Seq.newBuilder[NotebookCell]
+        newCells ++= cells.slice(0, ci)
+        // Swap position
+        newCells += cells(swapTargetCellIndex)
+        newCells += cells(ci)
+        newCells ++= cells.slice(swapTargetCellIndex + 1, cells.length)
+        cells = newCells.result()
+        updated.forceSet(true)
+      }
     }
   }
 
@@ -252,8 +284,20 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
                 run
               }
             ),
-            a(cls -> "dropdown-item", "Move Up"),
-            a(cls -> "dropdown-item", "Move Down")
+            a(
+              cls -> "dropdown-item",
+              "Move Up",
+              onclick -> { e: MouseEvent =>
+                moveUp(thisCell)
+              }
+            ),
+            a(
+              cls -> "dropdown-item",
+              "Move Down",
+              onclick -> { e: MouseEvent =>
+                moveDown(thisCell)
+              }
+            )
           )
         )
     }
