@@ -1,4 +1,4 @@
-val AIRFRAME_VERSION = "21.3.1-13-af51f916-SNAPSHOT"
+val AIRFRAME_VERSION = "21.3.1-20-dfa27cb9-SNAPSHOT"
 addSbtPlugin("org.xerial.sbt"     % "sbt-sonatype"  % "3.9.5")
 addSbtPlugin("com.jsuereth"       % "sbt-pgp"       % "2.1.1")
 addSbtPlugin("org.scoverage"      % "sbt-scoverage" % "1.6.1")

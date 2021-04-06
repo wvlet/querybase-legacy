@@ -14,7 +14,7 @@ class EditorIcon(name: String, iconClass: String, onClick: MouseEvent => Unit) e
 
   override def render: RxElement =
     i(
-      cls     -> s"${baseCls} text-secondary",
+      cls     -> s"${baseCls} text-black-50",
       title   -> name,
       onclick -> { e: MouseEvent => onClick(e) },
       onmouseover -> { e: MouseEvent =>
@@ -24,7 +24,7 @@ class EditorIcon(name: String, iconClass: String, onClick: MouseEvent => Unit) e
       },
       onmouseout -> { e: MouseEvent =>
         e.getCurrentTarget.foreach { el =>
-          el.className = s"${baseCls} text-secondary"
+          el.className = s"${baseCls} text-black-50"
         }
       }
     )

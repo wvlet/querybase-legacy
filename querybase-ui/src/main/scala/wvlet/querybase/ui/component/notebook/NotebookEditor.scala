@@ -13,6 +13,7 @@ import wvlet.querybase.api.frontend.{ServiceJSClient, ServiceJSClientRx}
 import wvlet.querybase.ui.component._
 import wvlet.querybase.ui.component.editor.TextEditor
 
+import java.util.UUID
 import scala.concurrent.Future
 
 /**
@@ -24,7 +25,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
 
   private var cells: Seq[NotebookCell] = Seq(
     new NotebookCell(
-      1,
+      UUID.randomUUID(),
       Cell(
         cellType = "sql",
         source = "show functions",
@@ -44,13 +45,6 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
       ),
       div(
         new EditorIcon(
-          name = "Add Cell",
-          "fa-plus",
-          onClick = { e: MouseEvent =>
-            focusOnCell((cells.size + 1).max(0), create = true)
-          }
-        ),
-        new EditorIcon(
           name = "Delete Cell",
           "fa-cut",
           onClick = { e: MouseEvent => }
@@ -67,17 +61,35 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     )
   }
 
-  protected def focusOnCell(cellIndex: Int, create: Boolean = false): Unit = {
-    if (create && cellIndex - 1 >= cells.size) {
-      cells =
-        cells :+ new NotebookCell(cellIndex, Cell("sql", source = "", outputs = Seq("""{"text":"(query results)"}""")))
-      updated.forceSet(true)
+  protected def focusOnCell(cell: NotebookCell): Unit = {
+    cells.foreach { c =>
+      if (c eq cell) {
+        c.focus
+      } else {
+        c.unfocus
+      }
     }
-    cells.find(_.index == cellIndex).foreach { cell =>
-      info(s"Focus on ${cell.index}")
-      cell.focus
+  }
+
+  protected def getCell(index: Int): Option[NotebookCell] = {
+    if (index >= 0 && index < cells.length) {
+      Option(cells(index))
+    } else {
+      None
     }
-    cells.filter(_.index != cellIndex).foreach(_.unfocus)
+  }
+  protected def getCellIndex(cell: NotebookCell): Option[Int] = {
+    cells.zipWithIndex.find { case (c, i) => c eq cell }.map(_._2)
+  }
+
+  protected def insertCellAfter(cell: NotebookCell): Unit = {
+    val ci       = getCellIndex(cell).map(_ + 1).getOrElse(cells.size).max(cells.size)
+    val newCells = Seq.newBuilder[NotebookCell]
+    newCells ++= cells.slice(0, ci)
+    newCells += new NotebookCell(UUID.randomUUID(), Cell("sql", source = "", outputs = Seq.empty))
+    newCells ++= cells.slice(ci, cells.size)
+    cells = newCells.result()
+    updated.forceSet(true)
   }
 
   /** Submit a query and get a query Id
@@ -96,7 +108,8 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     }
   }
 
-  class NotebookCell(val index: Int, cell: Cell, focused: Boolean = false) extends RxElement with LogSupport {
+  class NotebookCell(cellId: UUID, cell: Cell, focused: Boolean = false) extends RxElement with LogSupport {
+    thisCell =>
 
     private val currentQueryId                           = Rx.optionVariable[String](None)
     private val currentQueryInfo: RxOptionVar[QueryInfo] = Rx.optionVariable(None)
@@ -105,6 +118,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
       submitQuery(editor.getTextValue).foreach { queryId =>
         currentQueryId := Some(queryId)
         currentQueryInfo := None
+        showResult := true
       }
     }
 
@@ -112,35 +126,36 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
       cell.source,
       onEnter = { text: String =>
         if (text.trim.nonEmpty) {
-          showResult := true
           run
-          focusOnCell(index + 1, create = true)
+          focusOnCell(thisCell)
         }
       },
       onExitUp = { () =>
-        //info(s"Exit up cell: ${index}")
-        focusOnCell((index - 1).max(1))
+        getCellIndex(thisCell).foreach { cellIndex =>
+          getCell(cellIndex - 1).foreach(focusOnCell(_))
+        }
       },
       onExitDown = { () =>
-        //info(s"Exit down cell: ${index}")
-        focusOnCell((index + 1).min(cells.length))
+        getCellIndex(thisCell).foreach { cellIndex =>
+          getCell(cellIndex + 1).foreach(focusOnCell(_))
+        }
       }
     )
 
-    private val cellId       = s"cell-${index}"
+    private val cellIdStr    = s"cell-${cellId}"
     private val resultCellId = s"${cellId}-result"
 
     private val defaultStyle = "w-100 shadow-none border border-white"
-    private val focusedStyle = "w-100 shadow-sm border"
+    private val focusedStyle = "w-100 shadow-sm border border-info"
 
     def unfocus: Unit = {
-      findHTMLElement(cellId).foreach {
+      findHTMLElement(cellIdStr).foreach {
         _.className = defaultStyle
       }
     }
     def focus: Unit = {
       editor.focus
-      findHTMLElement(cellId).foreach {
+      findHTMLElement(cellIdStr).foreach {
         _.className = focusedStyle
       }
     }
@@ -151,16 +166,24 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
       div(
         cls -> "w-100",
         table(
-          id  -> cellId,
+          id  -> cellIdStr,
           cls -> defaultStyle,
           onclick -> { e: MouseEvent =>
-            focusOnCell(index)
+            focusOnCell(thisCell)
           },
           tr(
             cls -> "mt-1",
             td(
               cls -> "align-top bg-light",
               span(
+                cls -> "text-nowrap",
+                new EditorIcon(
+                  "Add",
+                  "fa-plus",
+                  onClick = { e: MouseEvent =>
+                    insertCellAfter(thisCell)
+                  }
+                ),
                 new EditorIcon(
                   "Fold",
                   "fa-caret-down",

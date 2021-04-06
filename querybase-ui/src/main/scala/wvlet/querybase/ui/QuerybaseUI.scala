@@ -47,11 +47,11 @@ object QuerybaseUI extends LogSupport {
       .bind[JSHttpClient].toProvider { auth: GoogleAuth =>
         JSHttpClient.defaultClient.withConfig { config =>
           config.withRequestFilter { req =>
-            val user = auth.getCurrentUser.asInstanceOf[RxOptionVar[GoogleAuthProfile]].get
-            if (user.isDefined) {
-              req.withHeader("Authorization", s"Bearer ${user.get.id_token}")
-            } else {
-              req
+            auth.getCurrentUser match {
+              case Some(user) =>
+                req.withHeader("Authorization", s"Bearer ${user.id_token}")
+              case _ =>
+                req
             }
           }
         }
