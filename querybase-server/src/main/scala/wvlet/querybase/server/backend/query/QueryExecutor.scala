@@ -63,10 +63,20 @@ class QueryExecutor(
                 packer.packString(md.getColumnTypeName(i))
               }
 
-              val rsCodec = JDBCCodec(rs)
-              while (rs.next()) {
+              val rsCodec  = JDBCCodec(rs)
+              var rowCount = 0
+              val maxRows  = request.executionType.resultRowsLimit.getOrElse(Int.MaxValue)
+              while (rs.next() && rowCount < maxRows) {
                 rsCodec.packRowAsArray(packer)
+                rowCount += 1
               }
+
+              // Send a query cancel request if it still has more rows
+              if (rs.next()) {
+                warn(f"Read ${rowCount}%,d rows limit for preview. Cancelling the query: ${request.queryId}")
+                stmt.cancel()
+              }
+              rs.close()
               coordinatorClient.v1.CoordinatorApi.updateQueryStatus(
                 queryId = request.queryId,
                 status = QueryStatus.FINISHED,
@@ -97,8 +107,14 @@ object QueryExecutor {
       executionType: ExecutionType = PREVIEW(limit = 1000)
   )
 
-  sealed trait ExecutionType
-  case class PREVIEW(limit: Int = 100) extends ExecutionType
-  case object FULL                     extends ExecutionType
+  sealed trait ExecutionType {
+    def resultRowsLimit: Option[Int]
+  }
+  case class PREVIEW(limit: Int = 1000) extends ExecutionType {
+    override def resultRowsLimit: Option[Int] = Some(limit)
+  }
+  case object FULL extends ExecutionType {
+    override def resultRowsLimit: Option[Int] = None
+  }
 
 }
