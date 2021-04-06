@@ -1,12 +1,11 @@
 package wvlet.querybase.server.backend.api
 
 import wvlet.log.LogSupport
-import wvlet.querybase.api.backend.v1.{CoordinatorApi, RequestStatus}
+import wvlet.querybase.api.backend.v1.CoordinatorApi
 import wvlet.querybase.api.backend.v1.query.QueryStatus
 import wvlet.querybase.server.backend.NodeManager
-import wvlet.querybase.server.backend.query.{QueryExecutorConfig, QueryManager, QueryResultFileReader, QueryResultStore}
+import wvlet.querybase.server.backend.query.{QueryManager, QueryResultFileReader, QueryResultStore}
 
-import java.io.File
 import java.time.Instant
 
 /**
@@ -51,9 +50,14 @@ class CoordinatorApiImpl(nodeManager: NodeManager, queryManager: QueryManager, q
     queryManager.listQueries
   }
 
-  override def updateQueryStatus(queryId: String, status: QueryStatus, completedAt: Option[Instant]): Int = {
+  override def updateQueryStatus(
+      queryId: String,
+      status: QueryStatus,
+      error: Option[QueryError],
+      completedAt: Option[Instant]
+  ): Int = {
     queryManager.update(queryId) { qi =>
-      qi.withQueryStatus(status).withCompletedAt(completedAt)
+      qi.withQueryStatus(status).withCompletedAt(completedAt).withError(error)
     }
     info(s"Update query status: ${queryId}, status: ${status}")
     //ret match {

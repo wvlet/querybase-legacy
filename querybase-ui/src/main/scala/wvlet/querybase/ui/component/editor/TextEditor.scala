@@ -105,14 +105,14 @@ class TextEditor(
 
       if (e.keyCode == KeyCode.UpArrow || e.keyCode == KeyCode.PageUp) {
         if (cursorPosition.lineNumber == 1) {
-          debug("Exit up from the editor")
+          //debug("Exit up from the editor")
           onExitUp()
         }
       }
 
       if (e.keyCode == KeyCode.DownArrow || e.keyCode == KeyCode.PageDown) {
         if (cursorPosition.lineNumber == lineCount) {
-          debug(s"Exit from the editor")
+          //debug(s"Exit from the editor")
           onExitDown()
         }
       }

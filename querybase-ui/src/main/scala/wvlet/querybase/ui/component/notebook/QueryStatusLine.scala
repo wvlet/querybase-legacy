@@ -16,10 +16,25 @@ class QueryStatusLine(queryInfo: Option[QueryInfo]) extends RxElement with LogSu
   }
 
   private def queryStatusLine(qi: QueryInfo): RxElement = {
-    small(
-      status(qi.queryStatus),
-      span(
-        s"[${qi.serviceType}:${qi.serviceName}] ${qi.queryId}: ${qi.elapsed}"
+    div(
+      table(
+        tr(
+          td(
+            small(
+              status(qi.queryStatus),
+              span(
+                s"[${qi.serviceType}:${qi.serviceName}] ${qi.queryId}: ${qi.elapsed}"
+              )
+            )
+          )
+        ),
+        qi.error.map { err =>
+          tr(
+            td(
+              small(s"${err.errorMessage}")
+            )
+          )
+        }
       )
     )
   }

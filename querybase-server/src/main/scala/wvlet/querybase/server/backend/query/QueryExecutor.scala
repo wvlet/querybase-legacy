@@ -1,11 +1,12 @@
 package wvlet.querybase.server.backend.query
 
+import io.trino.spi.StandardErrorCode
 import org.xerial.snappy.SnappyOutputStream
 import wvlet.airframe.codec.JDBCCodec
 import wvlet.airframe.control.Control
 import wvlet.airframe.msgpack.spi.MessagePack
 import wvlet.log.LogSupport
-import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryId
+import wvlet.querybase.api.backend.v1.CoordinatorApi.{QueryError, QueryId}
 import wvlet.querybase.api.backend.v1.WorkerApi.TrinoService
 import wvlet.querybase.api.backend.v1.query.QueryStatus
 import wvlet.querybase.server.backend.BackendServer.CoordinatorClient
@@ -39,6 +40,7 @@ class QueryExecutor(
     coordinatorClient.v1.CoordinatorApi.updateQueryStatus(
       queryId = request.queryId,
       status = QueryStatus.RUNNING,
+      error = None,
       completedAt = None
     )
 
@@ -80,14 +82,22 @@ class QueryExecutor(
               coordinatorClient.v1.CoordinatorApi.updateQueryStatus(
                 queryId = request.queryId,
                 status = QueryStatus.FINISHED,
+                error = None,
                 completedAt = Some(Instant.now())
               )
             } catch {
               case e: SQLException =>
                 warn(s"${e.getMessage}")
+                val err = QueryError(
+                  errorCode = e.getErrorCode,
+                  // TODO Resolve error code name. Currently, trino-jdbc provides no mapping to StandardErrorCode
+                  errorCodeName = "N/A",
+                  errorMessage = e.getMessage
+                )
                 coordinatorClient.v1.CoordinatorApi.updateQueryStatus(
                   queryId = request.queryId,
                   status = QueryStatus.FAILED,
+                  error = Some(err),
                   completedAt = Some(Instant.now())
                 )
             }
