@@ -83,8 +83,9 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
   }
 
   protected def insertCellAfter(cell: NotebookCell): Unit = {
-    val ci       = getCellIndex(cell).map(_ + 1).getOrElse(cells.size).max(cells.size)
-    val newCells = Seq.newBuilder[NotebookCell]
+    val targetCellIndex = getCellIndex(cell)
+    val ci              = targetCellIndex.map(_ + 1).getOrElse(cells.size).min(cells.size)
+    val newCells        = Seq.newBuilder[NotebookCell]
     newCells ++= cells.slice(0, ci)
     newCells += new NotebookCell(UUID.randomUUID(), Cell("sql", source = "", outputs = Seq.empty))
     newCells ++= cells.slice(ci, cells.size)
