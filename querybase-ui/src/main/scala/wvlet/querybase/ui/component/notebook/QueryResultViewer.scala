@@ -12,10 +12,10 @@ class QueryResultViewer(r: QueryResult) extends RxElement {
     val columnNames: Seq[String] = r.schema.map(_.name)
     div(
       // width must be set to properly enable horizontal scroll
-      style -> s"overflow-x: scroll; width: calc(100vw - ${Sidebar.sidebarWidth + 55}px); max-height: 300px; ",
+      style -> s"overflow-x: scroll; max-width: calc(100vw - ${Sidebar.sidebarWidth + 55}px); max-height: 300px; ",
       table(
         cls   -> "table table-sm table-bordered",
-        style -> "font-size: 12px;",
+        style -> "width: auto; font-size: 12px;",
         thead(
           cls -> "thead-light",
           tr(
