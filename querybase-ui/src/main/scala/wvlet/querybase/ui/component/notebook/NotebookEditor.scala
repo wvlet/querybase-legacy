@@ -163,6 +163,41 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
 
     private val showResult = Rx.variable(true)
 
+    class CellOpsIcons extends RxElement {
+      private val visible = Rx.variable(false)
+
+      def setVisibility(isVisible: Boolean): Unit = {
+        visible := isVisible
+      }
+
+      override def render: RxElement =
+        span(
+          cls -> "text-nowrap",
+          visible.map {
+            case true =>
+              style -> s"visibility: visible;"
+            case false =>
+              style -> s"visibility: hidden;"
+          },
+          new EditorIcon(
+            "Add a new cell",
+            "fa-plus",
+            onClick = { e: MouseEvent =>
+              insertCellAfter(thisCell)
+            }
+          ),
+          new EditorIcon(
+            "Fold",
+            "fa-caret-down",
+            onClick = { e: MouseEvent =>
+              showResult.update(prev => !prev)
+            }
+          )
+        )
+    }
+
+    private val cellOpsIcon = new CellOpsIcons
+
     override def render: RxElement = {
       div(
         cls -> "w-100",
@@ -172,27 +207,17 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
           onclick -> { e: MouseEvent =>
             focusOnCell(thisCell)
           },
+          onmouseover -> { e: MouseEvent =>
+            cellOpsIcon.setVisibility(true)
+          },
+          onmouseout -> { e: MouseEvent =>
+            cellOpsIcon.setVisibility(false)
+          },
           tr(
             cls -> "mt-1",
             td(
               cls -> "align-top bg-light",
-              span(
-                cls -> "text-nowrap",
-                new EditorIcon(
-                  "Add",
-                  "fa-plus",
-                  onClick = { e: MouseEvent =>
-                    insertCellAfter(thisCell)
-                  }
-                ),
-                new EditorIcon(
-                  "Fold",
-                  "fa-caret-down",
-                  onClick = { e: MouseEvent =>
-                    showResult.update(prev => !prev)
-                  }
-                )
-              )
+              cellOpsIcon
             ),
             td(
               cls -> "align-middle",
