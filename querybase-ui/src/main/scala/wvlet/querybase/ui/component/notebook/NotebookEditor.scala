@@ -38,6 +38,12 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
   private val updated = Rx.variable(false)
 
   override def render: RxElement = {
+    // TODO: Add afterRender event hook support to airframe-rx-html
+    scala.scalajs.js.timers.setTimeout(100) {
+      cells.headOption.foreach {
+        focusOnCell(_)
+      }
+    }
     div(
       div(
         style -> "min-height: 30px;",
@@ -135,6 +141,10 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     cells = newCells.result()
     updated.forceSet(true)
     nc
+  }
+
+  protected def cloneCell(cell: NotebookCell): Unit = {
+    // TODO
   }
 
   /** Submit a query and get a query Id
@@ -278,7 +288,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
               }
             ),
             dropdownItem(
-              menuIcon("fa-cut"),
+              menuIcon("fa-trash"),
               "Delete",
               onclick -> { e: MouseEvent =>
                 deleteCell(thisCell)
@@ -296,6 +306,13 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
               "Move Down",
               onclick -> { e: MouseEvent =>
                 moveDown(thisCell)
+              }
+            ),
+            dropdownItem(
+              menuIcon("fa-clone"),
+              "Clone Cell",
+              onclick -> { e: MouseEvent =>
+                cloneCell(thisCell)
               }
             )
           )
