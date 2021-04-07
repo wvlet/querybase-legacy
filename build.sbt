@@ -2,7 +2,7 @@ val SCALA_2_12          = "2.12.12"
 val SCALA_2_13          = "2.13.4"
 val targetScalaVersions = SCALA_2_13 :: Nil
 
-val AIRFRAME_VERSION    = "21.3.1-13-af51f916-SNAPSHOT"
+val AIRFRAME_VERSION    = "21.3.1-20-dfa27cb9-SNAPSHOT"
 val SCALAJS_DOM_VERSION = "1.1.0"
 val SPARK_VERSION       = "3.0.1"
 val TRINO_VERSION       = "352"
@@ -133,7 +133,7 @@ lazy val ui =
       //webpackEmitSourceMaps := false,
       webpackBundlingMode in Compile := BundlingMode.LibraryOnly()
     )
-    .dependsOn(apiJS, frontendClientJS)
+    .dependsOn(frontendClientJS, apiJS)
 
 /** Unit test for UI components. Spliting a test module is a workaround because
   * using ScalaJSBundler for tests had a lot of troubles..
@@ -162,14 +162,17 @@ lazy val server =
       // For using project root as a working folder
       reStart / baseDirectory := (ThisBuild / baseDirectory).value,
       libraryDependencies ++= Seq(
-        "org.wvlet.airframe" %% "airframe"              % AIRFRAME_VERSION,
-        "org.wvlet.airframe" %% "airframe-config"       % AIRFRAME_VERSION,
-        "org.wvlet.airframe" %% "airframe-launcher"     % AIRFRAME_VERSION,
-        "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION,
-        "org.wvlet.airframe" %% "airframe-http-grpc"    % AIRFRAME_VERSION,
-        "io.trino"            % "trino-cli"             % TRINO_VERSION,
-        "io.trino"            % "trino-jdbc"            % TRINO_VERSION,
-        "org.slf4j"           % "slf4j-jdk14"           % "1.8.0-beta4"
+        "org.wvlet.airframe"   %% "airframe"              % AIRFRAME_VERSION,
+        "org.wvlet.airframe"   %% "airframe-config"       % AIRFRAME_VERSION,
+        "org.wvlet.airframe"   %% "airframe-launcher"     % AIRFRAME_VERSION,
+        "org.wvlet.airframe"   %% "airframe-http-finagle" % AIRFRAME_VERSION,
+        "org.wvlet.airframe"   %% "airframe-http-grpc"    % AIRFRAME_VERSION,
+        "io.trino"              % "trino-cli"             % TRINO_VERSION,
+        "io.trino"              % "trino-jdbc"            % TRINO_VERSION,
+        "io.trino"              % "trino-spi"             % TRINO_VERSION,
+        "org.slf4j"             % "slf4j-jdk14"           % "1.8.0-beta4",
+        "org.xerial.snappy"     % "snappy-java"           % "1.1.8.4",
+        "com.google.api-client" % "google-api-client"     % "1.31.3"
       )
     )
     .dependsOn(apiJVM, sql, store, apiClient, frontendClientJVM)

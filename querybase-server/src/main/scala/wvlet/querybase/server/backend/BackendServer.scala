@@ -10,6 +10,7 @@ import wvlet.log.io.IOUtil
 import wvlet.querybase.api.backend.ServiceGrpc
 import wvlet.querybase.api.backend.v1.ServerInfoApi
 import wvlet.querybase.server.backend.api.{CoordinatorApiImpl, ServiceCatalog, ServiceCatalogApiImpl, WorkerApiImpl}
+import wvlet.querybase.server.backend.query.QueryExecutorConfig
 
 import java.io.File
 import java.net.ServerSocket
@@ -83,6 +84,7 @@ object BackendServer extends LogSupport {
       .bind[WorkerConfig].toInstance(config)
       .bind[WorkerServer].toProvider { session: Session => workerServer(config).newServer(session) }
       .bind[WorkerService].toSingleton
+      .bind[QueryExecutorConfig].toSingleton
   }
 
   private[server] def randomPort(num: Int): Seq[Int] = {

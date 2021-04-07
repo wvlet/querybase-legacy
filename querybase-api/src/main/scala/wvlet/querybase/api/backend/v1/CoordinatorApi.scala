@@ -19,7 +19,12 @@ trait CoordinatorApi {
   def getQueryInfo(queryId: String): Option[QueryInfo]
   def listQueries: Seq[QueryInfo]
 
-  def updateQueryStatus(queryId: String, status: QueryStatus, completedAt: Option[Instant] = None): Int
+  def updateQueryStatus(
+      queryId: String,
+      status: QueryStatus,
+      error: Option[QueryError] = None,
+      completedAt: Option[Instant] = None
+  ): Int
 }
 
 object CoordinatorApi {
@@ -43,8 +48,7 @@ object CoordinatorApi {
       query: String,
       createdAt: Instant = Instant.now(),
       completedAt: Option[Instant] = None,
-      errorCode: Option[String] = None,
-      errorMessage: Option[String] = None,
+      error: Option[QueryError] = None,
       result: Option[QueryResult] = None
   ) {
     def elapsed: ElapsedTime = {
@@ -56,16 +60,23 @@ object CoordinatorApi {
       }
     }
 
+    def withError(err: Option[QueryError]): QueryInfo               = this.copy(error = err)
     def withQueryStatus(newQueryStatus: QueryStatus): QueryInfo     = this.copy(queryStatus = newQueryStatus)
     def withCompletedAt(newCompletedAt: Option[Instant]): QueryInfo = this.copy(completedAt = newCompletedAt)
+    def withQueryResult(newQueryResult: QueryResult): QueryInfo     = this.copy(result = Some(newQueryResult))
   }
 
   case class QueryResult(
       schema: Seq[Column],
       rows: Seq[Seq[Any]] = Seq.empty
   )
-
   case class Column(name: String, typeName: String)
+
+  case class QueryError(
+      errorCode: Int,
+      errorCodeName: String,
+      errorMessage: String
+  )
 }
 
 object RequestStatus {

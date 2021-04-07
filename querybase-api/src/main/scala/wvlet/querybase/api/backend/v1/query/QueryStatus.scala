@@ -8,6 +8,9 @@ sealed trait QueryStatus {
 
 object QueryStatus {
 
+  case object STARTING extends QueryStatus {
+    override def isFinished: Boolean = false
+  }
   case object QUEUED extends QueryStatus {
     override def isFinished: Boolean = false
   }
@@ -28,7 +31,7 @@ object QueryStatus {
   }
 
   private def statusTable =
-    Seq(QUEUED, RUNNING, FINISHED, FAILED, CANCELED, UNKNOWN).map { x =>
+    Seq(STARTING, QUEUED, RUNNING, FINISHED, FAILED, CANCELED, UNKNOWN).map { x =>
       x.toString -> x
     }.toMap
 

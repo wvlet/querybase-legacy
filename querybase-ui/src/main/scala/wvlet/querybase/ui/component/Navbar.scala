@@ -3,6 +3,10 @@ package wvlet.querybase.ui.component
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 
+object Navbar {
+  def navbarHeight = 60
+}
+
 /**
   */
 class Navbar(loginProfile: LoginProfileIcon, router: RxRouter) extends RxElement {
@@ -10,7 +14,7 @@ class Navbar(loginProfile: LoginProfileIcon, router: RxRouter) extends RxElement
   override def render: RxElement = {
     nav(
       cls   -> "navbar navbar-dark bg-dark sticky-top",
-      style -> "height: 60px;",
+      style -> s"height: ${Navbar.navbarHeight}px;",
       span(
         cls -> "navbar-brand",
         router.current.map { p => p.route.title }
