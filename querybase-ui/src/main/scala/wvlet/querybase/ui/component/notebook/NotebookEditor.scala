@@ -1,6 +1,7 @@
 package wvlet.querybase.ui.component.notebook
 
 import org.scalajs.dom
+import org.scalajs.dom.document
 import org.scalajs.dom.raw.{HTMLElement, MouseEvent}
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
@@ -15,6 +16,7 @@ import wvlet.querybase.ui.component.editor.TextEditor
 
 import java.util.UUID
 import scala.concurrent.Future
+import scala.scalajs.js
 
 /**
   */
@@ -294,6 +296,20 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
               "Run Cell",
               onclick -> { e: MouseEvent =>
                 run
+              }
+            ),
+            dropdownItem(
+              menuIcon("fa-clipboard"),
+              "Copy Query and Results",
+              onclick -> { e: MouseEvent =>
+                val clipboardText = new StringBuilder()
+                clipboardText.append(s"${editor.getTextValue}\n\n")
+                currentQueryInfo.get.flatMap { qi =>
+                  qi.result.map { result =>
+                    clipboardText.append(QueryResultPrinter.print(result))
+                  }
+                }
+                js.Dynamic.global.navigator.clipboard.writeText(clipboardText.result())
               }
             ),
             dropdownItem(
