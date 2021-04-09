@@ -46,13 +46,16 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     }
     div(
       div(
+        "Synchronized..."
+      ),
+      div(
         style -> "min-height: 30px;",
         serviceSelector
       ),
       updated.map { x =>
         cells
       },
-      // footer-margin
+      // Add a footer-margin so that the user can scroll the last cell at the middle of the screen
       div(
         style -> "min-height: 500px;"
       )
@@ -205,16 +208,22 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     private val defaultStyle = "w-100 shadow-none border border-white"
     private val focusedStyle = "w-100 shadow-sm border border-info"
 
+    private var hasFocus = false
+
     def unfocus: Unit = {
       findHTMLElement(cellIdStr).foreach {
         _.className = defaultStyle
       }
+      hasFocus = false
     }
     def focus: Unit = {
-      editor.focus
-      findHTMLElement(cellIdStr).foreach {
-        _.className = focusedStyle
+      if (!hasFocus) {
+        editor.focus
+        findHTMLElement(cellIdStr).foreach { el =>
+          el.className = focusedStyle
+        }
       }
+      hasFocus = true
     }
 
     private val showResult = Rx.variable(true)
