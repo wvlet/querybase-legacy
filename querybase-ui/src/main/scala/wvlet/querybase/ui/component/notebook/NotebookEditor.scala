@@ -391,7 +391,8 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
                     new QueryStatusLine(Some(qi))
                   case (None, Some(queryId)) =>
                     span(
-                      Rx.intervalMillis(800).flatMap { i =>
+                      Rx.intervalMillis(300)
+                        .flatMap { _ =>
                           rpcRxClient.FrontendApi
                             .getQueryInfo(queryId)
                             .map {

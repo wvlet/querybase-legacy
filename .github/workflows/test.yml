@@ -51,7 +51,7 @@ jobs:
         with:
           node-version: '14.x'
       - name: Node.js setup
-        run: npm install jsdom@16.0.0
+        run: npm install jsdom@16.5.2
       - uses: actions/cache@v1
         with:
           path: ~/.cache

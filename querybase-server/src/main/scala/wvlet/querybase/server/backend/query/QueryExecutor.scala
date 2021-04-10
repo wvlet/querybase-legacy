@@ -37,12 +37,14 @@ class QueryExecutor(
     info(s"Starting query: ${request.queryId}")
 
     // TODO Make this an asynchronous call to avoid the latency before query processing
-    coordinatorClient.v1.CoordinatorApi.updateQueryStatus(
-      queryId = request.queryId,
-      status = QueryStatus.RUNNING,
-      error = None,
-      completedAt = None
-    )
+    threadManager.submit {
+      coordinatorClient.v1.CoordinatorApi.updateQueryStatus(
+        queryId = request.queryId,
+        status = QueryStatus.RUNNING,
+        error = None,
+        completedAt = None
+      )
+    }
 
     // Prepare query result store
     val queryResultFile = queryResultStore.createNewResultFile(request.queryId)

@@ -53,7 +53,7 @@ object FrontendServer extends LogSupport {
       .bind[FrontendServer].toEagerSingleton
       .bind[QueryStorage].to[SQLiteQueryStorage]
       .bind[AuthFilter].to[GoogleAuthFilter]
-      .bind[CoordinatorClient].toLazyInstance {
+      .bind[CoordinatorClient].toInstance {
         val channel = ManagedChannelBuilder.forTarget(config.coordinatorAddress.hostAndPort).usePlaintext().build
         ServiceGrpc.newSyncClient(channel)
       }
