@@ -2,7 +2,7 @@ package wvlet.querybase.ui.component.notebook
 
 import org.scalajs.dom
 import org.scalajs.dom.document
-import org.scalajs.dom.raw.{HTMLElement, MouseEvent}
+import org.scalajs.dom.raw.{HTMLElement, HTMLInputElement, MouseEvent}
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.airframe.rx.{Rx, RxOptionVar}
@@ -37,7 +37,8 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     )
   )
 
-  private val updated = Rx.variable(false)
+  private val updated    = Rx.variable(false)
+  private val schemaForm = new SchemaForm()
 
   override def render: RxElement = {
     // TODO: Add afterRender event hook support to airframe-rx-html
@@ -48,11 +49,16 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     }
     div(
       div(
-        "Synchronized..."
-      ),
-      div(
+        cls   -> "form-row",
         style -> "min-height: 30px;",
-        serviceSelector
+        div(
+          cls -> "col-auto",
+          serviceSelector
+        ),
+        div(
+          cls -> "col-auto",
+          schemaForm
+        )
       ),
       updated.map { x =>
         cells
@@ -158,11 +164,13 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     serviceSelector.getSelectedService match {
       case Some(selectedService) =>
         info(s"Submit to ${selectedService.name}: ${query}")
-        rpcClient.FrontendApi.submitQuery(SubmitQueryRequest(query = query, serviceName = selectedService.name)).map {
-          resp =>
+        rpcClient.FrontendApi
+          .submitQuery(
+            SubmitQueryRequest(query = query, serviceName = selectedService.name, schema = schemaForm.text)
+          ).map { resp =>
             info(s"query_id: ${resp.queryId}")
             resp.queryId
-        }
+          }
       case None =>
         Future.failed(new IllegalStateException("No service is selected"))
     }
@@ -391,7 +399,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
                     new QueryStatusLine(Some(qi))
                   case (None, Some(queryId)) =>
                     span(
-                      Rx.intervalMillis(300)
+                      Rx.intervalMillis(800)
                         .flatMap { _ =>
                           rpcRxClient.FrontendApi
                             .getQueryInfo(queryId)

@@ -24,7 +24,8 @@ class FrontendApiImpl(coordinatorClient: CoordinatorClient) extends FrontendApi 
   }
 
   override def submitQuery(request: SubmitQueryRequest): SubmitQueryResponse = {
-    val r = coordinatorClient.v1.CoordinatorApi.newQuery(NewQueryRequest(request.query, request.serviceName))
+    val r =
+      coordinatorClient.v1.CoordinatorApi.newQuery(NewQueryRequest(request.query, request.serviceName, request.schema))
     SubmitQueryResponse(r.queryId)
   }
 

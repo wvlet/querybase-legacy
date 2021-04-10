@@ -37,7 +37,7 @@ object CoordinatorApi {
   }
   case class RegisterResponse()
 
-  case class NewQueryRequest(query: String, serviceName: String)
+  case class NewQueryRequest(query: String, serviceName: String, schema: String)
   case class NewQueryResponse(queryId: QueryId)
 
   case class QueryInfo(
