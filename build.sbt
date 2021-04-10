@@ -11,13 +11,13 @@ val TRINO_VERSION       = "354"
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 // For using Scala 2.12 in sbt
-scalaVersion in ThisBuild := SCALA_2_13
-organization in ThisBuild := "org.wvlet.querybase"
+ThisBuild / scalaVersion := SCALA_2_13
+ThisBuild / organization := "org.wvlet.querybase"
 
 // Use dynamic snapshot version strings for non tagged versions
-dynverSonatypeSnapshots in ThisBuild := true
+ThisBuild / dynverSonatypeSnapshots := true
 // Use coursier friendly version separator
-dynverSeparator in ThisBuild := "-"
+ThisBuild / dynverSeparator := "-"
 
 val buildSettings = Seq[Setting[_]](
   sonatypeProfileName := "org.wvlet",
@@ -51,7 +51,7 @@ val buildSettings = Seq[Setting[_]](
   )
 )
 
-publishTo in ThisBuild := sonatypePublishToBundle.value
+ThisBuild / publishTo := sonatypePublishToBundle.value
 
 val jsBuildSettings = Seq[Setting[_]](
   crossScalaVersions := targetScalaVersions,
@@ -115,13 +115,13 @@ lazy val ui =
         "org.scala-js"       %%% "scalajs-dom"        % SCALAJS_DOM_VERSION
       ),
       scalaJSUseMainModuleInitializer := true,
-      jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
-      requireJsDomEnv in Test := true,
-      webpackConfigFile in Compile := Some(baseDirectory.value / "webpack.config.js"),
-      webpackConfigFile in Test := Some(baseDirectory.value / "webpack-test.config.js"),
-      version in startWebpackDevServer := "3.11.0",
-      npmDependencies in Compile += "monaco-editor" -> "0.21.3",
-      npmDevDependencies in Compile ++= Seq(
+      Test / jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
+      Test / requireJsDomEnv := true,
+      Compile / webpackConfigFile := Some(baseDirectory.value / "webpack.config.js"),
+      Test / webpackConfigFile := Some(baseDirectory.value / "webpack-test.config.js"),
+      startWebpackDevServer / version := "3.11.0",
+      Compile / npmDependencies += "monaco-editor" -> "0.21.3",
+      Compile / npmDevDependencies ++= Seq(
         "import-loader"                -> "1.0.1",
         "expose-loader"                -> "1.0.0",
         "style-loader"                 -> "^1.2.1",
@@ -132,7 +132,7 @@ lazy val ui =
       ),
       useYarn := true,
       //webpackEmitSourceMaps := false,
-      webpackBundlingMode in Compile := BundlingMode.LibraryOnly()
+      Compile / webpackBundlingMode := BundlingMode.LibraryOnly()
     )
     .dependsOn(frontendClientJS, apiJS)
 
