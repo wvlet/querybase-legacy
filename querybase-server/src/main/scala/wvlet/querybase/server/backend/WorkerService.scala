@@ -1,9 +1,9 @@
 package wvlet.querybase.server.backend
 
-import wvlet.airframe.newDesign
+import wvlet.airframe.{Design, newDesign}
 import wvlet.querybase.api.backend.v1.CoordinatorApi.Node
 import wvlet.querybase.server.backend.BackendServer.WorkerServer
-import wvlet.querybase.server.backend.WorkerService.BackgroundExecutor
+import wvlet.querybase.server.backend.WorkerService.WorkerBackgroundExecutor
 
 import java.net.InetAddress
 import java.time.Instant
@@ -16,7 +16,7 @@ class WorkerService(
     // Adding this dependency to start WorkerServer
     workerServer: WorkerServer,
     rpcClientProvider: RPCClientProvider,
-    executor: BackgroundExecutor
+    executor: WorkerBackgroundExecutor
 ) {
 
   private val self: Node = {
@@ -29,11 +29,7 @@ class WorkerService(
 
   // Polling coordinator every 5 seconds
   executor.scheduleAtFixedRate(
-    new Runnable {
-      override def run(): Unit = {
-        coordinatorClient.v1.CoordinatorApi.register(self)
-      }
-    },
+    () => { coordinatorClient.v1.CoordinatorApi.register(self) },
     0,
     5,
     TimeUnit.SECONDS
@@ -43,10 +39,10 @@ class WorkerService(
 
 object WorkerService {
 
-  type BackgroundExecutor = ScheduledExecutorService
+  type WorkerBackgroundExecutor = ScheduledExecutorService
 
-  def design = newDesign
-    .bind[BackgroundExecutor].toInstance(
+  def design: Design = newDesign
+    .bind[WorkerBackgroundExecutor].toInstance(
       Executors.newSingleThreadScheduledExecutor()
     )
     .onShutdown(_.shutdownNow())

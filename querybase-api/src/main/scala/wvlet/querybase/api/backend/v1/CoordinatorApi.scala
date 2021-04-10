@@ -37,13 +37,14 @@ object CoordinatorApi {
   }
   case class RegisterResponse()
 
-  case class NewQueryRequest(query: String, serviceName: String, schema: String)
+  case class NewQueryRequest(query: String, serviceName: String, schema: Option[String])
   case class NewQueryResponse(queryId: QueryId)
 
   case class QueryInfo(
       queryId: QueryId,
       serviceName: String,
       serviceType: String,
+      schema: String,
       queryStatus: QueryStatus,
       query: String,
       createdAt: Instant = Instant.now(),
@@ -60,6 +61,7 @@ object CoordinatorApi {
       }
     }
 
+    def withSchema(newSchema: String): QueryInfo                    = this.copy(schema = newSchema)
     def withError(err: Option[QueryError]): QueryInfo               = this.copy(error = err)
     def withQueryStatus(newQueryStatus: QueryStatus): QueryInfo     = this.copy(queryStatus = newQueryStatus)
     def withCompletedAt(newCompletedAt: Option[Instant]): QueryInfo = this.copy(completedAt = newCompletedAt)

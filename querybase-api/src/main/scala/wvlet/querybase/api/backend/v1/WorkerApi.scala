@@ -12,11 +12,11 @@ import java.time.Instant
 trait WorkerApi {
   import WorkerApi._
 
-  def runTrinoQuery(queryId: String, service: TrinoService, query: String): QueryExecutionInfo
+  def runTrinoQuery(queryId: String, service: TrinoService, query: String, schema: String): QueryExecutionInfo
 }
 
 object WorkerApi {
-  case class TrinoService(address: String, connector: String, schema: String, @secret user: String)
+  case class TrinoService(address: String, connector: String, @secret user: String)
   case class QueryExecutionInfo(queryId: String, nodeId: NodeId, createdAt: Instant = Instant.now())
 
 }

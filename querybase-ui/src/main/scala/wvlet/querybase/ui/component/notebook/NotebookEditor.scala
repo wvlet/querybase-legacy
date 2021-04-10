@@ -166,7 +166,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
         info(s"Submit to ${selectedService.name}: ${query}")
         rpcClient.FrontendApi
           .submitQuery(
-            SubmitQueryRequest(query = query, serviceName = selectedService.name, schema = schemaForm.text)
+            SubmitQueryRequest(query = query, serviceName = selectedService.name, schema = schemaForm.getText)
           ).map { resp =>
             info(s"query_id: ${resp.queryId}")
             resp.queryId

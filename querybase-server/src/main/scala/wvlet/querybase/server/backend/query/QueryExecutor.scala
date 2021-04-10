@@ -34,24 +34,22 @@ class QueryExecutor(
   }
 
   private def execute(request: QueryExecutionRequest): Unit = {
-    info(s"Starting query: ${request.queryId}")
+    info(s"Starting query: ${request}")
 
     // TODO Make this an asynchronous call to avoid the latency before query processing
-    threadManager.submit {
-      coordinatorClient.v1.CoordinatorApi.updateQueryStatus(
-        queryId = request.queryId,
-        status = QueryStatus.RUNNING,
-        error = None,
-        completedAt = None
-      )
-    }
+    coordinatorClient.v1.CoordinatorApi.updateQueryStatus(
+      queryId = request.queryId,
+      status = QueryStatus.RUNNING,
+      error = None,
+      completedAt = None
+    )
 
     // Prepare query result store
     val queryResultFile = queryResultStore.createNewResultFile(request.queryId)
 
     Control.withResource(MessagePack.newPacker(new SnappyOutputStream(new FileOutputStream(queryResultFile)))) {
       packer =>
-        trinoJDBCRunner.withConnection(request.service) { conn =>
+        trinoJDBCRunner.withConnection(service = request.service, schema = request.schema) { conn =>
           Control.withResource(conn.createStatement()) { stmt =>
             try {
               val rs          = stmt.executeQuery(request.query)
@@ -115,6 +113,7 @@ object QueryExecutor {
   case class QueryExecutionRequest(
       queryId: QueryId,
       query: String,
+      schema: String,
       service: TrinoService,
       executionType: ExecutionType = PREVIEW(limit = 1000)
   )

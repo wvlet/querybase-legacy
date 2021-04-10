@@ -41,7 +41,7 @@ object FrontendApi {
   case class SubmitQueryRequest(
       query: String,
       serviceName: String,
-      schema: String,
+      schema: Option[String] = None,
       uuid: UUID = UUID.randomUUID()
   )
   case class SubmitQueryResponse(queryId: String)

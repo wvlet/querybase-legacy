@@ -10,10 +10,9 @@ import java.util.Properties
 
 class TrinoJDBCRunner(driver: TrinoJDBCDriver) {
 
-  def withConnection[U](service: TrinoService)(body: TrinoConnection => U): U = {
-    Control.withResource(driver.newConnection(service.address, service.connector, service.schema, service.user)) {
-      conn =>
-        body(conn)
+  def withConnection[U](service: TrinoService, schema: String)(body: TrinoConnection => U): U = {
+    Control.withResource(driver.newConnection(service.address, service.connector, schema, service.user)) { conn =>
+      body(conn)
     }
   }
 }

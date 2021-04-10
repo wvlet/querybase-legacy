@@ -1,15 +1,22 @@
 package wvlet.querybase.ui.component.notebook
 
-import org.scalajs.dom.raw.{HTMLInputElement, MouseEvent}
+import org.scalajs.dom.KeyboardEvent
+import org.scalajs.dom.raw.{Event, HTMLInputElement, MouseEvent}
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
+import wvlet.log.LogSupport
 
 /**
   */
-class SchemaForm extends RxElement {
-  private var _text: String = "information_schema"
+class SchemaForm extends RxElement with LogSupport {
+  private var _text: String = ""
 
-  def text: String = _text.trim
+  def getText: Option[String] = {
+    _text.trim match {
+      case s if s.isEmpty => None
+      case other          => Some(other)
+    }
+  }
 
   override def render = form(
     cls -> "form-inline",
@@ -19,11 +26,11 @@ class SchemaForm extends RxElement {
       input(
         cls         -> "form-control form-control-sm",
         tpe         -> "text",
-        placeholder -> _text,
-        onchange -> { e: MouseEvent =>
+        placeholder -> "(database schema)",
+        onchange -> { e: KeyboardEvent =>
           e.target match {
             case e: HTMLInputElement =>
-              Option(e.textContent).foreach(_text = _)
+              Option(e.value).foreach(_text = _)
           }
         }
       )

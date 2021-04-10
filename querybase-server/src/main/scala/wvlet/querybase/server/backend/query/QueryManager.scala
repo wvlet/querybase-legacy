@@ -35,12 +35,14 @@ class QueryManager(
 
     // Find the target service from the catalog
     val serviceName = request.serviceName
+    val schema      = request.schema.getOrElse("information_schema")
     val qi: QueryInfo = findService(serviceName) match {
       case Some(svc) =>
         QueryInfo(
           queryId = queryId,
           serviceName = svc.name,
           serviceType = svc.serviceType,
+          schema = schema,
           queryStatus = QueryStatus.QUEUED,
           query = request.query
         )
@@ -49,6 +51,7 @@ class QueryManager(
           queryId = queryId,
           serviceName = request.serviceName,
           serviceType = "N/A",
+          schema = schema,
           queryStatus = QueryStatus.FAILED,
           query = request.query
         )
@@ -88,7 +91,7 @@ class QueryManager(
     updateQuery(qi)
 
     if (!qi.queryStatus.isFinished) {
-      val service = findService(qi.serviceName) match {
+      findService(qi.serviceName) match {
         case None =>
           updateQuery(qi.withQueryStatus(QueryStatus.FAILED))
         case Some(svc) =>
@@ -102,7 +105,12 @@ class QueryManager(
               val workerApi    = rpcClientProvider.getSyncClientFor(w.node.address)
               try {
                 val executionInfo =
-                  workerApi.v1.WorkerApi.runTrinoQuery(qi.queryId, service = trinoService, query = qi.query)
+                  workerApi.v1.WorkerApi.runTrinoQuery(
+                    qi.queryId,
+                    service = trinoService,
+                    query = qi.query,
+                    schema = qi.schema
+                  )
                 queryAssignment.put(qi.queryId, RemoteQuery(executionInfo.nodeId))
               } catch {
                 case e: StatusRuntimeException =>
