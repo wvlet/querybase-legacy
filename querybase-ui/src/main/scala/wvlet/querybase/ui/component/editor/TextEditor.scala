@@ -21,6 +21,7 @@ import wvlet.airframe.rx.html.widget.editor.monaco.editor.{
 }
 
 import scala.scalajs.js
+import scala.scalajs.js.Dictionary
 
 /**
   */
@@ -50,19 +51,49 @@ class TextEditor(
 
     import js.JSConverters._
 
-    def newRule = new js.Object().asInstanceOf[ITokenThemeRule]
+    def newRule(f: ITokenThemeRule => Unit): ITokenThemeRule = {
+      val r = new js.Object().asInstanceOf[ITokenThemeRule]
+      f(r)
+      r
+    }
 
-    val r1 = newRule
-    r1.token = "keyword"
-    r1.foreground = "#aa99dd"
-//    val r2 = newRule
-//    r2.token = "string"
-//    r2.foreground = "#eeeeee"
     val rules = Seq[ITokenThemeRule](
-      r1
-//      r2
+      newRule { r =>
+        r.token = "keyword"
+        r.foreground = "#c9c6fc"
+      },
+      newRule { r =>
+        r.token = "number.sql"
+        r.foreground = "#bec5ce"
+      },
+      newRule { r =>
+        r.token = "string.sql"
+        r.foreground = "#e4c0aa"
+      },
+      newRule { r =>
+        // pre-defined SQL functions
+        r.token = "predefined.sql"
+        r.foreground = "#58ccf0"
+      },
+      newRule { r =>
+        // Double quotation
+        r.token = "identifier"
+        r.foreground = "#ffffff"
+      },
+      newRule { r =>
+        // Inside double quotation, $VAR
+        r.token = "identifier.sql"
+        r.foreground = "#eeeeee"
+      },
+      newRule { r =>
+        r.token = "comment"
+        r.foreground = "#99cc99"
+      }
     ).toJSArray
     editorTheme.rules = rules
+    editorTheme.colors = Dictionary[String](
+      ("editor.background", "#202124")
+    )
     Editor.defineTheme("vs-querybase", editorTheme)
 
     val option = new scalajs.js.Object().asInstanceOf[IStandaloneEditorConstructionOptions]
@@ -156,6 +187,9 @@ class TextEditor(
       updateLayout()
     }
 
+    scalajs.js.timers.setTimeout(100) {
+      updateLayout()
+    }
     //updateLayout(isInit = true)
     editorNode
   }

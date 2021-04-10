@@ -30,7 +30,12 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
       UUID.randomUUID(),
       Cell(
         cellType = "sql",
-        source = "show functions",
+        source = """-- comment
+        |select
+        |  123456,
+        |  'abcde',
+        |  cast(1 as varchar),
+        |  pow(2, 8) as "hello", $VAR """.stripMargin,
         outputs = Seq("""{"text":"(query results)"}""")
       ),
       focused = true
