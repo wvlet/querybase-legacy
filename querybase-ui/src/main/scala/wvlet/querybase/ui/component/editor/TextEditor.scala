@@ -68,7 +68,7 @@ class TextEditor(
       },
       newRule { r =>
         r.token = "string.sql"
-        r.foreground = "#e4c0aa"
+        r.foreground = "#f4c099"
       },
       newRule { r =>
         // pre-defined SQL functions

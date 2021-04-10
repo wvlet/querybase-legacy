@@ -31,11 +31,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
       Cell(
         cellType = "sql",
         source = """-- comment
-        |select
-        |  123456,
-        |  'abcde',
-        |  cast(1 as varchar),
-        |  pow(2, 8) as "hello", $VAR """.stripMargin,
+                   |select 1""".stripMargin,
         outputs = Seq("""{"text":"(query results)"}""")
       ),
       focused = true

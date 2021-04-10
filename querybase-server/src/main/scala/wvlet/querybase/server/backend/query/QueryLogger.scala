@@ -1,13 +1,58 @@
 package wvlet.querybase.server.backend.query
 
-import wvlet.log.LogSupport
+import wvlet.airframe.codec.MessageCodec
+import wvlet.log.{AsyncHandler, LogFormatter, LogLevel, LogRecord, LogRotationHandler, LogSupport, Logger}
 import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
+import wvlet.querybase.server.backend.query.QueryLogger.QueryLoggerFormatter
 
-class QueryLogger extends LogSupport {
+import java.io.File
+
+class QueryLogger {
+
+  private val queryStartLogger      = Logger("querylogger.start")
+  private val queryCompletionLogger = Logger("querylogger.completion")
+
+  private val queryHistoryDir = new File(".querybase/history")
+
+  init
+
+  private def init: Unit = {
+    queryHistoryDir.mkdirs()
+
+    queryStartLogger.setLogLevel(LogLevel.ALL)
+    queryCompletionLogger.setLogLevel(LogLevel.ALL)
+
+    queryStartLogger.resetHandler(
+      new LogRotationHandler(
+        fileName = ".querybase/history/query_start.json",
+        formatter = QueryLoggerFormatter,
+        logFileExt = ".json"
+      )
+    )
+    queryCompletionLogger.resetHandler(
+      new LogRotationHandler(
+        fileName = ".querybase/history/query_completion.json",
+        formatter = QueryLoggerFormatter,
+        logFileExt = ".json"
+      )
+    )
+  }
+
+  private val codec = MessageCodec.of[QueryInfo]
+
   def startLog(queryInfo: QueryInfo): Unit = {
-    info(s"query started: ${queryInfo}")
+    queryStartLogger.info(codec.toJson(queryInfo))
   }
   def completionLog(queryInfo: QueryInfo): Unit = {
-    info(s"query completed: ${queryInfo}")
+    queryCompletionLogger.info(codec.toJson(queryInfo))
   }
+}
+
+object QueryLogger {
+  object QueryLoggerFormatter extends LogFormatter {
+    override def formatLog(r: LogRecord): String = {
+      r.getMessage
+    }
+  }
+
 }
