@@ -155,7 +155,7 @@ lazy val server =
         "io.trino"              % "trino-spi"             % TRINO_VERSION,
         "org.slf4j"             % "slf4j-jdk14"           % "1.8.0-beta4",
         "org.xerial.snappy"     % "snappy-java"           % "1.1.8.4",
-        "com.google.api-client" % "google-api-client"     % "1.31.3"
+        "com.google.api-client" % "google-api-client"     % "1.31.4"
       )
     )
     .dependsOn(apiJVM, sql, store, apiClient, frontendClientJVM)
