@@ -6,7 +6,6 @@ import com.google.api.client.json.gson.GsonFactory
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.Future
 import wvlet.airframe.http.{Http, HttpStatus}
-import wvlet.airframe.http.finagle.FinagleFilter
 import wvlet.log.LogSupport
 
 import scala.jdk.CollectionConverters._
@@ -17,7 +16,7 @@ case class GoogleAuthConfig(
 
 /**
   */
-class GoogleAuthFilter(config: GoogleAuthConfig) extends FinagleFilter with LogSupport {
+class GoogleAuthFilter(config: GoogleAuthConfig) extends AuthFilter with LogSupport {
 
   private val verifier = {
     new GoogleIdTokenVerifier.Builder(GoogleNetHttpTransport.newTrustedTransport, GsonFactory.getDefaultInstance())
@@ -36,7 +35,7 @@ class GoogleAuthFilter(config: GoogleAuthConfig) extends FinagleFilter with LogS
           case None =>
             throw Http.serverException(HttpStatus.Unauthorized_401)
         }
-      case None =>
+      case _ =>
         throw Http.serverException(HttpStatus.Unauthorized_401)
     }
 

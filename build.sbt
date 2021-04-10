@@ -118,6 +118,7 @@ lazy val ui =
       jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
       requireJsDomEnv in Test := true,
       webpackConfigFile in Compile := Some(baseDirectory.value / "webpack.config.js"),
+      webpackConfigFile in Test := Some(baseDirectory.value / "webpack-test.config.js"),
       version in startWebpackDevServer := "3.11.0",
       npmDependencies in Compile += "monaco-editor" -> "0.21.3",
       npmDevDependencies in Compile ++= Seq(
@@ -135,7 +136,7 @@ lazy val ui =
     )
     .dependsOn(frontendClientJS, apiJS)
 
-/** Unit test for UI components. Spliting a test module is a workaround because
+/** Unit test for UI components. Spliting this test module is a workaround because
   * using ScalaJSBundler for tests had a lot of troubles..
   */
 lazy val uiTest =

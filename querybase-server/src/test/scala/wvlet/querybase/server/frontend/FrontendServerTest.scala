@@ -17,7 +17,7 @@ class FrontendServerTest extends AirSpec {
   }
 
   test("rpc service info") { client: FrontendClient =>
-    val serviceInfo = client.ServiceApi.serviceInfo()
+    val serviceInfo = client.FrontendApi.serverInfo()
     serviceInfo.name shouldBe "querybase"
   }
 }

@@ -29,7 +29,7 @@ object FrontendServer extends LogSupport {
 
   private[server] def router =
     Router
-      .add[GoogleAuthFilter].andThen(
+      .add[AuthFilter].andThen(
         Router
           .add[FrontendApiImpl]
           .add[QueryLogApiImpl]
@@ -52,18 +52,22 @@ object FrontendServer extends LogSupport {
       )
       .bind[FrontendServer].toEagerSingleton
       .bind[QueryStorage].to[SQLiteQueryStorage]
+      .bind[AuthFilter].to[GoogleAuthFilter]
       .bind[CoordinatorClient].toLazyInstance {
         val channel = ManagedChannelBuilder.forTarget(config.coordinatorAddress.hostAndPort).usePlaintext().build
         ServiceGrpc.newSyncClient(channel)
       }
+
   }
 
-  private[querybase] def testDesign = {
+  private[querybase] def testDesign: Design = {
     val port = IOUtil.randomPort
     design(FrontendServerConfig(port = port, coordinatorAddress = ServerAddress("localhost:8081")))
       .bind[SyncClient].toInstance(Http.client.withRetryContext(_.noRetry).newSyncClient(s"localhost:${port}"))
       .bind[FrontendClient].toProvider { syncClient: SyncClient =>
         new ServiceSyncClient(syncClient)
       }
+      // Disable GoogleAuth for testing
+      .bind[AuthFilter].toInstance(NoAuthFilter)
   }
 }
