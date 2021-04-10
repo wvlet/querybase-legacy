@@ -136,24 +136,6 @@ lazy val ui =
     )
     .dependsOn(frontendClientJS, apiJS)
 
-/** Unit test for UI components. Spliting this test module is a workaround because
-  * using ScalaJSBundler for tests had a lot of troubles..
-  */
-lazy val uiTest =
-  project
-    .in(file("querybase-ui-test"))
-    .enablePlugins(ScalaJSPlugin)
-    .settings(buildSettings)
-    .settings(jsBuildSettings)
-    .settings(
-      noPublish,
-      name := "querybase-ui-test",
-      description := "UI test for Querybase",
-      jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
-      requireJsDomEnv in Test := true
-    )
-    .dependsOn(ui)
-
 lazy val server =
   project
     .in(file("querybase-server"))
