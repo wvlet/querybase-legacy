@@ -20,6 +20,7 @@ class QueryManager(
     catalog: ServiceCatalog,
     nodeManager: NodeManager,
     threadManager: QueryManagerThreadManager,
+    queryLogger: QueryLogger,
     rpcClientProvider: RPCClientProvider
 ) extends LogSupport
     with AutoCloseable {
@@ -56,6 +57,7 @@ class QueryManager(
           query = request.query
         )
     }
+    queryLogger.startLog(qi)
     startNewQuery(qi)
     // TODO Process query
     qi
@@ -79,6 +81,9 @@ class QueryManager(
     queryList.get(queryId).map { qi =>
       val updated = updater(qi)
       queryList.put(queryId, updated)
+      if (updated.isFinished) {
+        queryLogger.completionLog(updated)
+      }
       updated
     }
   }

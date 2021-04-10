@@ -52,6 +52,7 @@ object CoordinatorApi {
       error: Option[QueryError] = None,
       result: Option[QueryResult] = None
   ) {
+    def isFinished: Boolean = queryStatus.isFinished
     def elapsed: ElapsedTime = {
       completedAt match {
         case Some(completed) =>
