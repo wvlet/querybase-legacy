@@ -1,6 +1,6 @@
 package wvlet.querybase.server.backend.query
 
-import wvlet.airframe.codec.MessageCodec
+import wvlet.airframe.codec.{MessageCodec, MessageCodecFactory}
 import wvlet.log.{AsyncHandler, LogFormatter, LogLevel, LogRecord, LogRotationHandler, LogSupport, Logger}
 import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
 import wvlet.querybase.server.backend.query.QueryLogger.QueryLoggerFormatter
@@ -38,7 +38,7 @@ class QueryLogger {
     )
   }
 
-  private val codec = MessageCodec.of[QueryInfo]
+  private val codec = MessageCodecFactory.defaultFactoryForJSON.of[QueryInfo]
 
   def startLog(queryInfo: QueryInfo): Unit = {
     queryStartLogger.info(codec.toJson(queryInfo))
