@@ -239,22 +239,22 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
 
     private val showResult = Rx.variable(true)
 
-    class CellOpsIcons extends RxElement {
-      private val visible = Rx.variable(false)
+    def menuIcon(faStyle: String) = small(
+      i(
+        cls   -> s"fa ${faStyle} mr-1 text-secondary",
+        style -> "width: 11px;"
+      )
+    )
 
+    private val visible = Rx.variable(false)
+
+    class CellOpsIcons extends RxElement {
       def setVisibility(isVisible: Boolean): Unit = {
         visible := isVisible
       }
 
       def dropdownItem = a(
         cls -> "dropdown-item px-3"
-      )
-
-      def menuIcon(faStyle: String) = small(
-        i(
-          cls   -> s"fa ${faStyle} mr-1 text-secondary",
-          style -> "width: 11px;"
-        )
       )
 
       override def render: RxElement =
@@ -355,6 +355,9 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
 
     private val cellOpsIcon = new CellOpsIcons
 
+    private val cellMenuStyle =
+      "background: #ffffff; display: flex; position: absolute; top: -14px; right: 8px; z-index: 1500;"
+
     override def render: RxElement = {
       div(
         cls -> "w-100",
@@ -377,8 +380,28 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
               cellOpsIcon
             ),
             td(
-              cls -> "align-middle",
-              editor
+              cls   -> "align-middle",
+              style -> "display: flex; flex-direction: column; position: relative; ",
+              editor,
+              div(
+                visible.map {
+                  case true =>
+                    style -> s"visibility: visible; ${cellMenuStyle}"
+                  case false =>
+                    style -> s"visibility: hidden; ${cellMenuStyle}"
+                },
+                cls -> "border rounded shadow px-2",
+                span(
+                  menuIcon("fa-angle-up")(
+                    title -> "Move Up",
+                    onclick -> { e: MouseEvent =>
+                      moveUp(thisCell)
+                    }
+                  ),
+                  menuIcon("fa-angle-down"),
+                  menuIcon("fa-trash")
+                )
+              )
             )
           ),
           tr(
