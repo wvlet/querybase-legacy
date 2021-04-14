@@ -1,8 +1,6 @@
 package wvlet.querybase.ui.component.notebook
 
-import org.scalajs.dom
-import org.scalajs.dom.document
-import org.scalajs.dom.raw.{HTMLElement, HTMLInputElement, MouseEvent}
+import org.scalajs.dom.raw.MouseEvent
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.airframe.rx.{Rx, RxOptionVar}
@@ -17,17 +15,20 @@ import wvlet.querybase.ui.component.editor.TextEditor
 
 import java.util.UUID
 import scala.concurrent.Future
-import scala.scalajs.js
 
 /**
   */
-class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSClientRx, rpcClient: ServiceJSClient)
-    extends RxElement
+class NotebookEditor(
+    serviceSelector: ServiceSelector,
+    private[notebook] val rpcRxClient: ServiceJSClientRx,
+    rpcClient: ServiceJSClient
+) extends RxElement
     with LogSupport {
   private implicit val queue = scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
   private var cells: Seq[NotebookCell] = Seq(
     new NotebookCell(
+      this,
       UUID.randomUUID(),
       Cell(
         cellType = "sql",
@@ -72,7 +73,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     )
   }
 
-  protected def focusOnCell(cell: NotebookCell): Unit = {
+  def focusOnCell(cell: NotebookCell): Unit = {
     cells.foreach { c =>
       if (c eq cell) {
         c.focus
@@ -82,18 +83,19 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     }
   }
 
-  protected def getCell(index: Int): Option[NotebookCell] = {
+  def getCell(index: Int): Option[NotebookCell] = {
     if (index >= 0 && index < cells.length) {
       Option(cells(index))
     } else {
       None
     }
   }
-  protected def getCellIndex(cell: NotebookCell): Option[Int] = {
+
+  def getCellIndex(cell: NotebookCell): Option[Int] = {
     cells.zipWithIndex.find { case (c, i) => c eq cell }.map(_._2)
   }
 
-  protected def deleteCell(cell: NotebookCell): Unit = {
+  def deleteCell(cell: NotebookCell): Unit = {
     getCellIndex(cell).foreach { cellIndex =>
       val newCells = Seq.newBuilder[NotebookCell]
       newCells ++= cells.slice(0, cellIndex)
@@ -107,7 +109,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     }
   }
 
-  protected def moveUp(cell: NotebookCell): Unit = {
+  def moveUp(cell: NotebookCell): Unit = {
     getCellIndex(cell).foreach { ci =>
       val swapTargetCellIndex = (ci - 1).max(0)
       if (ci != swapTargetCellIndex) {
@@ -123,7 +125,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     }
   }
 
-  protected def moveDown(cell: NotebookCell): Unit = {
+  def moveDown(cell: NotebookCell): Unit = {
     getCellIndex(cell).foreach { ci =>
       val swapTargetCellIndex = (ci + 1).min(cells.size - 1)
       if (ci != swapTargetCellIndex) {
@@ -140,10 +142,10 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
   }
 
   private def newCell: NotebookCell = {
-    new NotebookCell(UUID.randomUUID(), Cell("sql", source = "", outputs = Seq.empty))
+    new NotebookCell(this, UUID.randomUUID(), Cell("sql", source = "", outputs = Seq.empty))
   }
 
-  protected def insertCellAfter(cell: NotebookCell): NotebookCell = {
+  def insertCellAfter(cell: NotebookCell): NotebookCell = {
     val targetCellIndex = getCellIndex(cell)
     val ci              = targetCellIndex.map(_ + 1).getOrElse(cells.size).min(cells.size)
     val nc              = newCell
@@ -158,7 +160,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
 
   /** Submit a query and get a query Id
     */
-  private def submitQuery(query: String): Future[String] = {
+  private[notebook] def submitQuery(query: String): Future[String] = {
     serviceSelector.getSelectedService match {
       case Some(selectedService) =>
         info(s"Submit to ${selectedService.name}: ${query}")
@@ -174,317 +176,338 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     }
   }
 
-  class NotebookCell(cellId: UUID, cell: Cell, focused: Boolean = false) extends RxElement with LogSupport {
-    thisCell =>
+}
 
-    private val currentQueryId                           = Rx.optionVariable[String](None)
-    private val currentQueryInfo: RxOptionVar[QueryInfo] = Rx.optionVariable(None)
+class NotebookCell(val notebookEditor: NotebookEditor, cellId: UUID, cell: Cell, focused: Boolean = false)
+    extends RxElement
+    with LogSupport {
+  thisCell =>
 
-    private def run: Unit = {
-      submitQuery(editor.getTextValue).foreach { queryId =>
-        currentQueryId := Some(queryId)
-        showResult := true
-        currentQueryInfo := None
+  private implicit val queue = scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+
+  private val currentQueryId                           = Rx.optionVariable[String](None)
+  private val currentQueryInfo: RxOptionVar[QueryInfo] = Rx.optionVariable(None)
+
+  def runCell: Unit = {
+    notebookEditor.submitQuery(editor.getTextValue).foreach { queryId =>
+      currentQueryId := Some(queryId)
+      showResult := true
+      currentQueryInfo := None
+    }
+  }
+
+  private val editor = new TextEditor(
+    initialValue = cell.source,
+    onEnter = { text: String =>
+      if (text.trim.nonEmpty) {
+        runCell
+        notebookEditor.focusOnCell(thisCell)
+      }
+    },
+    onExitUp = { () =>
+      notebookEditor.getCellIndex(thisCell).foreach { cellIndex =>
+        notebookEditor.getCell(cellIndex - 1).foreach(notebookEditor.focusOnCell(_))
+      }
+    },
+    onExitDown = { () =>
+      notebookEditor.getCellIndex(thisCell).foreach { cellIndex =>
+        notebookEditor.getCell(cellIndex + 1).foreach { cell =>
+          notebookEditor.focusOnCell(cell)
+        }
       }
     }
+  )
 
-    private val editor = new TextEditor(
-      cell.source,
-      onEnter = { text: String =>
-        if (text.trim.nonEmpty) {
-          run
-          focusOnCell(thisCell)
-        }
-      },
-      onExitUp = { () =>
-        getCellIndex(thisCell).foreach { cellIndex =>
-          getCell(cellIndex - 1).foreach(focusOnCell(_))
-        }
-      },
-      onExitDown = { () =>
-        getCellIndex(thisCell).foreach { cellIndex =>
-          getCell(cellIndex + 1).foreach { cell =>
-            focusOnCell(cell)
+  private val cellIdStr    = s"cell-${cellId}"
+  private val resultCellId = s"${cellId}-result"
+
+  private val defaultStyle = "w-100 shadow-none border border-white"
+  private val focusedStyle = "w-100 shadow-sm border border-info"
+
+  private var hasFocus = false
+
+  def unfocus: Unit = {
+    findHTMLElement(cellIdStr).foreach {
+      _.className = defaultStyle
+    }
+    hasFocus = false
+  }
+  def focus: Unit = {
+    if (!hasFocus) {
+      editor.focus
+      findHTMLElement(cellIdStr).foreach { el =>
+        el.className = focusedStyle
+      }
+    }
+    hasFocus = true
+  }
+
+  def getTextValue: String = {
+    editor.getTextValue
+  }
+
+  def getQueryInfo: Option[QueryInfo] = {
+    currentQueryInfo.get
+  }
+
+  private[notebook] val showResult = Rx.variable(true)
+  private[notebook] val visible    = Rx.variable(false)
+
+  class LeftCellIcon extends RxElement {
+    def setVisibility(isVisible: Boolean): Unit = {
+      visible := isVisible
+    }
+    override def render: RxElement =
+      span(
+        cls -> "dropdown text-nowrap",
+        visible.map {
+          case true =>
+            style -> s"visibility: visible;"
+          case false =>
+            style -> s"visibility: hidden;"
+        },
+        new EditorIcon(
+          "Add a new cell",
+          "fa-plus",
+          onClick = { e: MouseEvent =>
+            val newCell = notebookEditor.insertCellAfter(thisCell)
+            notebookEditor.focusOnCell(newCell)
           }
+        )
+      )
+  }
+
+  private val cellOpsIcon = new LeftCellIcon
+
+  override def render: RxElement = {
+    div(
+      cls -> "w-100",
+      table(
+        id  -> cellIdStr,
+        cls -> defaultStyle,
+        onclick -> { e: MouseEvent =>
+          notebookEditor.focusOnCell(thisCell)
+        },
+        onmouseover -> { e: MouseEvent =>
+          cellOpsIcon.setVisibility(true)
+        },
+        onmouseout -> { e: MouseEvent =>
+          cellOpsIcon.setVisibility(false)
+        },
+        tr(
+          cls -> "mt-1",
+          td(
+            cls -> "align-top bg-light",
+            cellOpsIcon
+          ),
+          td(
+            cls -> "align-middle",
+            // This setting is necessary for placing cell menu icons at the right-top corner
+            style -> "display: flex; flex-direction: column; position: relative; ",
+            new NotebookCellToolbar(thisCell),
+            editor
+          )
+        ),
+        tr(
+          td(
+            cls -> "align-top bg-light"
+          ),
+          td(
+            div(
+              showResult.map {
+                case true =>
+                  cls -> "collapse show"
+                case false =>
+                  cls -> "collapse hide"
+              },
+              id    -> s"${resultCellId}",
+              style -> "min-height: 22px; ",
+              Rx.join(currentQueryInfo, currentQueryId).map[RxElement] {
+                case (Some(qi), _) =>
+                  new QueryStatusLine(Some(qi))
+                case (None, Some(queryId)) =>
+                  span(
+                    Rx.intervalMillis(800)
+                      .flatMap { _ =>
+                        notebookEditor.rpcRxClient.FrontendApi
+                          .getQueryInfo(queryId)
+                          .map {
+                            case Some(qi) =>
+                              if (qi.queryStatus.isFinished) {
+                                currentQueryInfo := Some(qi)
+                              }
+                              new QueryStatusLine(Some(qi))
+                            case None =>
+                              small("Query not found")
+                          }
+                      }.startWith(small("Loading ..."))
+                  )
+                case (None, None) =>
+                  span()
+              }
+            )
+          )
+        )
+      )
+    )
+  }
+}
+
+class NotebookCellToolbar(thisCell: NotebookCell) extends RxElement {
+
+  private val cellMenuStyle =
+    "background: #ffffff; display: flex; position: absolute; top: -14px; right: 10px; z-index: 1070;"
+
+  private def cellMenuIcon(name: String, faStyle: String, onClick: MouseEvent => Unit) = {
+    val baseStyle = s"fa ${faStyle} mr-1 p-1"
+    i(
+      title   -> name,
+      cls     -> s"${baseStyle} text-secondary",
+      onclick -> { e: MouseEvent => onClick(e) },
+      onmouseover -> { e: MouseEvent =>
+        e.getCurrentTarget.foreach { el =>
+          el.className = s"${baseStyle} text-white bg-info"
+        }
+      },
+      onmouseout -> { e: MouseEvent =>
+        e.getCurrentTarget.foreach { el =>
+          el.className = s"${baseStyle} text-secondary"
         }
       }
     )
+  }
 
-    private val cellIdStr    = s"cell-${cellId}"
-    private val resultCellId = s"${cellId}-result"
-
-    private val defaultStyle = "w-100 shadow-none border border-white"
-    private val focusedStyle = "w-100 shadow-sm border border-info"
-
-    private var hasFocus = false
-
-    def unfocus: Unit = {
-      findHTMLElement(cellIdStr).foreach {
-        _.className = defaultStyle
-      }
-      hasFocus = false
-    }
-    def focus: Unit = {
-      if (!hasFocus) {
-        editor.focus
-        findHTMLElement(cellIdStr).foreach { el =>
-          el.className = focusedStyle
-        }
-      }
-      hasFocus = true
-    }
-
-    private val showResult = Rx.variable(true)
-
-    def dropdownItem(iconStyle: String) = {
-      val baseStyle = "dropdown-item px-3"
-      a(
-        cls -> "dropdown-item px-3",
-        i(
-          cls   -> s"fa ${iconStyle} mr-2",
-          style -> "width: 11px;"
-        ),
-        onmouseover -> { e: MouseEvent =>
-          e.getCurrentTarget.foreach { el =>
-            el.className = s"${baseStyle} text-white bg-info"
-          }
-        },
-        onmouseout -> { e: MouseEvent =>
-          e.getCurrentTarget.foreach { el =>
-            el.className = baseStyle
-          }
-        }
-      )
-    }
-
-    private val visible = Rx.variable(false)
-
-    class CellOpsIcons extends RxElement {
-      def setVisibility(isVisible: Boolean): Unit = {
-        visible := isVisible
-      }
-
-      override def render: RxElement =
-        span(
-          cls -> "dropdown text-nowrap",
-          visible.map {
-            case true =>
-              style -> s"visibility: visible;"
-            case false =>
-              style -> s"visibility: hidden;"
-          },
-          new EditorIcon(
-            "Add a new cell",
-            "fa-plus",
-            onClick = { e: MouseEvent =>
-              val newCell = insertCellAfter(thisCell)
-              focusOnCell(newCell)
-            }
-          )
-        )
-    }
-
-    private val cellOpsIcon = new CellOpsIcons
-
-    private val cellMenuStyle =
-      "background: #ffffff; display: flex; position: absolute; top: -14px; right: 10px; z-index: 1070;"
-
-    def cellMenuIcon(name: String, faStyle: String, onClick: MouseEvent => Unit) = {
-      val baseStyle = s"fa ${faStyle} mr-1 p-1"
+  private def dropdownItem(iconStyle: String) = {
+    val baseStyle = "dropdown-item px-3"
+    a(
+      cls -> "dropdown-item px-3",
       i(
-        title   -> name,
-        cls     -> s"${baseStyle} text-secondary",
-        onclick -> { e: MouseEvent => onClick(e) },
-        onmouseover -> { e: MouseEvent =>
-          e.getCurrentTarget.foreach { el =>
-            el.className = s"${baseStyle} text-white bg-info"
-          }
-        },
-        onmouseout -> { e: MouseEvent =>
-          e.getCurrentTarget.foreach { el =>
-            el.className = s"${baseStyle} text-secondary"
-          }
+        cls   -> s"fa ${iconStyle} mr-2",
+        style -> "width: 11px;"
+      ),
+      onmouseover -> { e: MouseEvent =>
+        e.getCurrentTarget.foreach { el =>
+          el.className = s"${baseStyle} text-white bg-info"
         }
-      )
-    }
+      },
+      onmouseout -> { e: MouseEvent =>
+        e.getCurrentTarget.foreach { el =>
+          el.className = baseStyle
+        }
+      }
+    )
+  }
 
-    override def render: RxElement = {
+  override def render: RxElement = {
+    div(
+      style -> "display: flex; flex-direction: column; position: relative; ",
       div(
-        cls -> "w-100",
-        table(
-          id  -> cellIdStr,
-          cls -> defaultStyle,
-          onclick -> { e: MouseEvent =>
-            focusOnCell(thisCell)
-          },
-          onmouseover -> { e: MouseEvent =>
-            cellOpsIcon.setVisibility(true)
-          },
-          onmouseout -> { e: MouseEvent =>
-            cellOpsIcon.setVisibility(false)
-          },
-          tr(
-            cls -> "mt-1",
-            td(
-              cls -> "align-top bg-light",
-              cellOpsIcon
+        thisCell.visible.map {
+          case true =>
+            style -> s"visibility: visible; ${cellMenuStyle}"
+          case false =>
+            style -> s"visibility: hidden; ${cellMenuStyle}"
+        },
+        cls -> "border rounded shadow px-2",
+        span(
+          cellMenuIcon(
+            name = "Run Cell",
+            "fa-play",
+            { e: MouseEvent =>
+              thisCell.runCell
+            }
+          ),
+          div(
+            cls -> "btn-group",
+            cellMenuIcon(
+              "Copy",
+              "fa-clipboard",
+              onClick = { e: MouseEvent => }
+            )(
+              aria.haspopup  -> true,
+              aria.expanded  -> false,
+              data("toggle") -> "dropdown"
             ),
-            td(
-              cls -> "align-middle",
-              // This setting is necessary for placing cell menu icons at the right-top corner
-              style -> "display: flex; flex-direction: column; position: relative; ",
-              editor,
-              div(
-                visible.map {
-                  case true =>
-                    style -> s"visibility: visible; ${cellMenuStyle}"
-                  case false =>
-                    style -> s"visibility: hidden; ${cellMenuStyle}"
-                },
-                cls -> "border rounded shadow px-2",
-                span(
-                  cellMenuIcon(
-                    name = "Run Cell",
-                    "fa-play",
-                    { e: MouseEvent =>
-                      run
+            span(
+              cls -> "dropdown-menu",
+              // Need to set a higher z-index than query result table header (1020)
+              style -> "z-index: 1070; ",
+              dropdownItem("fa-edit")(
+                "Copy SQL",
+                onclick -> { e: MouseEvent =>
+                  val clipboardText = new StringBuilder()
+                  clipboardText.append(s"${thisCell.getTextValue}")
+                  Clipboard.writeText(clipboardText.result())
+                }
+              ),
+              dropdownItem("fa-sticky-note")(
+                "Copy SQL & Results",
+                onclick -> { e: MouseEvent =>
+                  val clipboardText = new StringBuilder()
+                  clipboardText.append(s"${thisCell.getTextValue}\n\n")
+                  thisCell.getQueryInfo.foreach { qi =>
+                    qi.result.map { result =>
+                      clipboardText.append(QueryResultPrinter.print(result))
                     }
-                  ),
-                  div(
-                    cls -> "btn-group",
-                    cellMenuIcon(
-                      "Copy",
-                      "fa-clipboard",
-                      onClick = { e: MouseEvent => }
-                    )(
-                      aria.haspopup  -> true,
-                      aria.expanded  -> false,
-                      data("toggle") -> "dropdown"
-                    ),
-                    span(
-                      cls -> "dropdown-menu",
-                      // Need to set a higher z-index than query result table header (1020)
-                      style -> "z-index: 1070; ",
-                      dropdownItem("fa-edit")(
-                        "Copy SQL",
-                        onclick -> { e: MouseEvent =>
-                          val clipboardText = new StringBuilder()
-                          clipboardText.append(s"${editor.getTextValue}")
-                          Clipboard.writeText(clipboardText.result())
-                        }
-                      ),
-                      dropdownItem("fa-sticky-note")(
-                        "Copy SQL & Results",
-                        onclick -> { e: MouseEvent =>
-                          val clipboardText = new StringBuilder()
-                          clipboardText.append(s"${editor.getTextValue}\n\n")
-                          currentQueryInfo.get.flatMap { qi =>
-                            qi.result.map { result =>
-                              clipboardText.append(QueryResultPrinter.print(result))
-                            }
-                          }
-                          Clipboard.writeText(clipboardText.result())
-                        }
-                      )
-                    )
-                  ),
-                  cellMenuIcon(
-                    name = "Move Up",
-                    "fa-angle-up",
-                    { e: MouseEvent =>
-                      moveUp(thisCell)
-                    }
-                  ),
-                  cellMenuIcon(
-                    "Move Down",
-                    "fa-angle-down",
-                    { e: MouseEvent =>
-                      moveDown(thisCell)
-                    }
-                  ),
-                  cellMenuIcon(
-                    "Delete",
-                    "fa-trash",
-                    { e: MouseEvent =>
-                      deleteCell(thisCell)
-                    }
-                  ),
-                  cellMenuIcon(
-                    "Fold/Unfold",
-                    "fa-caret-down",
-                    { e: MouseEvent =>
-                      showResult.update(prev => !prev)
-                    }
-                  ),
-                  div(
-                    cls -> "btn-group",
-                    cellMenuIcon(
-                      "Menu",
-                      "fa-ellipsis-v",
-                      onClick = { e: MouseEvent => }
-                    )(
-                      aria.haspopup  -> true,
-                      aria.expanded  -> false,
-                      data("toggle") -> "dropdown"
-                    ),
-                    span(
-                      cls -> "dropdown-menu",
-                      // Need to set a higher z-index than query result table header (1020)
-                      style -> "z-index: 1070; ",
-                      dropdownItem("fa-menu")(
-                        "More menu",
-                        onclick -> { e: MouseEvent =>
-                          // TODO
-                        }
-                      )
-                    )
-                  )
-                )
+                  }
+                  Clipboard.writeText(clipboardText.result())
+                }
               )
             )
           ),
-          tr(
-            td(
-              cls -> "align-top bg-light"
+          cellMenuIcon(
+            name = "Move Up",
+            "fa-angle-up",
+            { e: MouseEvent =>
+              thisCell.notebookEditor.moveUp(thisCell)
+            }
+          ),
+          cellMenuIcon(
+            "Move Down",
+            "fa-angle-down",
+            { e: MouseEvent =>
+              thisCell.notebookEditor.moveDown(thisCell)
+            }
+          ),
+          cellMenuIcon(
+            "Delete",
+            "fa-trash",
+            { e: MouseEvent =>
+              thisCell.notebookEditor.deleteCell(thisCell)
+            }
+          ),
+          cellMenuIcon(
+            "Fold/Unfold",
+            "fa-caret-down",
+            { e: MouseEvent =>
+              thisCell.showResult.update(prev => !prev)
+            }
+          ),
+          div(
+            cls -> "btn-group",
+            cellMenuIcon(
+              "Menu",
+              "fa-ellipsis-v",
+              onClick = { e: MouseEvent => }
+            )(
+              aria.haspopup  -> true,
+              aria.expanded  -> false,
+              data("toggle") -> "dropdown"
             ),
-            td(
-              div(
-                showResult.map {
-                  case true =>
-                    cls -> "collapse show"
-                  case false =>
-                    cls -> "collapse hide"
-                },
-                id    -> s"${resultCellId}",
-                style -> "min-height: 22px; ",
-                Rx.join(currentQueryInfo, currentQueryId).map[RxElement] {
-                  case (Some(qi), _) =>
-                    new QueryStatusLine(Some(qi))
-                  case (None, Some(queryId)) =>
-                    span(
-                      Rx.intervalMillis(800)
-                        .flatMap { _ =>
-                          rpcRxClient.FrontendApi
-                            .getQueryInfo(queryId)
-                            .map {
-                              case Some(qi) =>
-                                if (qi.queryStatus.isFinished) {
-                                  currentQueryInfo := Some(qi)
-                                }
-                                new QueryStatusLine(Some(qi))
-                              case None =>
-                                small("Query not found")
-                            }
-                        }.startWith(small("Loading ..."))
-                    )
-                  case (None, None) =>
-                    span()
+            span(
+              cls -> "dropdown-menu",
+              // Need to set a higher z-index than query result table header (1020)
+              style -> "z-index: 1070; ",
+              dropdownItem("fa-menu")(
+                "More menu",
+                onclick -> { e: MouseEvent =>
+                  // TODO
                 }
               )
             )
           )
         )
       )
-    }
+    )
   }
 }
