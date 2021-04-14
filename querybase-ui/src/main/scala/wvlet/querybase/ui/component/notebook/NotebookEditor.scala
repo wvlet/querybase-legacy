@@ -317,7 +317,7 @@ class NotebookCell(val notebookEditor: NotebookEditor, cellId: UUID, cell: Cell,
         tr(
           td(
             cls -> "align-top text-center bg-light",
-            currentQueryInfo.map { qi =>
+            currentQueryInfo.filter(_.result.isDefined).map { qi =>
               new LeftCellIcon(
                 "fa-caret-down",
                 "Fold/Unfold",
@@ -341,14 +341,16 @@ class NotebookCell(val notebookEditor: NotebookEditor, cellId: UUID, cell: Cell,
                             if (qi.queryStatus.isFinished) {
                               currentQueryInfo := Some(qi)
                             }
-                            new QueryStatusLine(Some(qi))
+                            new QueryStatusLine(qi)
                           case None =>
                             small("Query not found")
                         }
                     }.startWith(small("Loading ..."))
                 )
-              case (optQueryInfo, _) =>
-                new QueryStatusLine(optQueryInfo)
+              case (Some(qi), _) =>
+                new QueryStatusLine(qi)
+              case (None, _) =>
+                span()
             }
           )
         ),
@@ -382,9 +384,6 @@ class NotebookCell(val notebookEditor: NotebookEditor, cellId: UUID, cell: Cell,
 }
 
 class NotebookCellToolbar(thisCell: NotebookCell, isToolbarVisible: RxVar[Boolean]) extends RxElement {
-
-  private val cellMenuStyle =
-    "background: #ffffff; display: flex; position: absolute; top: -14px; right: 10px; z-index: 1070;"
 
   private def cellMenuIcon(name: String, faStyle: String, onClick: MouseEvent => Unit) = {
     val baseStyle = s"fa ${faStyle} mr-1 p-1"
@@ -425,6 +424,10 @@ class NotebookCellToolbar(thisCell: NotebookCell, isToolbarVisible: RxVar[Boolea
       }
     )
   }
+
+  private val cellMenuStyle =
+    Seq("background: #ffffff", "display: flex", "position: absolute", "top: -20px", "right: 10px", "z-index: 1070")
+      .mkString("; ")
 
   override def render: RxElement = {
     div(

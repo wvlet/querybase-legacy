@@ -3,32 +3,32 @@ package wvlet.querybase.ui.component.notebook
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.log.LogSupport
-import wvlet.querybase.api.backend.v1.CoordinatorApi.{QueryInfo, QueryResult}
+import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
 import wvlet.querybase.api.backend.v1.query.QueryStatus
 import wvlet.querybase.ui.component.QueryListPanel
 
 /**
   */
-class QueryStatusLine(queryInfo: Option[QueryInfo]) extends RxElement with LogSupport {
+class QueryStatusLine(queryInfo: QueryInfo) extends RxElement with LogSupport {
 
   private def status(s: QueryStatus): RxElement = {
     QueryListPanel.renderStatus(s)(cls += "mr-2")
   }
 
-  private def queryStatusLine(qi: QueryInfo): RxElement = {
+  override def render: RxElement = {
     div(
       table(
         tr(
           td(
             small(
-              status(qi.queryStatus),
+              status(queryInfo.queryStatus),
               span(
-                s"[${qi.serviceType}:${qi.serviceName}] ${qi.queryId}: ${qi.elapsed}"
+                s"[${queryInfo.serviceType}:${queryInfo.serviceName}] ${queryInfo.queryId}: ${queryInfo.elapsed}"
               )
             )
           )
         ),
-        qi.error.map { err =>
+        queryInfo.error.map { err =>
           tr(
             td(
               small(s"${err.errorMessage}")
@@ -39,10 +39,4 @@ class QueryStatusLine(queryInfo: Option[QueryInfo]) extends RxElement with LogSu
     )
   }
 
-  override def render: RxElement = queryInfo match {
-    case Some(qi) =>
-      queryStatusLine(qi)
-    case None =>
-      span()
-  }
 }
