@@ -12,3 +12,56 @@ Database for queries.
 - Workload optimization
   - Find common sub-expression queries where materialized views or pre-processing
    can be used
+
+
+
+
+## Developer Note
+
+
+Add service settings:
+
+__.querybase/services.json__
+```json
+{
+  "services": [
+    {
+      "serviceType": "trino",
+      "name": "td (US)",
+      "description": "td-presto US region",
+      "properties": {
+        "address": "api-presto.treasuredata.com:443",
+        "connector": "td-presto",
+        "user": "(TD API KEY)"
+      }
+    },
+    {
+      "serviceType": "trino",
+      "name": "td (JP)",
+      "description": "td-presto Tokyo region",
+      "properties": {
+        "address": "api-presto.treasuredata.co.jp:443",
+        "connector": "td-presto",
+        "user": "(TD API KEY)"
+      }
+    }
+  ]
+}
+
+```
+
+
+Run querybase server: 
+```
+$ ./sbt
+> ~server/reStart standalone 
+```
+
+
+Build Scala.js UI:
+```
+$ ./sbt
+> ~ui/fastOptJS/webpack
+```
+
+Open http://localhost:8080/ui/
