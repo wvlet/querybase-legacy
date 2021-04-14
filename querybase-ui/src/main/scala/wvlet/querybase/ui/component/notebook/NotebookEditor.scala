@@ -3,10 +3,16 @@ package wvlet.querybase.ui.component.notebook
 import org.scalajs.dom.raw.MouseEvent
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
-import wvlet.airframe.rx.{Rx, RxOptionVar, RxVar}
+import wvlet.airframe.rx.{Cancelable, Rx, RxOptionVar, RxVar}
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
-import wvlet.querybase.api.frontend.FrontendApi.SubmitQueryRequest
+import wvlet.querybase.api.frontend.FrontendApi.{
+  NotebookCellData,
+  NotebookData,
+  NotebookSession,
+  SaveNotebookRequest,
+  SubmitQueryRequest
+}
 import wvlet.querybase.api.frontend.code.NotebookApi.Cell
 import wvlet.querybase.api.frontend.{ServiceJSClient, ServiceJSClientRx}
 import wvlet.querybase.ui.component._
@@ -14,7 +20,10 @@ import wvlet.querybase.ui.component.common.Clipboard
 import wvlet.querybase.ui.component.editor.TextEditor
 
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 import scala.concurrent.Future
+import scala.scalajs.js.timers.SetIntervalHandle
+import scala.util.Try
 
 /**
   */
@@ -42,6 +51,37 @@ class NotebookEditor(
 
   private val updated    = Rx.variable(false)
   private val schemaForm = new SchemaForm()
+
+  private var saveTimer: Option[Cancelable]    = None
+  private var lastResult: Option[NotebookData] = None
+
+  override def beforeRender: Unit = {
+    val saver = Rx
+      .interval(3, TimeUnit.SECONDS).map { i =>
+        // Save
+        val cellData = cells.map { c =>
+          NotebookCellData(
+            text = c.getTextValue,
+            queryInfo = c.getQueryInfo
+          )
+        }
+        NotebookData(cellData)
+      }.filter { data =>
+        lastResult.isEmpty || lastResult.get != data
+      }.map { data =>
+        lastResult = Some(data)
+        // save data
+        rpcRxClient.FrontendApi.saveNotebook(SaveNotebookRequest(NotebookSession("default"), data))
+        data
+      }
+
+    saveTimer.foreach { _.cancel }
+    saveTimer = Some(saver.runContinuously[Unit] { x => })
+  }
+
+  override def beforeUnmount: Unit = {
+    saveTimer.foreach(_.cancel)
+  }
 
   override def render: RxElement = {
     // TODO: Add afterRender event hook support to airframe-rx-html

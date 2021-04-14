@@ -1,12 +1,18 @@
 package wvlet.querybase.server.frontend
 
+import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi.{NewQueryRequest, QueryInfo}
 import wvlet.querybase.api.backend.v1.{CoordinatorApi, ServiceCatalogApi}
 import wvlet.querybase.api.frontend.FrontendApi
-import wvlet.querybase.api.frontend.FrontendApi.{ServerNode, SubmitQueryRequest, SubmitQueryResponse}
+import wvlet.querybase.api.frontend.FrontendApi.{
+  SaveNotebookResponse,
+  ServerNode,
+  SubmitQueryRequest,
+  SubmitQueryResponse
+}
 import wvlet.querybase.server.backend.BackendServer.CoordinatorClient
 
-class FrontendApiImpl(coordinatorClient: CoordinatorClient) extends FrontendApi {
+class FrontendApiImpl(coordinatorClient: CoordinatorClient) extends FrontendApi with LogSupport {
   override def serverNodes: Seq[ServerNode] = {
     val nodes = coordinatorClient.v1.CoordinatorApi.listNodes()
     nodes.map { n =>
@@ -35,5 +41,10 @@ class FrontendApiImpl(coordinatorClient: CoordinatorClient) extends FrontendApi 
 
   override def listQueries(): Seq[CoordinatorApi.QueryInfo] = {
     coordinatorClient.v1.CoordinatorApi.listQueries()
+  }
+
+  override def saveNotebook(request: FrontendApi.SaveNotebookRequest): FrontendApi.SaveNotebookResponse = {
+    info(request)
+    SaveNotebookResponse()
   }
 }

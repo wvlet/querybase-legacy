@@ -24,6 +24,9 @@ trait FrontendApi {
   def submitQuery(request: SubmitQueryRequest): SubmitQueryResponse
   def getQueryInfo(queryId: String): Option[QueryInfo]
   def listQueries(): Seq[QueryInfo]
+
+  def saveNotebook(request: SaveNotebookRequest): SaveNotebookResponse
+
 }
 
 object FrontendApi {
@@ -45,4 +48,19 @@ object FrontendApi {
       uuid: UUID = UUID.randomUUID()
   )
   case class SubmitQueryResponse(queryId: String)
+
+  case class SaveNotebookRequest(
+      session: NotebookSession,
+      data: NotebookData
+  )
+  case class SaveNotebookResponse(
+  )
+
+  case class NotebookSession(id: String)
+  case class NotebookData(cells: Seq[NotebookCellData])
+  case class NotebookCellData(
+      text: String,
+      queryInfo: Option[QueryInfo]
+  )
+
 }
