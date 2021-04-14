@@ -52,35 +52,24 @@ class NotebookEditor(
   private val updated    = Rx.variable(false)
   private val schemaForm = new SchemaForm()
 
-  private var saveTimer: Option[Cancelable]    = None
-  private var lastResult: Option[NotebookData] = None
+  private val notebookSaver = new NotebookSaver(this, rpcRxClient)
 
   override def beforeRender: Unit = {
-    val saver = Rx
-      .interval(3, TimeUnit.SECONDS).map { i =>
-        // Save
-        val cellData = cells.map { c =>
-          NotebookCellData(
-            text = c.getTextValue,
-            queryInfo = c.getQueryInfo
-          )
-        }
-        NotebookData(cellData)
-      }.filter { data =>
-        lastResult.isEmpty || lastResult.get != data
-      }.map { data =>
-        lastResult = Some(data)
-        // save data
-        rpcRxClient.FrontendApi.saveNotebook(SaveNotebookRequest(NotebookSession("default"), data))
-        data
-      }
-
-    saveTimer.foreach { _.cancel }
-    saveTimer = Some(saver.runContinuously[Unit] { x => })
+    notebookSaver.start
   }
 
   override def beforeUnmount: Unit = {
-    saveTimer.foreach(_.cancel)
+    notebookSaver.stop
+  }
+
+  def getNotebookData: NotebookData = {
+    val cellData = cells.map { c =>
+      NotebookCellData(
+        text = c.getTextValue,
+        queryInfo = c.getQueryInfo
+      )
+    }
+    NotebookData(cellData)
   }
 
   override def render: RxElement = {

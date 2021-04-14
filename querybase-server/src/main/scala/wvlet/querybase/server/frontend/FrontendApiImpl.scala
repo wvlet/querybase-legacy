@@ -12,6 +12,8 @@ import wvlet.querybase.api.frontend.FrontendApi.{
 }
 import wvlet.querybase.server.backend.BackendServer.CoordinatorClient
 
+import java.io.File
+
 class FrontendApiImpl(coordinatorClient: CoordinatorClient) extends FrontendApi with LogSupport {
   override def serverNodes: Seq[ServerNode] = {
     val nodes = coordinatorClient.v1.CoordinatorApi.listNodes()
@@ -45,6 +47,10 @@ class FrontendApiImpl(coordinatorClient: CoordinatorClient) extends FrontendApi 
 
   override def saveNotebook(request: FrontendApi.SaveNotebookRequest): FrontendApi.SaveNotebookResponse = {
     info(request)
+
+    // TODO Support multiple-users
+    val sessionStorePath = new File(".querybase", "sessions")
+
     SaveNotebookResponse()
   }
 }
