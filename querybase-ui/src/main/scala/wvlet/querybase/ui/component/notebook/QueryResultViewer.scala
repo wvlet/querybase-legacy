@@ -11,11 +11,18 @@ class QueryResultViewer(r: QueryResult) extends RxElement {
   override def render: RxElement = {
     val columnNames: Seq[String] = r.schema.map(_.name)
     div(
-      // width must be set to properly enable horizontal scroll
-      style -> s"overflow-x: scroll; max-width: calc(100vw - ${Sidebar.sidebarWidth + 55}px); max-height: 300px; ",
+      style -> Seq(
+        "overflow-x: scroll",
+        "max-height: 300px",
+        "width: auto",
+        // max-width must be set to properly enable horizontal scroll (scroll-x)
+        s"max-width: calc(100vw - ${Sidebar.sidebarWidth + 55}px)"
+      ).mkString("; "),
       table(
-        cls   -> "table table-sm table-bordered",
-        style -> "width: auto; font-size: 12px;",
+        cls -> "table table-sm table-bordered",
+        style -> Seq(
+          "font-size: 12px"
+        ).mkString("; "),
         thead(
           cls -> "thead-light",
           tr(
@@ -31,7 +38,7 @@ class QueryResultViewer(r: QueryResult) extends RxElement {
           )
         ),
         tbody(
-          // Enable scrolling long rows
+          // Enable vertical scroll for long rows
           style -> "overflow-y: scroll; ",
           r.rows.map { row =>
             tr(

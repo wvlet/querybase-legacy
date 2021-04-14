@@ -257,31 +257,24 @@ class NotebookCell(val notebookEditor: NotebookEditor, cellId: UUID, cell: Cell,
   private[notebook] val showResult       = Rx.variable(true)
   private[notebook] val isToolbarVisible = Rx.variable(false)
 
-  class LeftCellIcon extends RxElement {
-    def setVisibility(isVisible: Boolean): Unit = {
-      isToolbarVisible := isVisible
-    }
+  class LeftCellIcon(iconStyle: String, description: String, onClick: MouseEvent => Unit) extends RxElement {
+    private val baseStyle = "width: 25px; "
     override def render: RxElement =
       span(
-        cls -> "dropdown text-nowrap",
+        cls -> "text-nowrap",
         isToolbarVisible.map {
           case true =>
-            style -> s"visibility: visible;"
+            style -> s"${baseStyle}; visibility: visible;"
           case false =>
-            style -> s"visibility: hidden;"
+            style -> s"${baseStyle}; visibility: hidden;"
         },
         new EditorIcon(
-          "Add a new cell",
-          "fa-plus",
-          onClick = { e: MouseEvent =>
-            val newCell = notebookEditor.insertCellAfter(thisCell)
-            notebookEditor.focusOnCell(newCell)
-          }
+          description,
+          iconStyle,
+          onClick = onClick
         )
       )
   }
-
-  private val cellOpsIcon = new LeftCellIcon
 
   override def render: RxElement = {
     div(
@@ -293,16 +286,23 @@ class NotebookCell(val notebookEditor: NotebookEditor, cellId: UUID, cell: Cell,
           notebookEditor.focusOnCell(thisCell)
         },
         onmouseover -> { e: MouseEvent =>
-          cellOpsIcon.setVisibility(true)
+          isToolbarVisible := true
         },
         onmouseout -> { e: MouseEvent =>
-          cellOpsIcon.setVisibility(false)
+          isToolbarVisible := false
         },
         tr(
           cls -> "mt-1",
           td(
-            cls -> "align-top bg-light",
-            cellOpsIcon
+            cls -> "align-top text-center bg-light",
+            new LeftCellIcon(
+              "fa-plus",
+              "Add a new cell",
+              onClick = { e: MouseEvent =>
+                val newCell = notebookEditor.insertCellAfter(thisCell)
+                notebookEditor.focusOnCell(newCell)
+              }
+            )
           ),
           td(
             cls -> "align-middle",
@@ -314,7 +314,44 @@ class NotebookCell(val notebookEditor: NotebookEditor, cellId: UUID, cell: Cell,
         ),
         tr(
           td(
-            cls -> "align-top bg-light"
+            cls -> "align-top text-center bg-light",
+            currentQueryInfo.map { qi =>
+              new LeftCellIcon(
+                "fa-caret-down",
+                "Fold/Unfold",
+                onClick = { e: MouseEvent =>
+                  toggleResultView
+                }
+              )
+            }
+          ),
+          td(
+            style -> "min-height: 22px; ",
+            Rx.join(currentQueryInfo, currentQueryId).map[RxElement] {
+              case (None, Some(queryId)) =>
+                div(
+                  Rx.intervalMillis(800)
+                    .flatMap { _ =>
+                      notebookEditor.rpcRxClient.FrontendApi
+                        .getQueryInfo(queryId)
+                        .map {
+                          case Some(qi) =>
+                            if (qi.queryStatus.isFinished) {
+                              currentQueryInfo := Some(qi)
+                            }
+                            new QueryStatusLine(Some(qi))
+                          case None =>
+                            small("Query not found")
+                        }
+                    }.startWith(small("Loading ..."))
+                )
+              case (optQueryInfo, _) =>
+                new QueryStatusLine(optQueryInfo)
+            }
+          )
+        ),
+        tr(
+          td(
           ),
           td(
             div(
@@ -324,30 +361,14 @@ class NotebookCell(val notebookEditor: NotebookEditor, cellId: UUID, cell: Cell,
                 case false =>
                   cls -> "collapse hide"
               },
-              id    -> s"${resultCellId}",
-              style -> "min-height: 22px; ",
-              Rx.join(currentQueryInfo, currentQueryId).map[RxElement] {
-                case (Some(qi), _) =>
-                  new QueryStatusLine(Some(qi))
-                case (None, Some(queryId)) =>
-                  span(
-                    Rx.intervalMillis(800)
-                      .flatMap { _ =>
-                        notebookEditor.rpcRxClient.FrontendApi
-                          .getQueryInfo(queryId)
-                          .map {
-                            case Some(qi) =>
-                              if (qi.queryStatus.isFinished) {
-                                currentQueryInfo := Some(qi)
-                              }
-                              new QueryStatusLine(Some(qi))
-                            case None =>
-                              small("Query not found")
-                          }
-                      }.startWith(small("Loading ..."))
-                  )
-                case (None, None) =>
-                  span()
+              id -> s"${resultCellId}",
+              currentQueryInfo.map { qi =>
+                qi.result match {
+                  case Some(qr) =>
+                    new QueryResultViewer(qr)
+                  case _ =>
+                    span()
+                }
               }
             )
           )

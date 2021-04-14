@@ -40,17 +40,9 @@ class QueryStatusLine(queryInfo: Option[QueryInfo]) extends RxElement with LogSu
   }
 
   override def render: RxElement = queryInfo match {
-    case Some(qi) if qi.result.nonEmpty =>
-      div(
-        queryStatusLine(qi),
-        new QueryResultViewer(qi.result.get)
-      )
     case Some(qi) =>
       queryStatusLine(qi)
     case None =>
-      small(
-        status(QueryStatus.STARTING),
-        "running..."
-      )
+      span()
   }
 }

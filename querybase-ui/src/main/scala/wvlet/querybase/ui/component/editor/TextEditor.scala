@@ -188,7 +188,7 @@ class TextEditor(
       updateLayout()
     }
 
-    scalajs.js.timers.setTimeout(100) {
+    scalajs.js.timers.setTimeout(50) {
       updateLayout()
     }
     //updateLayout(isInit = true)
