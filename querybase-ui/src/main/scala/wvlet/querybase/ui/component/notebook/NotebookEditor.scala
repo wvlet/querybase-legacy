@@ -291,6 +291,7 @@ class NotebookCell(val notebookEditor: NotebookEditor, cellId: UUID, cell: Cell,
         onmouseout -> { e: MouseEvent =>
           isToolbarVisible := false
         },
+        // Query editor
         tr(
           cls -> "mt-1",
           td(
@@ -312,6 +313,7 @@ class NotebookCell(val notebookEditor: NotebookEditor, cellId: UUID, cell: Cell,
             editor
           )
         ),
+        // Query status
         tr(
           td(
             cls -> "align-top text-center bg-light",
@@ -326,7 +328,7 @@ class NotebookCell(val notebookEditor: NotebookEditor, cellId: UUID, cell: Cell,
             }
           ),
           td(
-            style -> "min-height: 22px; ",
+            style -> "min-height: 23px; ",
             Rx.join(currentQueryInfo, currentQueryId).map[RxElement] {
               case (None, Some(queryId)) =>
                 div(
@@ -350,6 +352,7 @@ class NotebookCell(val notebookEditor: NotebookEditor, cellId: UUID, cell: Cell,
             }
           )
         ),
+        // Query results
         tr(
           td(
           ),
