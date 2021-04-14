@@ -12,6 +12,7 @@ import wvlet.querybase.api.frontend.FrontendApi.SubmitQueryRequest
 import wvlet.querybase.api.frontend.code.NotebookApi.Cell
 import wvlet.querybase.api.frontend.{ServiceJSClient, ServiceJSClientRx}
 import wvlet.querybase.ui.component._
+import wvlet.querybase.ui.component.common.Clipboard
 import wvlet.querybase.ui.component.editor.TextEditor
 
 import java.util.UUID
@@ -235,15 +236,26 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
 
     private val showResult = Rx.variable(true)
 
-    def menuIcon(faStyle: String) = small(
-      i(
-        cls   -> s"fa ${faStyle} mr-1 text-secondary",
-        style -> "width: 11px;"
+    def dropdownItem(iconStyle: String) = {
+      val baseStyle = "dropdown-item px-3"
+      a(
+        cls -> "dropdown-item px-3",
+        i(
+          cls   -> s"fa ${iconStyle} mr-2",
+          style -> "width: 11px;"
+        ),
+        onmouseover -> { e: MouseEvent =>
+          e.getCurrentTarget.foreach { el =>
+            el.className = s"${baseStyle} text-white bg-info"
+          }
+        },
+        onmouseout -> { e: MouseEvent =>
+          e.getCurrentTarget.foreach { el =>
+            el.className = baseStyle
+          }
+        }
       )
-    )
-    def dropdownItem = a(
-      cls -> "dropdown-item px-3"
-    )
+    }
 
     private val visible = Rx.variable(false)
 
@@ -275,7 +287,7 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
     private val cellOpsIcon = new CellOpsIcons
 
     private val cellMenuStyle =
-      "background: #ffffff; display: flex; position: absolute; top: -20px; right: 8px; z-index: 1070;"
+      "background: #ffffff; display: flex; position: absolute; top: -14px; right: 10px; z-index: 1070;"
 
     def cellMenuIcon(name: String, faStyle: String, onClick: MouseEvent => Unit) = {
       val baseStyle = s"fa ${faStyle} mr-1 p-1"
@@ -338,28 +350,43 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
                       run
                     }
                   ),
-                  cellMenuIcon(
-                    "Copy query to clipboard",
-                    "fa-clipboard",
-                    { e: MouseEvent =>
-                      val clipboardText = new StringBuilder()
-                      clipboardText.append(s"${editor.getTextValue}")
-                      js.Dynamic.global.navigator.clipboard.writeText(clipboardText.result())
-                    }
-                  ),
-                  cellMenuIcon(
-                    "Copy query and results to clipboard",
-                    "fa-copy",
-                    { e: MouseEvent =>
-                      val clipboardText = new StringBuilder()
-                      clipboardText.append(s"${editor.getTextValue}\n\n")
-                      currentQueryInfo.get.flatMap { qi =>
-                        qi.result.map { result =>
-                          clipboardText.append(QueryResultPrinter.print(result))
+                  div(
+                    cls -> "btn-group",
+                    cellMenuIcon(
+                      "Copy",
+                      "fa-clipboard",
+                      onClick = { e: MouseEvent => }
+                    )(
+                      aria.haspopup  -> true,
+                      aria.expanded  -> false,
+                      data("toggle") -> "dropdown"
+                    ),
+                    span(
+                      cls -> "dropdown-menu",
+                      // Need to set a higher z-index than query result table header (1020)
+                      style -> "z-index: 1070; ",
+                      dropdownItem("fa-edit")(
+                        "Copy SQL",
+                        onclick -> { e: MouseEvent =>
+                          val clipboardText = new StringBuilder()
+                          clipboardText.append(s"${editor.getTextValue}")
+                          Clipboard.writeText(clipboardText.result())
                         }
-                      }
-                      js.Dynamic.global.navigator.clipboard.writeText(clipboardText.result())
-                    }
+                      ),
+                      dropdownItem("fa-sticky-note")(
+                        "Copy SQL & Results",
+                        onclick -> { e: MouseEvent =>
+                          val clipboardText = new StringBuilder()
+                          clipboardText.append(s"${editor.getTextValue}\n\n")
+                          currentQueryInfo.get.flatMap { qi =>
+                            qi.result.map { result =>
+                              clipboardText.append(QueryResultPrinter.print(result))
+                            }
+                          }
+                          Clipboard.writeText(clipboardText.result())
+                        }
+                      )
+                    )
                   ),
                   cellMenuIcon(
                     name = "Move Up",
@@ -389,28 +416,27 @@ class NotebookEditor(serviceSelector: ServiceSelector, rpcRxClient: ServiceJSCli
                       showResult.update(prev => !prev)
                     }
                   ),
-                  cellMenuIcon(
-                    "Menu",
-                    "fa-ellipsis-v",
-                    onClick = { e: MouseEvent => }
-                  )(
-                    id             -> s"dropdown-${cellId}",
-                    aria.haspopup  -> true,
-                    aria.expanded  -> false,
-                    data("toggle") -> "dropdown"
-                  ),
-                  span(
-                    id  -> s"dropdown-menu-${cellId}",
-                    cls -> "dropdown-menu",
-                    // Need to set a higher z-index than query result table header (1020)
-                    style           -> "z-index: 1070; ",
-                    aria.labelledby -> s"dropdown-${cellId}",
-                    dropdownItem(
-                      menuIcon("fa-menu"),
-                      "More menu",
-                      onclick -> { e: MouseEvent =>
-                        // TODO
-                      }
+                  div(
+                    cls -> "btn-group",
+                    cellMenuIcon(
+                      "Menu",
+                      "fa-ellipsis-v",
+                      onClick = { e: MouseEvent => }
+                    )(
+                      aria.haspopup  -> true,
+                      aria.expanded  -> false,
+                      data("toggle") -> "dropdown"
+                    ),
+                    span(
+                      cls -> "dropdown-menu",
+                      // Need to set a higher z-index than query result table header (1020)
+                      style -> "z-index: 1070; ",
+                      dropdownItem("fa-menu")(
+                        "More menu",
+                        onclick -> { e: MouseEvent =>
+                          // TODO
+                        }
+                      )
                     )
                   )
                 )

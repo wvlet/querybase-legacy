@@ -4,6 +4,7 @@ import org.scalajs.dom.document
 import org.scalajs.dom.raw.HTMLElement
 import wvlet.airframe.control.ULID
 import wvlet.airframe.rx.html.RxElement
+import wvlet.airframe.rx.html.all.{cls, div, style}
 import wvlet.log.LogSupport
 import wvlet.airframe.rx.html.widget.editor.monaco.editor.Editor.IEditorModel
 import wvlet.airframe.rx.html.widget.editor.monaco.{IKeyboardEvent, KeyCode, Position}
@@ -191,6 +192,10 @@ class TextEditor(
       updateLayout()
     }
     //updateLayout(isInit = true)
-    editorNode
+    div(
+      cls   -> "py-1",
+      style -> "background: #202124;",
+      editorNode
+    )
   }
 }
