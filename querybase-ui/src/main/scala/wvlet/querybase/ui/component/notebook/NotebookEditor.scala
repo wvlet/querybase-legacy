@@ -3,7 +3,7 @@ package wvlet.querybase.ui.component.notebook
 import org.scalajs.dom.raw.MouseEvent
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
-import wvlet.airframe.rx.{Rx, RxOptionVar}
+import wvlet.airframe.rx.{Rx, RxOptionVar, RxVar}
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
 import wvlet.querybase.api.frontend.FrontendApi.SubmitQueryRequest
@@ -250,17 +250,21 @@ class NotebookCell(val notebookEditor: NotebookEditor, cellId: UUID, cell: Cell,
     currentQueryInfo.get
   }
 
-  private[notebook] val showResult = Rx.variable(true)
-  private[notebook] val visible    = Rx.variable(false)
+  def toggleResultView: Unit = {
+    showResult.update(prev => !prev)
+  }
+
+  private[notebook] val showResult       = Rx.variable(true)
+  private[notebook] val isToolbarVisible = Rx.variable(false)
 
   class LeftCellIcon extends RxElement {
     def setVisibility(isVisible: Boolean): Unit = {
-      visible := isVisible
+      isToolbarVisible := isVisible
     }
     override def render: RxElement =
       span(
         cls -> "dropdown text-nowrap",
-        visible.map {
+        isToolbarVisible.map {
           case true =>
             style -> s"visibility: visible;"
           case false =>
@@ -304,7 +308,7 @@ class NotebookCell(val notebookEditor: NotebookEditor, cellId: UUID, cell: Cell,
             cls -> "align-middle",
             // This setting is necessary for placing cell menu icons at the right-top corner
             style -> "display: flex; flex-direction: column; position: relative; ",
-            new NotebookCellToolbar(thisCell),
+            new NotebookCellToolbar(thisCell, isToolbarVisible),
             editor
           )
         ),
@@ -353,7 +357,7 @@ class NotebookCell(val notebookEditor: NotebookEditor, cellId: UUID, cell: Cell,
   }
 }
 
-class NotebookCellToolbar(thisCell: NotebookCell) extends RxElement {
+class NotebookCellToolbar(thisCell: NotebookCell, isToolbarVisible: RxVar[Boolean]) extends RxElement {
 
   private val cellMenuStyle =
     "background: #ffffff; display: flex; position: absolute; top: -14px; right: 10px; z-index: 1070;"
@@ -402,7 +406,7 @@ class NotebookCellToolbar(thisCell: NotebookCell) extends RxElement {
     div(
       style -> "display: flex; flex-direction: column; position: relative; ",
       div(
-        thisCell.visible.map {
+        isToolbarVisible.map {
           case true =>
             style -> s"visibility: visible; ${cellMenuStyle}"
           case false =>
@@ -480,7 +484,7 @@ class NotebookCellToolbar(thisCell: NotebookCell) extends RxElement {
             "Fold/Unfold",
             "fa-caret-down",
             { e: MouseEvent =>
-              thisCell.showResult.update(prev => !prev)
+              thisCell.toggleResultView
             }
           ),
           div(
