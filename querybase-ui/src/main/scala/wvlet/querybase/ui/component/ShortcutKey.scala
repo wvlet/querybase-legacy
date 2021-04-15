@@ -2,8 +2,9 @@ package wvlet.querybase.ui.component
 
 import org.scalajs.dom
 import org.scalajs.dom.raw.KeyboardEvent
+import wvlet.airframe.rx.Rx
 import wvlet.airframe.rx.html.RxElement
-import wvlet.airframe.rx.html.all.div
+import wvlet.airframe.rx.html.all.{div, span}
 import wvlet.log.LogSupport
 
 import scala.scalajs.js
@@ -20,23 +21,29 @@ case class ShortcutKeyDef(
 
 class ShortcutKeys() extends RxElement with LogSupport {
 
+  private val keyEvent = Rx.optionVariable[KeyboardEvent](None)
   // We need to explicitly create js.Function1 object to stabilize the function reference.
   // Without this cast, removeEventListener won't work
-  protected val onKeyPress: js.Function1[KeyboardEvent, Unit] = { e: KeyboardEvent =>
-    logger.info(s"Key is pressed: ${e.key}:${e.keyCode}")
+  protected val onKeyDown: js.Function1[KeyboardEvent, Unit] = { e: KeyboardEvent =>
+    keyEvent := Some(e)
   }
 
   override def beforeRender: Unit = {
     info(s"Add shortcuts")
-    dom.document.addEventListener("keypress", onKeyPress, false)
+    dom.document.addEventListener("keydown", onKeyDown, false)
   }
 
   override def beforeUnmount: Unit = {
     info(s"Remove shortcuts")
-    dom.document.removeEventListener("keypress", onKeyPress, false)
+    dom.document.removeEventListener("keydown", onKeyDown, false)
   }
 
-  override def render: RxElement = div()
+  override def render: RxElement =
+    keyEvent.map { e =>
+      info(s"Key is pressed: ${e.key}:${e.keyCode}")
+      // Nothing to render
+      None
+    }
 }
 
 object ShortcutKey {}
