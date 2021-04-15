@@ -1,24 +1,15 @@
 package wvlet.querybase.server.frontend
 
-import wvlet.airframe.codec.{MessageCodec, MessageCodecFactory}
-import wvlet.airframe.control.Control.withResource
-import wvlet.airframe.control.IO
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi.{NewQueryRequest, QueryInfo}
 import wvlet.querybase.api.backend.v1.{CoordinatorApi, ServiceCatalogApi}
 import wvlet.querybase.api.frontend.FrontendApi
-import wvlet.querybase.api.frontend.FrontendApi.{
-  NotebookData,
-  SaveNotebookResponse,
-  ServerNode,
-  SubmitQueryRequest,
-  SubmitQueryResponse
-}
+import wvlet.querybase.api.frontend.FrontendApi._
 import wvlet.querybase.server.backend.BackendServer.CoordinatorClient
 
-import java.io.{File, FileWriter}
-
-class FrontendApiImpl(coordinatorClient: CoordinatorClient) extends FrontendApi with LogSupport {
+class FrontendApiImpl(coordinatorClient: CoordinatorClient, notebookManager: NotebookManager)
+    extends FrontendApi
+    with LogSupport {
   override def serverNodes: Seq[ServerNode] = {
     val nodes = coordinatorClient.v1.CoordinatorApi.listNodes()
     nodes.map { n =>
@@ -49,19 +40,12 @@ class FrontendApiImpl(coordinatorClient: CoordinatorClient) extends FrontendApi 
     coordinatorClient.v1.CoordinatorApi.listQueries()
   }
 
-  private val notebookDataCodec = MessageCodecFactory.defaultFactoryForMapOutput.of[NotebookData]
   override def saveNotebook(request: FrontendApi.SaveNotebookRequest): FrontendApi.SaveNotebookResponse = {
-    info(request)
-
-    // TODO Support multiple-users
-    val sessionStorePath = new File(".querybase", "sessions")
-    sessionStorePath.mkdirs()
-    val sessionFile = new File(sessionStorePath, request.session.id)
-    val json        = notebookDataCodec.toJson(request.data)
-    withResource(new FileWriter(sessionFile)) { out =>
-      info(s"Saving the session to ${sessionFile}")
-      out.write(json)
-    }
+    notebookManager.saveNotebook(request.session, request.data)
     SaveNotebookResponse()
+  }
+
+  override def getNotebook(request: FrontendApi.GetNotebookRequest): Option[NotebookData] = {
+    notebookManager.readNotebook(request.session)
   }
 }

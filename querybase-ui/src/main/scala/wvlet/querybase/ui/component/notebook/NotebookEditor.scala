@@ -3,27 +3,17 @@ package wvlet.querybase.ui.component.notebook
 import org.scalajs.dom.raw.MouseEvent
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
-import wvlet.airframe.rx.{Cancelable, Rx, RxOptionVar, RxVar}
+import wvlet.airframe.rx.{Rx, RxOptionVar, RxVar}
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
-import wvlet.querybase.api.frontend.FrontendApi.{
-  NotebookCellData,
-  NotebookData,
-  NotebookSession,
-  SaveNotebookRequest,
-  SubmitQueryRequest
-}
-import wvlet.querybase.api.frontend.code.NotebookApi.Cell
+import wvlet.querybase.api.frontend.FrontendApi._
 import wvlet.querybase.api.frontend.{ServiceJSClient, ServiceJSClientRx}
 import wvlet.querybase.ui.component._
 import wvlet.querybase.ui.component.common.Clipboard
 import wvlet.querybase.ui.component.editor.TextEditor
 
 import java.util.UUID
-import java.util.concurrent.TimeUnit
 import scala.concurrent.Future
-import scala.scalajs.js.timers.SetIntervalHandle
-import scala.util.Try
 
 /**
   */
@@ -36,31 +26,47 @@ class NotebookEditor(
   private implicit val queue = scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
   private var cells: Seq[NotebookCell] = Seq(
-    new NotebookCell(
-      this,
-      UUID.randomUUID(),
-      Cell(
-        cellType = "sql",
-        source = """-- comment
-                   |select 1""".stripMargin,
-        outputs = Seq("""{"text":"(query results)"}""")
-      ),
-      focused = true
-    )
+    new NotebookCell(this, UUID.randomUUID(), NotebookCellData("select 1", None), focused = true)
   )
+  private val session = NotebookSession("default")
 
+  // Trigger this variable when the cells are updated
   private val updated    = Rx.variable(false)
   private val schemaForm = new SchemaForm()
 
-  private val notebookSaver = new NotebookSaver(this, rpcRxClient)
+  private val notebookSaver = new NotebookSaver(this, rpcClient)
+
+  private var hasLoaded: Boolean = false
 
   override def beforeRender: Unit = {
-    notebookSaver.start
+    if (!hasLoaded) {
+      val future = rpcClient.FrontendApi
+        .getNotebook(GetNotebookRequest(session))
+        .filter(_.isDefined)
+        .map { data =>
+          info(s"Read the session data from the server")
+          cells = data.get.cells.map { cellData =>
+            new NotebookCell(this, UUID.randomUUID(), cellData, focused = false)
+          }
+          updated.forceSet(true)
+        }
+
+      future.onComplete { case _ =>
+        hasLoaded = true
+        // Start NotebookSaver after the reading the default session finished
+        notebookSaver.start
+      }
+    } else {
+      notebookSaver.start
+    }
   }
 
   override def beforeUnmount: Unit = {
+    notebookSaver.save(getNotebookData)
     notebookSaver.stop
   }
+
+  def currentSession: NotebookSession = session
 
   def getNotebookData: NotebookData = {
     val cellData = cells.map { c =>
@@ -171,7 +177,7 @@ class NotebookEditor(
   }
 
   private def newCell: NotebookCell = {
-    new NotebookCell(this, UUID.randomUUID(), Cell("sql", source = "", outputs = Seq.empty))
+    new NotebookCell(this, UUID.randomUUID(), NotebookCellData("", None))
   }
 
   def insertCellAfter(cell: NotebookCell): NotebookCell = {
@@ -207,15 +213,19 @@ class NotebookEditor(
 
 }
 
-class NotebookCell(val notebookEditor: NotebookEditor, cellId: UUID, cell: Cell, focused: Boolean = false)
-    extends RxElement
+class NotebookCell(
+    val notebookEditor: NotebookEditor,
+    cellId: UUID,
+    initData: NotebookCellData,
+    focused: Boolean = false
+) extends RxElement
     with LogSupport {
   thisCell =>
 
   private implicit val queue = scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
-  private val currentQueryId                           = Rx.optionVariable[String](None)
-  private val currentQueryInfo: RxOptionVar[QueryInfo] = Rx.optionVariable(None)
+  private val currentQueryId                           = Rx.optionVariable[String](initData.queryInfo.map(_.queryId))
+  private val currentQueryInfo: RxOptionVar[QueryInfo] = Rx.optionVariable(initData.queryInfo)
 
   def runCell: Unit = {
     notebookEditor.submitQuery(editor.getTextValue).foreach { queryId =>
@@ -226,7 +236,7 @@ class NotebookCell(val notebookEditor: NotebookEditor, cellId: UUID, cell: Cell,
   }
 
   private val editor = new TextEditor(
-    initialValue = cell.source,
+    initialValue = initData.text,
     onEnter = { text: String =>
       if (text.trim.nonEmpty) {
         runCell

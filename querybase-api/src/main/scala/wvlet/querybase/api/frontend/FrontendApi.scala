@@ -25,7 +25,9 @@ trait FrontendApi {
   def getQueryInfo(queryId: String): Option[QueryInfo]
   def listQueries(): Seq[QueryInfo]
 
+  // Notebook APIs
   def saveNotebook(request: SaveNotebookRequest): SaveNotebookResponse
+  def getNotebook(request: GetNotebookRequest): Option[NotebookData]
 
 }
 
@@ -63,4 +65,7 @@ object FrontendApi {
       queryInfo: Option[QueryInfo]
   )
 
+  case class GetNotebookRequest(
+      session: NotebookSession
+  )
 }
