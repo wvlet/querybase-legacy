@@ -78,6 +78,8 @@ class NotebookEditor(
     NotebookData(cellData)
   }
 
+  private val shortcutKeys = new ShortcutKeys()
+
   override def render: RxElement = {
     // TODO: Add afterRender event hook support to airframe-rx-html
     scala.scalajs.js.timers.setTimeout(100) {
@@ -86,6 +88,7 @@ class NotebookEditor(
       }
     }
     div(
+      shortcutKeys,
       div(
         cls   -> "form-row",
         style -> "min-height: 30px;",
@@ -183,8 +186,18 @@ class NotebookEditor(
   def insertCellAfter(cell: NotebookCell): NotebookCell = {
     val targetCellIndex = getCellIndex(cell)
     val ci              = targetCellIndex.map(_ + 1).getOrElse(cells.size).min(cells.size)
-    val nc              = newCell
-    val newCells        = Seq.newBuilder[NotebookCell]
+    insertCellAt(ci)
+  }
+
+  def insertCellBefore(cell: NotebookCell): NotebookCell = {
+    val baseCellIndex = getCellIndex(cell)
+    val ci            = baseCellIndex.map(_ - 1).getOrElse(0).max(0)
+    insertCellAt(ci)
+  }
+
+  private def insertCellAt(ci: Int): NotebookCell = {
+    val nc       = newCell
+    val newCells = Seq.newBuilder[NotebookCell]
     newCells ++= cells.slice(0, ci)
     newCells += nc
     newCells ++= cells.slice(ci, cells.size)
@@ -339,7 +352,7 @@ class NotebookCell(
               "fa-plus",
               "Add a new cell",
               onClick = { e: MouseEvent =>
-                val newCell = notebookEditor.insertCellAfter(thisCell)
+                val newCell = notebookEditor.insertCellBefore(thisCell)
                 notebookEditor.focusOnCell(newCell)
               }
             )
