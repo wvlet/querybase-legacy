@@ -3,7 +3,7 @@ package wvlet.querybase.api.frontend.code
 import java.time.Instant
 
 import wvlet.airframe.codec.MessageCodec
-import wvlet.airframe.control.ULID
+import wvlet.airframe.ulid.ULID
 import wvlet.airframe.http.RPC
 import wvlet.airframe.json.Json
 

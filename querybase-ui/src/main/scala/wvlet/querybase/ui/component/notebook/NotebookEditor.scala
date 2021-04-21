@@ -19,7 +19,7 @@ import scala.concurrent.Future
   */
 class NotebookEditor(
     serviceSelector: ServiceSelector,
-    private[notebook] val rpcRxClient: ServiceJSClientRx,
+    private[ui] val rpcRxClient: ServiceJSClientRx,
     rpcClient: ServiceJSClient
 ) extends RxElement
     with LogSupport {

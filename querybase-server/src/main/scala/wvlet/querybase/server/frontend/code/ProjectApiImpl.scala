@@ -2,7 +2,7 @@ package wvlet.querybase.server.frontend.code
 
 import wvlet.airframe.bind
 import wvlet.querybase.api.frontend.code.ProjectApi
-import wvlet.airframe.control.ULID
+import wvlet.airframe.ulid.ULID
 import wvlet.log.LogSupport
 import wvlet.querybase.server.backend.BackendServer.CoordinatorClient
 

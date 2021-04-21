@@ -2,7 +2,7 @@ package wvlet.querybase.server.executor
 
 import java.time.Instant
 
-import wvlet.airframe.control.ULID
+import wvlet.airframe.ulid.ULID
 import wvlet.airframe._
 import wvlet.airframe.jdbc.{ConnectionPool, ConnectionPoolFactory, DbConfig}
 import wvlet.airframe.json.Json

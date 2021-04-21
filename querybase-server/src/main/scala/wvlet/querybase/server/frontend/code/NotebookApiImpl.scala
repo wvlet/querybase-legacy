@@ -4,7 +4,7 @@ import java.time.Instant
 
 import wvlet.querybase.api.frontend.code.NotebookApi
 import NotebookApi._
-import wvlet.airframe.control.ULID
+import wvlet.airframe.ulid.ULID
 
 /**
   */

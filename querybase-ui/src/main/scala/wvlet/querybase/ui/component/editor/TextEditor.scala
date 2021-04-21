@@ -2,7 +2,7 @@ package wvlet.querybase.ui.component.editor
 
 import org.scalajs.dom.document
 import org.scalajs.dom.raw.HTMLElement
-import wvlet.airframe.control.ULID
+import wvlet.airframe.ulid.ULID
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all.{cls, div, style}
 import wvlet.log.LogSupport

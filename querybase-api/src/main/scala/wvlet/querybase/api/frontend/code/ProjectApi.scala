@@ -2,7 +2,7 @@ package wvlet.querybase.api.frontend.code
 
 import java.time.Instant
 import wvlet.airframe.http.RPC
-import wvlet.airframe.control.ULID
+import wvlet.airframe.ulid.ULID
 
 object ProjectApi {
   case class Project(

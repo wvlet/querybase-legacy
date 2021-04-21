@@ -1,7 +1,7 @@
 package wvlet.querybase.server.frontend.code
 
 import wvlet.airframe.Design
-import wvlet.airframe.control.ULID
+import wvlet.airframe.ulid.ULID
 import wvlet.airspec.AirSpec
 import wvlet.querybase.api.frontend.code.ProjectApi.Project
 import wvlet.querybase.server.frontend.FrontendServer
