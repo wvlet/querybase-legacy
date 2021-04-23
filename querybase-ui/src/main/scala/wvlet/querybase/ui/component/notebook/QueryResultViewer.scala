@@ -14,13 +14,13 @@ class QueryResultViewer(r: QueryResult) extends RxElement {
       style -> Seq(
         "overflow-x: scroll",
         "max-height: 300px",
-        "width: auto",
         // max-width must be set to properly enable horizontal scroll (scroll-x)
         s"max-width: calc(100vw - ${Sidebar.sidebarWidth + 55}px)"
       ).mkString("; "),
       table(
         cls -> "table table-sm table-bordered",
         style -> Seq(
+          "width: auto",
           "font-size: 12px"
         ).mkString("; "),
         thead(

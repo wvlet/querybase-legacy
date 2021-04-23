@@ -412,10 +412,14 @@ class NotebookCell(
                 span()
             }
           )
-        ),
+        )
+      ),
+      table(
+        style -> "width: auto;",
         // Query results
         tr(
           td(
+            style -> "width: 25px;"
           ),
           td(
             div(
@@ -486,7 +490,7 @@ class NotebookCellToolbar(thisCell: NotebookCell, isToolbarVisible: RxVar[Boolea
   }
 
   private val cellMenuStyle =
-    Seq("background: #ffffff", "display: flex", "position: absolute", "top: -20px", "right: 10px", "z-index: 1070")
+    Seq("background: #ffffff", "display: flex", "position: absolute", "top: -16px", "right: 10px", "z-index: 1070")
       .mkString("; ")
 
   override def render: RxElement = {

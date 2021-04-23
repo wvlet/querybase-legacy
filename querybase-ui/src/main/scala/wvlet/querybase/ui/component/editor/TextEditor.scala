@@ -89,7 +89,8 @@ class TextEditor(
     option.minimap = minimapOptions
 
     val scrollbarOptions = new js.Object().asInstanceOf[IEditorScrollbarOptions]
-    scrollbarOptions.alwaysConsumeMouseWheel = true
+    scrollbarOptions.handleMouseWheel = true
+    scrollbarOptions.alwaysConsumeMouseWheel = false
     option.scrollbar = scrollbarOptions
 
     // Code formatter
