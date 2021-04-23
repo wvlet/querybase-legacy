@@ -22,7 +22,7 @@ case class ShortcutKeyDef(
 class ShortcutKeys() extends RxElement with LogSupport {
 
   private val keyEvent = Rx.optionVariable[KeyboardEvent](None)
-  // We need to explicitly create js.Function1 object to stabilize the function reference.
+  // We need to explicitly create js.Function1 object to have a stable pointer to the function.
   // Without this cast, removeEventListener won't work
   protected val onKeyDown: js.Function1[KeyboardEvent, Unit] = { e: KeyboardEvent =>
     keyEvent := Some(e)
@@ -40,7 +40,7 @@ class ShortcutKeys() extends RxElement with LogSupport {
 
   override def render: RxElement =
     keyEvent.map { e =>
-      info(s"Key is pressed: ${e.key}:${e.keyCode}")
+      trace(s"Key is pressed: ${e.key}:${e.keyCode}")
       // Nothing to render
       None
     }

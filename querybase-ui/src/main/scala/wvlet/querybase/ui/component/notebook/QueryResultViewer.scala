@@ -45,7 +45,7 @@ class QueryResultViewer(r: QueryResult) extends RxElement {
               row.map { col =>
                 val v: String = Option(col).map(_.toString).getOrElse("")
                 td(
-                  cls   -> "text-truncate",
+                  cls   -> "text-truncate text-right",
                   style -> "max-width: 250px;",
                   title -> v,
                   v
