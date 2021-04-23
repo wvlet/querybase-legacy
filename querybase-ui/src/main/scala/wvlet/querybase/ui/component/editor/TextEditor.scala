@@ -61,8 +61,7 @@ class TextEditor(
     editorNode
   }
 
-  private val editor = {
-
+  private def defaultEditorOptions: IStandaloneEditorConstructionOptions = {
     val option = new scalajs.js.Object().asInstanceOf[IStandaloneEditorConstructionOptions]
     option.value = initialValue
     option.language = "sql"
@@ -90,13 +89,21 @@ class TextEditor(
 
     val scrollbarOptions = new js.Object().asInstanceOf[IEditorScrollbarOptions]
     scrollbarOptions.handleMouseWheel = true
-    scrollbarOptions.alwaysConsumeMouseWheel = true
+    scrollbarOptions.alwaysConsumeMouseWheel = false
     option.scrollbar = scrollbarOptions
 
     // Code formatter
     //  option.formatOnType = true
-    val editor = Editor.create(editorNode, option)
+
+    option
+  }
+
+  private val editor = {
     TextEditor.init
+    val editor = Editor.create(editorNode, defaultEditorOptions)
+//    editor.onDidBlurEditorWidget { () =>
+//      enableScrollWheel(false)
+//    }
 
     editor.onKeyDown { e: IKeyboardEvent =>
       if (e.keyCode == KeyCode.Enter && (e.metaKey || e.ctrlKey)) {
@@ -123,7 +130,21 @@ class TextEditor(
     editor
   }
 
+  // This code didn't work
+//  private def enableScrollWheel(enabled: Boolean): Unit = {
+//    val option           = defaultEditorOptions
+//    val scrollbarOptions = new js.Object().asInstanceOf[IEditorScrollbarOptions]
+//    //scrollbarOptions.handleMouseWheel = enabled
+//    scrollbarOptions.alwaysConsumeMouseWheel = enabled
+//    option.scrollbar = scrollbarOptions
+//
+//    editor.updateOptions(option)
+//    editor.layout()
+//  }
+
   def focus: Unit = {
+    info(s"focused")
+    //enableScrollWheel(true)
     editor.focus()
   }
 

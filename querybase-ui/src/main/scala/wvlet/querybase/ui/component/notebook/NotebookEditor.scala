@@ -1,7 +1,8 @@
 package wvlet.querybase.ui.component.notebook
 
+import org.scalajs.dom.ext.KeyCode
 import org.scalajs.dom.{document, window}
-import org.scalajs.dom.raw.{HTMLElement, MouseEvent}
+import org.scalajs.dom.raw.{HTMLElement, KeyboardEvent, MouseEvent}
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.airframe.rx.{Rx, RxOptionVar, RxVar}
@@ -79,8 +80,90 @@ class NotebookEditor(
     NotebookData(cellData)
   }
 
-  private val shortcutKeys = new ShortcutKeys()
-  private val notebookId   = s"notebook-${ULID.newULID}"
+  private val shortcutKeys = new ShortcutKeys(
+    Seq(
+      ShortcutKeyDef(
+        keyCode = KeyCode.Escape,
+        ctrl = false,
+        meta = false,
+        description = "Switch mode",
+        handler = { e: KeyboardEvent =>
+          info(s"Switch editor mode")
+        }
+      ),
+      ShortcutKeyDef(
+        keyCode = KeyCode.P,
+        ctrl = true,
+        shift = true,
+        description = "Add a new cell above",
+        handler = { e: KeyboardEvent =>
+          info(s"Add a new cell above")
+          cells.find(_.hasFocus).foreach { cell =>
+            val inserted = insertCellBefore(cell)
+            focusOnCell(inserted)
+          }
+        }
+      ),
+      ShortcutKeyDef(
+        keyCode = KeyCode.N,
+        ctrl = true,
+        shift = true,
+        description = "Add a new cell below",
+        handler = { e: KeyboardEvent =>
+          info(s"Add a new cell below")
+          cells.find(_.hasFocus).foreach { cell =>
+            val inserted = insertCellAfter(cell)
+            focusOnCell(inserted)
+          }
+        }
+      ),
+      ShortcutKeyDef(
+        keyCode = KeyCode.P,
+        ctrl = true,
+        meta = true,
+        description = "Move to the upper cell",
+        handler = { e: KeyboardEvent =>
+          info(s"Move to the upper cell")
+          cells.find(_.hasFocus).foreach { cell =>
+            getCellIndex(cell).foreach { cellIndex =>
+              getCell(cellIndex - 1).foreach {
+                focusOnCell(_)
+              }
+            }
+          }
+        }
+      ),
+      ShortcutKeyDef(
+        keyCode = KeyCode.N,
+        ctrl = true,
+        meta = true,
+        description = "Move to the lower cell",
+        handler = { e: KeyboardEvent =>
+          info(s"Move to the lower cell")
+          cells.find(_.hasFocus).foreach { cell =>
+            getCellIndex(cell).foreach { cellIndex =>
+              getCell(cellIndex + 1).foreach {
+                focusOnCell(_)
+              }
+            }
+          }
+        }
+      ),
+      ShortcutKeyDef(
+        keyCode = KeyCode.D,
+        ctrl = true,
+        meta = true,
+        description = "Delete cell",
+        handler = { e: KeyboardEvent =>
+          info(s"Delete cell")
+          cells.find(_.hasFocus).foreach { cell =>
+            deleteCell(cell)
+          }
+        }
+      )
+    )
+  )
+  private val notebookId = s"notebook-${ULID.newULID}"
 
   override def render: RxElement = {
     // TODO: Add afterRender event hook support to airframe-rx-html
@@ -303,23 +386,24 @@ class NotebookCell(
   private val defaultStyle = "w-100 shadow-none border border-white"
   private val focusedStyle = "w-100 shadow-sm border border-info"
 
-  private var hasFocus = false
+  private var _hasFocus = false
+  def hasFocus: Boolean = _hasFocus
 
   def unfocus: Unit = {
-    findHTMLElement(editorId).foreach {
+    findHTMLElement(frameId).foreach {
       _.className = defaultStyle
     }
-    hasFocus = false
+    _hasFocus = false
   }
   def focus: Unit = {
-    if (!hasFocus) {
+    if (!_hasFocus) {
       editor.focus
-      findHTMLElement(editorId).foreach { el =>
+      findHTMLElement(frameId).foreach { el =>
         el.className = focusedStyle
       }
 
     }
-    hasFocus = true
+    _hasFocus = true
   }
 
   private def getFrame: Option[HTMLElement] = {
