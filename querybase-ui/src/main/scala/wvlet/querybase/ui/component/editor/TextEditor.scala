@@ -21,6 +21,7 @@ import wvlet.airframe.rx.html.widget.editor.monaco.editor.{
   IDimension,
   IEditorMinimapOptions,
   IEditorScrollbarOptions,
+  IIdentifiedSingleEditOperation,
   IModelDecorationsChangedEvent,
   IStandaloneEditorConstructionOptions,
   IStandaloneThemeData,
@@ -43,7 +44,7 @@ import js.JSConverters._
   */
 class TextEditor(
     initialValue: String = "",
-    maxHeight: Int = 250,
+    maxHeight: Int = 300,
     onEnter: String => Unit = { x: String => },
     onExitUp: () => Unit = { () => },
     onExitDown: () => Unit = { () => }
@@ -137,7 +138,19 @@ class TextEditor(
     editor.getValue()
   }
   def setTextValue(text: String): Unit = {
-    editor.setValue(text)
+    // Use ExecuteEdits to support Undo
+    editor.executeEdits(
+      "editor-set",
+      Array(
+        js.Dynamic
+          .literal(
+            range = editor.getModel().asInstanceOf[ITextModel].getFullModelRange(),
+            text = text,
+            forceMoveMarkers = true
+          ).asInstanceOf[IIdentifiedSingleEditOperation]
+      ).toJSArray
+    )
+    updateLayout()
   }
 
   def formatCode: Unit = {
@@ -238,12 +251,11 @@ object TextEditor extends LogSupport {
             val textValue = model.getValue()
             val fullRange = model.getFullModelRange()
             info(s"format code: ${textValue} ${fullRange.startLineNumber}, ${fullRange.endLineNumber}")
-
             Array[TextEdit](
               js.Dynamic.literal(
                 range = model.getFullModelRange(),
                 // This should be formatted
-                text = s"--- formatted\n${textValue}"
+                text = textValue
               )
             ).toJSArray
         }
