@@ -213,7 +213,7 @@ object TextEditor extends LogSupport {
     val rules = Seq[ITokenThemeRule](
       newRule { r =>
         r.token = "keyword"
-        r.foreground = "#c9c6fc"
+        r.foreground = "#58ccf0"
       },
       newRule { r =>
         r.token = "number.sql"
@@ -226,7 +226,7 @@ object TextEditor extends LogSupport {
       newRule { r =>
         // pre-defined SQL functions
         r.token = "predefined.sql"
-        r.foreground = "#58ccf0"
+        r.foreground = "#a9a6fc"
       },
       newRule { r =>
         // Double quotation
