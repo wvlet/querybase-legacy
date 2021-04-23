@@ -546,13 +546,14 @@ class NotebookCellToolbar(thisCell: NotebookCell, isToolbarVisible: RxVar[Boolea
               )
             )
           ),
-          cellMenuIcon(
-            name = "Undo",
-            "fa-undo",
-            { e: MouseEvent =>
-              thisCell.getEditor.undo
-            }
-          ),
+          // Undo doens't work well
+//          cellMenuIcon(
+//            name = "Undo",
+//            "fa-undo",
+//            { e: MouseEvent =>
+//              thisCell.getEditor.undo
+//            }
+//          ),
           cellMenuIcon(
             name = "Format Query",
             "fa-indent",
