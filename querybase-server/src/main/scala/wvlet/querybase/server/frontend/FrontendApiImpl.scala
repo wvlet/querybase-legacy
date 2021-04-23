@@ -52,7 +52,6 @@ class FrontendApiImpl(coordinatorClient: CoordinatorClient, notebookManager: Not
   }
 
   override def formatQuery(query: String): String = {
-    val plan = SQLParser.parse(query)
-    SQLGenerator.print(plan)
+    com.github.vertical_blank.sqlformatter.SqlFormatter.format(query)
   }
 }
