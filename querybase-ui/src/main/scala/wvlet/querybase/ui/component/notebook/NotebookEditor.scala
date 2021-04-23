@@ -1,9 +1,11 @@
 package wvlet.querybase.ui.component.notebook
 
-import org.scalajs.dom.raw.MouseEvent
+import org.scalajs.dom.{document, window}
+import org.scalajs.dom.raw.{HTMLElement, MouseEvent}
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.airframe.rx.{Rx, RxOptionVar, RxVar}
+import wvlet.airframe.ulid.ULID
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
 import wvlet.querybase.api.frontend.FrontendApi._
@@ -12,7 +14,6 @@ import wvlet.querybase.ui.component._
 import wvlet.querybase.ui.component.common.Clipboard
 import wvlet.querybase.ui.component.editor.TextEditor
 
-import java.util.UUID
 import scala.concurrent.Future
 
 /**
@@ -26,7 +27,7 @@ class NotebookEditor(
   private implicit val queue = scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
   private var cells: Seq[NotebookCell] = Seq(
-    new NotebookCell(this, UUID.randomUUID(), NotebookCellData("select 1", None), focused = true)
+    new NotebookCell(this, ULID.newULID, NotebookCellData("select 1", None), focused = true)
   )
   private val session = NotebookSession("default")
 
@@ -46,7 +47,7 @@ class NotebookEditor(
         .map { data =>
           info(s"Read the session data from the server")
           cells = data.get.cells.map { cellData =>
-            new NotebookCell(this, UUID.randomUUID(), cellData, focused = false)
+            new NotebookCell(this, ULID.newULID, cellData, focused = false)
           }
           updated.forceSet(true)
         }
@@ -79,6 +80,7 @@ class NotebookEditor(
   }
 
   private val shortcutKeys = new ShortcutKeys()
+  private val notebookId   = s"notebook-${ULID.newULID}"
 
   override def render: RxElement = {
     // TODO: Add afterRender event hook support to airframe-rx-html
@@ -88,6 +90,7 @@ class NotebookEditor(
       }
     }
     div(
+      id -> notebookId,
       shortcutKeys,
       div(
         cls   -> "form-row",
@@ -115,6 +118,27 @@ class NotebookEditor(
     cells.foreach { c =>
       if (c eq cell) {
         c.focus
+
+        document.getElementById(notebookId) match {
+          case e: HTMLElement =>
+            Option(e.parentElement).foreach { parent =>
+              val windowTop    = parent.scrollTop
+              val windowHeight = parent.clientHeight
+              val frameHeight  = c.frameHeight
+              val frameTop     = c.offsetTop
+              val frameOffset  = 90
+
+              debug(s"window top: ${window}, height: ${windowHeight}, height:${frameHeight}, frameTop:${frameTop}")
+              if (windowTop >= frameTop - frameOffset) {
+                parent.scrollTop = frameTop - frameOffset
+              }
+              if (windowTop + windowHeight < frameTop + frameHeight - frameOffset) {
+                parent.scrollTop = frameTop + frameHeight - windowHeight + frameOffset
+              }
+            }
+          case _ =>
+        }
+
       } else {
         c.unfocus
       }
@@ -180,7 +204,7 @@ class NotebookEditor(
   }
 
   private def newCell: NotebookCell = {
-    new NotebookCell(this, UUID.randomUUID(), NotebookCellData("", None))
+    new NotebookCell(this, ULID.newULID, NotebookCellData("", None))
   }
 
   def insertCellAfter(cell: NotebookCell): NotebookCell = {
@@ -228,7 +252,7 @@ class NotebookEditor(
 
 class NotebookCell(
     val notebookEditor: NotebookEditor,
-    cellId: UUID,
+    cellId: ULID,
     initData: NotebookCellData,
     focused: Boolean = false
 ) extends RxElement
@@ -258,7 +282,9 @@ class NotebookCell(
     },
     onExitUp = { () =>
       notebookEditor.getCellIndex(thisCell).foreach { cellIndex =>
-        notebookEditor.getCell(cellIndex - 1).foreach(notebookEditor.focusOnCell(_))
+        notebookEditor.getCell(cellIndex - 1).foreach { cell =>
+          notebookEditor.focusOnCell(cell)
+        }
       }
     },
     onExitDown = { () =>
@@ -270,8 +296,9 @@ class NotebookCell(
     }
   )
 
-  private val cellIdStr    = s"cell-${cellId}"
-  private val resultCellId = s"${cellId}-result"
+  private val frameId      = s"frame-${cellId}"
+  private val editorId     = s"cell-${cellId}"
+  private val resultCellId = s"result-${cellId}"
 
   private val defaultStyle = "w-100 shadow-none border border-white"
   private val focusedStyle = "w-100 shadow-sm border border-info"
@@ -279,7 +306,7 @@ class NotebookCell(
   private var hasFocus = false
 
   def unfocus: Unit = {
-    findHTMLElement(cellIdStr).foreach {
+    findHTMLElement(editorId).foreach {
       _.className = defaultStyle
     }
     hasFocus = false
@@ -287,11 +314,28 @@ class NotebookCell(
   def focus: Unit = {
     if (!hasFocus) {
       editor.focus
-      findHTMLElement(cellIdStr).foreach { el =>
+      findHTMLElement(editorId).foreach { el =>
         el.className = focusedStyle
       }
+
     }
     hasFocus = true
+  }
+
+  private def getFrame: Option[HTMLElement] = {
+    document.getElementById(frameId) match {
+      case el: HTMLElement =>
+        Some(el)
+      case _ =>
+        None
+    }
+  }
+
+  def frameHeight: Int = {
+    getFrame.map(_.scrollHeight).getOrElse(50)
+  }
+  def offsetTop: Int = {
+    getFrame.map(_.offsetTop.toInt).getOrElse(0)
   }
 
   def formatCode: Unit = editor.formatCode
@@ -338,8 +382,9 @@ class NotebookCell(
   override def render: RxElement = {
     div(
       cls -> "w-100",
+      id  -> frameId,
       table(
-        id  -> cellIdStr,
+        id  -> editorId,
         cls -> defaultStyle,
         onclick -> { e: MouseEvent =>
           notebookEditor.focusOnCell(thisCell)
