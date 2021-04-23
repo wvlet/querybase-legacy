@@ -90,7 +90,7 @@ class TextEditor(
 
     val scrollbarOptions = new js.Object().asInstanceOf[IEditorScrollbarOptions]
     scrollbarOptions.handleMouseWheel = true
-    scrollbarOptions.alwaysConsumeMouseWheel = false
+    scrollbarOptions.alwaysConsumeMouseWheel = true
     option.scrollbar = scrollbarOptions
 
     // Code formatter
