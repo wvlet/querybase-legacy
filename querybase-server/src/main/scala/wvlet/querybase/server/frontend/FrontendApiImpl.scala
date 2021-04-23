@@ -1,5 +1,7 @@
 package wvlet.querybase.server.frontend
 
+import wvlet.airframe.sql.model.LogicalPlanPrinter
+import wvlet.airframe.sql.parser.{SQLGenerator, SQLParser}
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi.{NewQueryRequest, QueryInfo}
 import wvlet.querybase.api.backend.v1.{CoordinatorApi, ServiceCatalogApi}
@@ -47,5 +49,10 @@ class FrontendApiImpl(coordinatorClient: CoordinatorClient, notebookManager: Not
 
   override def getNotebook(request: FrontendApi.GetNotebookRequest): Option[NotebookData] = {
     notebookManager.readNotebook(request.session)
+  }
+
+  override def formatQuery(query: String): String = {
+    val plan = SQLParser.parse(query)
+    SQLGenerator.print(plan)
   }
 }

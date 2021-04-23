@@ -20,7 +20,7 @@ import scala.concurrent.Future
 class NotebookEditor(
     serviceSelector: ServiceSelector,
     private[ui] val rpcRxClient: ServiceJSClientRx,
-    rpcClient: ServiceJSClient
+    private[ui] val rpcClient: ServiceJSClient
 ) extends RxElement
     with LogSupport {
   private implicit val queue = scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
@@ -294,8 +294,13 @@ class NotebookCell(
     hasFocus = true
   }
 
+  def formatCode: Unit = editor.formatCode
+
   def getTextValue: String = {
     editor.getTextValue
+  }
+  def setTextValue(text: String): Unit = {
+    editor.setTextValue(text)
   }
 
   def getQueryInfo: Option[QueryInfo] = {
@@ -436,6 +441,7 @@ class NotebookCell(
 }
 
 class NotebookCellToolbar(thisCell: NotebookCell, isToolbarVisible: RxVar[Boolean]) extends RxElement {
+  private implicit val queue = scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
   private def cellMenuIcon(name: String, faStyle: String, onClick: MouseEvent => Unit) = {
     val baseStyle = s"fa ${faStyle} mr-1 p-1"
@@ -537,6 +543,16 @@ class NotebookCellToolbar(thisCell: NotebookCell, isToolbarVisible: RxVar[Boolea
                 }
               )
             )
+          ),
+          cellMenuIcon(
+            name = "Format Query",
+            "fa-indent",
+            { e: MouseEvent =>
+              thisCell.formatCode
+            //thisCell.notebookEditor.rpcClient.FrontendApi.formatQuery(thisCell.getTextValue).foreach { formatted =>
+//                thisCell.setTextValue(formatted)
+            //            }
+            }
           ),
           cellMenuIcon(
             name = "Move Up",

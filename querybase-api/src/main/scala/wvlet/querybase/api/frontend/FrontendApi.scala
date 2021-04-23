@@ -29,6 +29,7 @@ trait FrontendApi {
   def saveNotebook(request: SaveNotebookRequest): SaveNotebookResponse
   def getNotebook(request: GetNotebookRequest): Option[NotebookData]
 
+  def formatQuery(query: String): String
 }
 
 object FrontendApi {
