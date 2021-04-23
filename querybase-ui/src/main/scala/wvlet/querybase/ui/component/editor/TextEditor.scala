@@ -93,7 +93,7 @@ class TextEditor(
     option.scrollbar = scrollbarOptions
 
     // Code formatter
-    option.formatOnType = true
+    //  option.formatOnType = true
     val editor = Editor.create(editorNode, option)
     TextEditor.init
 
@@ -140,7 +140,7 @@ class TextEditor(
   def setTextValue(text: String): Unit = {
     // Use ExecuteEdits to support Undo
     editor.executeEdits(
-      "editor-set",
+      "editor",
       Array(
         js.Dynamic
           .literal(
@@ -151,6 +151,13 @@ class TextEditor(
       ).toJSArray
     )
     updateLayout()
+  }
+  def undo: Unit = {
+    editor.trigger("whatever...", "undo", "undo")
+
+  }
+  def redo: Unit = {
+    editor.trigger("editor", "redo", null)
   }
 
   def formatCode: Unit = {

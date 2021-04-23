@@ -296,6 +296,8 @@ class NotebookCell(
 
   def formatCode: Unit = editor.formatCode
 
+  def getEditor: TextEditor = editor
+
   def getTextValue: String = {
     editor.getTextValue
   }
@@ -543,6 +545,13 @@ class NotebookCellToolbar(thisCell: NotebookCell, isToolbarVisible: RxVar[Boolea
                 }
               )
             )
+          ),
+          cellMenuIcon(
+            name = "Undo",
+            "fa-undo",
+            { e: MouseEvent =>
+              thisCell.getEditor.undo
+            }
           ),
           cellMenuIcon(
             name = "Format Query",
