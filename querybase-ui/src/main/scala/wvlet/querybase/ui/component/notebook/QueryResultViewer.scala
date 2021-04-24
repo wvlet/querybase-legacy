@@ -13,7 +13,7 @@ class QueryResultViewer(r: QueryResult) extends RxElement {
     div(
       style -> Seq(
         "overflow-x: scroll",
-        "max-height: 300px",
+        "max-height: 350px",
         // max-width must be set to properly enable horizontal scroll (scroll-x)
         s"max-width: calc(100vw - ${Sidebar.sidebarWidth + 55}px)"
       ).mkString("; "),
