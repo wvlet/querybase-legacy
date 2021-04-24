@@ -152,7 +152,7 @@ class NotebookEditor(
       ShortcutKeyDef(
         keyCode = KeyCode.D,
         ctrl = true,
-        meta = true,
+        shift = true,
         description = "Delete cell",
         handler = { e: KeyboardEvent =>
           info(s"Delete cell")
