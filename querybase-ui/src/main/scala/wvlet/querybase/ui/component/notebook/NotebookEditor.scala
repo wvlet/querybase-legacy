@@ -47,7 +47,7 @@ class NotebookEditor(
         .filter(_.isDefined)
         .map { data =>
           info(s"Read the session data from the server")
-          cells = data.get.cells.map { cellData =>
+          cells = data.get.cells.take(10).map { cellData =>
             new NotebookCell(this, ULID.newULID, cellData, focused = false)
           }
           updated.forceSet(true)

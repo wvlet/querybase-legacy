@@ -18,6 +18,10 @@ object QueryResultPrinter {
     rows.result()
   }
 
+  def toTSV(qi: QueryResult): String = {
+    toTable(qi).map(_.mkString("\t")).mkString("\n")
+  }
+
   def print(qi: QueryResult): String = {
     val tbl = toTable(qi)
 

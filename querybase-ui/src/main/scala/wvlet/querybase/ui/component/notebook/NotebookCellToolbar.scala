@@ -110,6 +110,18 @@ class NotebookCellToolbar(thisCell: NotebookCell, isToolbarVisible: RxVar[Boolea
                   }
                   Clipboard.writeText(clipboardText.result())
                 }
+              ),
+              dropdownItem("fa-sticky-note")(
+                "Copy Results",
+                onclick -> { e: MouseEvent =>
+                  val clipboardText = new StringBuilder()
+                  thisCell.getQueryInfo.foreach { qi =>
+                    qi.result.map { result =>
+                      clipboardText.append(QueryResultPrinter.toTSV(result))
+                    }
+                  }
+                  Clipboard.writeText(clipboardText.result())
+                }
               )
             )
           ),

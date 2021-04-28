@@ -44,7 +44,7 @@ import js.JSConverters._
   */
 class TextEditor(
     initialValue: String = "",
-    maxHeight: Int = 500,
+    maxHeight: Int = 350,
     onEnter: String => Unit = { x: String => },
     onExitUp: () => Unit = { () => },
     onExitDown: () => Unit = { () => }
