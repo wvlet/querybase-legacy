@@ -18,14 +18,20 @@ import scala.collection.immutable.ListMap
 
 /**
   */
-class ExploreWindow(notebookEditor: NotebookEditor, serviceJSClient: ServiceJSClient) extends RxElement with RPCQueue {
+class ExploreWindow(notebookEditor: NotebookEditor, serviceJSClient: ServiceJSClient)
+    extends RxElement
+    with RPCQueue
+    with LogSupport {
 
-  private val searchForm = SearchForm(
-    onChangeHandler = search,
-    onBlurHandler = { () =>
-      exitSearch
+  private val searchForm = LabeledForm()
+    .withLabel(i(cls -> "fa fa-search"))
+    .withPlaceholder("Search ...")
+    .onChange { keyword: String => search(keyword) }
+    .onBlur { () => exitSearch }
+    .onEnter { keyword: String =>
+      info(s"Start search: ${keyword}")
     }
-  )
+
   private val searchResultList = SearchCandidates(Seq.empty)
 
   private def search(keyword: String): Unit = {
@@ -72,34 +78,6 @@ class ExploreWindow(notebookEditor: NotebookEditor, serviceJSClient: ServiceJSCl
         searchResultList
       )
     )
-  }
-}
-
-case class SearchForm(onChangeHandler: String => Unit = { e: String => }, onBlurHandler: () => Unit = { () => })
-    extends RxElement
-    with LogSupport {
-  val elementId = ULID.newULID.toString()
-
-  def onChange(f: String => Unit): SearchForm = this.copy(onChangeHandler = f)
-  def onBlur(f: () => Unit): SearchForm       = this.copy(onBlurHandler = f)
-
-  def focus: Unit = {
-    form.focus
-  }
-
-  def blur: Unit = {
-    form.blur
-  }
-
-  private val form =
-    LabeledForm()
-      .withLabel(i(cls -> "fa fa-search"))
-      .withPlaceholder("Search ...")
-      .onChange { keyword: String => onChangeHandler(keyword) }
-      .onBlur(onBlurHandler)
-
-  override def render: RxElement = {
-    form
   }
 }
 

@@ -1,6 +1,7 @@
 package wvlet.querybase.ui.component.common
 
 import org.scalajs.dom
+import org.scalajs.dom.ext.KeyCode
 import org.scalajs.dom.{Event, KeyboardEvent}
 import org.scalajs.dom.raw.HTMLInputElement
 import wvlet.airframe.rx.html.RxElement
@@ -15,6 +16,7 @@ case class LabeledForm(
     formId: String = ULID.newULIDString,
     labelElement: RxElement = span(),
     placeholderText: String = "input...",
+    onEnterHandler: String => Unit = { e: String => },
     onChangeHandler: String => Unit = { e: String => },
     onBlurHandler: () => Unit = { () => }
 ) extends RxElement
@@ -22,6 +24,7 @@ case class LabeledForm(
 
   def withLabel(newLabel: RxElement): LabeledForm   = this.copy(labelElement = newLabel)
   def withPlaceholder(newText: String): LabeledForm = this.copy(placeholderText = newText)
+  def onEnter(f: String => Unit): LabeledForm       = this.copy(onEnterHandler = f)
   def onChange(f: String => Unit): LabeledForm      = this.copy(onChangeHandler = f)
   def onBlur(f: () => Unit): LabeledForm            = this.copy(onBlurHandler = f)
 
@@ -60,8 +63,14 @@ case class LabeledForm(
       tpe         -> "text",
       placeholder -> placeholderText,
       aria.label  -> "search input",
-      onkeyup     -> { e: KeyboardEvent => onChangeHandler(getText) },
-      onblur      -> { e: Event => onBlurHandler() }
+      onkeyup -> { e: KeyboardEvent =>
+        if (e.keyCode == KeyCode.Enter) {
+          onEnterHandler(getText)
+        } else {
+          onChangeHandler(getText)
+        }
+      },
+      onblur -> { e: Event => onBlurHandler() }
     )
   )
 }
