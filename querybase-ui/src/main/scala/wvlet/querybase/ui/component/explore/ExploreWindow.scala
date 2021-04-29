@@ -86,15 +86,12 @@ case class SearchForm(onChangeHandler: String => Unit = { e: String => }) extend
 }
 
 case class SearchCandidates(list: Seq[SearchItem]) extends RxElement {
-
-  private val show = Rx.variable(true)
-
   private def iconStyle(kind: String): String = kind match {
     case "service"  => "fa fa-project-diagram"
     case "table"    => "fa fa-table"
     case "query"    => "fa fa-stream"
     case "notebook" => "fa fa-book-open"
-    case _          => "fa fa-book"
+    case _          => "fa fa-search"
   }
 
   override def render: RxElement = {

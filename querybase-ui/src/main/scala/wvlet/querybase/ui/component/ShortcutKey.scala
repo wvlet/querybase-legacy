@@ -1,7 +1,7 @@
 package wvlet.querybase.ui.component
 
 import org.scalajs.dom
-import org.scalajs.dom.raw.KeyboardEvent
+import org.scalajs.dom.raw.{HTMLInputElement, HTMLTextAreaElement, KeyboardEvent}
 import wvlet.airframe.rx.Rx
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all.{div, span}
@@ -46,13 +46,23 @@ class ShortcutKeys(keys: Seq[ShortcutKeyDef] = Seq.empty) extends RxElement with
     dom.document.removeEventListener("keydown", onKeyDown, false)
   }
 
+  private def isTextArea(e: KeyboardEvent): Boolean = {
+    e.target match {
+      case input: HTMLInputElement   => true
+      case text: HTMLTextAreaElement => true
+      case _                         => false
+    }
+  }
+
   override def render: RxElement =
     keyEvent.throttleLast(200, TimeUnit.MILLISECONDS).map { e =>
       //info(s"Key is pressed: ${e.key}:${e.keyCode}, meta:${e.metaKey}, alt:${e.altKey}, ${e.ctrlKey}")
-      keys.find(key => key.hasMatch(e)).foreach { keyDef =>
-        info(s"Found a match: ${keyDef}")
-        e.preventDefault()
-        keyDef.handler(e)
+      if (!isTextArea(e)) {
+        keys.find(key => key.hasMatch(e)).foreach { keyDef =>
+          info(s"Found a match: ${keyDef}")
+          e.preventDefault()
+          keyDef.handler(e)
+        }
       }
       None
     }

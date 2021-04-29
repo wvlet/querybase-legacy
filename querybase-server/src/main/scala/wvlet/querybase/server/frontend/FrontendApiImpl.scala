@@ -57,6 +57,7 @@ class FrontendApiImpl(coordinatorClient: CoordinatorClient, notebookManager: Not
   }
 
   override def search(search: SearchRequest): SearchResponse = {
+
     // dummy response
     val services = coordinatorClient.v1.ServiceCatalogApi.listServices().map { x =>
       SearchItem(id = ULID.newULIDString, kind = "service", title = x.name)
@@ -91,6 +92,11 @@ class FrontendApiImpl(coordinatorClient: CoordinatorClient, notebookManager: Not
       )
     )
 
-    SearchResponse(results = services ++ tables ++ queries ++ notebooks)
+    val list        = services ++ tables ++ queries ++ notebooks
+    val matchedList = list.filter(_.title.toLowerCase.contains(search.keyword))
+
+    SearchResponse(
+      SearchItem(id = ULID.newULIDString, kind = "search", title = search.keyword) +: matchedList
+    )
   }
 }
