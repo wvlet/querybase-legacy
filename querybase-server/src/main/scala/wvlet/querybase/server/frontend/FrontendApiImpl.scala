@@ -95,8 +95,14 @@ class FrontendApiImpl(coordinatorClient: CoordinatorClient, notebookManager: Not
     val list        = services ++ tables ++ queries ++ notebooks
     val matchedList = list.filter(_.title.toLowerCase.contains(search.keyword))
 
+    val results = Seq.newBuilder[SearchItem]
+    if (search.keyword.nonEmpty) {
+      results += SearchItem(id = ULID.newULIDString, kind = "search", title = search.keyword)
+    }
+    results ++= matchedList
+
     SearchResponse(
-      SearchItem(id = ULID.newULIDString, kind = "search", title = search.keyword) +: matchedList
+      results.result()
     )
   }
 }

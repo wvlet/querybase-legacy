@@ -1,6 +1,7 @@
 package wvlet.querybase.ui.component
 
 import org.scalajs.dom
+import org.scalajs.dom.ext.KeyCode
 import org.scalajs.dom.raw.{HTMLInputElement, HTMLTextAreaElement, KeyboardEvent}
 import wvlet.airframe.rx.Rx
 import wvlet.airframe.rx.html.RxElement
@@ -57,7 +58,7 @@ class ShortcutKeys(keys: Seq[ShortcutKeyDef] = Seq.empty) extends RxElement with
   override def render: RxElement =
     keyEvent.throttleLast(200, TimeUnit.MILLISECONDS).map { e =>
       //info(s"Key is pressed: ${e.key}:${e.keyCode}, meta:${e.metaKey}, alt:${e.altKey}, ${e.ctrlKey}")
-      if (!isTextArea(e)) {
+      if (e.keyCode == KeyCode.Escape || !isTextArea(e)) {
         keys.find(key => key.hasMatch(e)).foreach { keyDef =>
           info(s"Found a match: ${keyDef}")
           e.preventDefault()

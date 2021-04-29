@@ -20,20 +20,25 @@ import scala.collection.immutable.ListMap
   */
 class ExploreWindow(notebookEditor: NotebookEditor, serviceJSClient: ServiceJSClient) extends RxElement with RPCQueue {
 
-  private val searchResults = Rx.variable(SearchResponse(Seq.empty))
   private val searchForm = SearchForm(
-    onChangeHandler = search
+    onChangeHandler = search,
+    onBlurHandler = { () =>
+      exitSearch
+    }
   )
+  private val searchResultList = SearchCandidates(Seq.empty)
 
   private def search(keyword: String): Unit = {
     serviceJSClient.FrontendApi
       .search(SearchRequest(keyword = keyword)).foreach { resp =>
-        searchResults := resp
+        searchResultList.setList(resp.results)
       }
   }
 
-  // Do the init search
-  search("")
+  private def exitSearch: Unit = {
+    searchResultList.setList(Seq.empty)
+    searchForm.blur
+  }
 
   private def shortcutKeys = new ShortcutKeys(
     Seq(
@@ -42,6 +47,13 @@ class ExploreWindow(notebookEditor: NotebookEditor, serviceJSClient: ServiceJSCl
         description = "Enter search box",
         handler = { e: Event =>
           searchForm.focus
+        }
+      ),
+      ShortcutKeyDef(
+        keyCode = KeyCode.Escape,
+        description = "Exit from search",
+        handler = { e: Event =>
+          exitSearch
         }
       )
     )
@@ -57,21 +69,26 @@ class ExploreWindow(notebookEditor: NotebookEditor, serviceJSClient: ServiceJSCl
       shortcutKeys,
       VStack(
         searchForm,
-        searchResults.map { x =>
-          SearchCandidates(x.results)
-        }
+        searchResultList
       )
     )
   }
 }
 
-case class SearchForm(onChangeHandler: String => Unit = { e: String => }) extends RxElement with LogSupport {
+case class SearchForm(onChangeHandler: String => Unit = { e: String => }, onBlurHandler: () => Unit = { () => })
+    extends RxElement
+    with LogSupport {
   val elementId = ULID.newULID.toString()
 
   def onChange(f: String => Unit): SearchForm = this.copy(onChangeHandler = f)
+  def onBlur(f: () => Unit): SearchForm       = this.copy(onBlurHandler = f)
 
   def focus: Unit = {
     form.focus
+  }
+
+  def blur: Unit = {
+    form.blur
   }
 
   private val form =
@@ -79,13 +96,22 @@ case class SearchForm(onChangeHandler: String => Unit = { e: String => }) extend
       .withLabel(i(cls -> "fa fa-search"))
       .withPlaceholder("Search ...")
       .onChange { keyword: String => onChangeHandler(keyword) }
+      .onBlur(onBlurHandler)
 
   override def render: RxElement = {
     form
   }
 }
 
-case class SearchCandidates(list: Seq[SearchItem]) extends RxElement {
+case class SearchCandidates(private val initList: Seq[SearchItem]) extends RxElement {
+  private val show  = Rx.variable(initList.nonEmpty)
+  private val items = Rx.variable(initList)
+
+  def setList(newList: Seq[SearchItem]): Unit = {
+    items := newList
+    show := newList.nonEmpty
+  }
+
   private def iconStyle(kind: String): String = kind match {
     case "service"  => "fa fa-project-diagram"
     case "table"    => "fa fa-table"
@@ -96,22 +122,33 @@ case class SearchCandidates(list: Seq[SearchItem]) extends RxElement {
 
   override def render: RxElement = {
     div(
-      cls -> "container-fluid px-0",
-      for ((itemType, items) <- list.groupBy(_.kind) if items.nonEmpty) yield {
-        VStack(
-          h6(cls -> "dropdown-header", itemType.capitalize),
-          items.map { x =>
-            a(
-              cls -> "dropdown-item text-secondary ml-2",
-              i(cls -> iconStyle(x.kind)),
-              span(
-                cls -> "ml-2",
-                x.title
-              )
+      cls -> "dropdown px-0",
+      div(
+        show.map {
+          case true =>
+            cls -> "dropdown-menu mt-0 show"
+          case false =>
+            cls -> "dropdown-menu"
+        },
+        items.map { list =>
+          for ((itemType, items) <- list.groupBy(_.kind) if items.nonEmpty) yield {
+            VStack(
+              h6(cls -> "dropdown-header", itemType.capitalize),
+              items.map { x =>
+                a(
+                  cls     -> "dropdown-item text-secondary ml-2",
+                  onclick -> { e: MouseEvent => show := false },
+                  i(cls -> iconStyle(x.kind)),
+                  span(
+                    cls -> "ml-2",
+                    x.title
+                  )
+                )
+              }
             )
           }
-        )
-      }
+        }
+      )
     )
   }
 }
