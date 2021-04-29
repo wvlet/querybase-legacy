@@ -1,6 +1,7 @@
 package wvlet.querybase.ui.component.explore
 
-import org.scalajs.dom.MouseEvent
+import org.scalajs.dom.{Event, MouseEvent}
+import org.scalajs.dom.ext.KeyCode
 import wvlet.airframe.rx.Rx
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
@@ -9,8 +10,11 @@ import wvlet.log.LogSupport
 import wvlet.querybase.api.frontend.FrontendApi.{SearchItem, SearchRequest, SearchResponse}
 import wvlet.querybase.api.frontend.ServiceJSClient
 import wvlet.querybase.ui.RPCQueue
+import wvlet.querybase.ui.component.{ShortcutKeyDef, ShortcutKeys}
 import wvlet.querybase.ui.component.common.{LabeledForm, VStack}
 import wvlet.querybase.ui.component.notebook.NotebookEditor
+
+import scala.collection.immutable.ListMap
 
 /**
   */
@@ -18,12 +22,29 @@ class ExploreWindow(notebookEditor: NotebookEditor, serviceJSClient: ServiceJSCl
 
   private val searchResults = Rx.variable(SearchResponse(Seq.empty))
   private val searchForm = SearchForm(
-    onChangeHandler = { keyword: String =>
-      serviceJSClient.FrontendApi
-        .search(SearchRequest(keyword = keyword)).foreach { resp =>
-          searchResults := resp
+    onChangeHandler = search
+  )
+
+  private def search(keyword: String): Unit = {
+    serviceJSClient.FrontendApi
+      .search(SearchRequest(keyword = keyword)).foreach { resp =>
+        searchResults := resp
+      }
+  }
+
+  // Do the init search
+  search("")
+
+  private def shortcutKeys = new ShortcutKeys(
+    Seq(
+      ShortcutKeyDef(
+        keyCode = 191,
+        description = "Enter search box",
+        handler = { e: Event =>
+          searchForm.focus
         }
-    }
+      )
+    )
   )
 
   override def render: RxElement = {
@@ -33,19 +54,12 @@ class ExploreWindow(notebookEditor: NotebookEditor, serviceJSClient: ServiceJSCl
     }
 
     div(
+      shortcutKeys,
       VStack(
         searchForm,
         searchResults.map { x =>
           SearchCandidates(x.results)
-        },
-        table(
-          tr(
-            td("service")
-          ),
-          tr(
-            td("queries")
-          )
-        )
+        }
       )
     )
   }
@@ -75,44 +89,34 @@ case class SearchCandidates(list: Seq[SearchItem]) extends RxElement {
 
   private val show = Rx.variable(true)
 
-  override def render: RxElement = div(
-    cls -> "dropdown",
+  private def iconStyle(kind: String): String = kind match {
+    case "service"  => "fa fa-project-diagram"
+    case "table"    => "fa fa-table"
+    case "query"    => "fa fa-stream"
+    case "notebook" => "fa fa-book-open"
+    case _          => "fa fa-book"
+  }
+
+  override def render: RxElement = {
     div(
-      show.map {
-        case true =>
-          cls -> "dropdown-menu show"
-        case false =>
-          cls -> "dropdown-menu"
-      },
-      list.map { x =>
-        a(
-          cls -> "dropdown-item",
-          span(
-            cls -> "text-black-50",
-            x.kind match {
-              case "service" =>
-                i(cls -> "fa fa-project-diagram")
-              case "table" =>
-                i(cls -> "fa fa-table")
-              case "query" =>
-                i(cls -> "fa fa-stream")
-              case "note-book" =>
-                i(cls -> "fa fa-book-open")
-              case _ =>
-                i(cls -> "fa fa-book")
-            }
-          ),
-          onclick -> { e: MouseEvent =>
-            show := false
-          },
-          span(
-            cls -> "ml-2",
-            x.title
-          )
+      cls -> "container-fluid px-0",
+      for ((itemType, items) <- list.groupBy(_.kind) if items.nonEmpty) yield {
+        VStack(
+          h6(cls -> "dropdown-header", itemType.capitalize),
+          items.map { x =>
+            a(
+              cls -> "dropdown-item text-secondary ml-2",
+              i(cls -> iconStyle(x.kind)),
+              span(
+                cls -> "ml-2",
+                x.title
+              )
+            )
+          }
         )
       }
-    ).unless(list.isEmpty)
-  )
+    )
+  }
 }
 
 case class SearchItemCard(result: SearchItem) extends RxElement {

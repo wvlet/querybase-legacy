@@ -79,7 +79,7 @@ class FrontendApiImpl(coordinatorClient: CoordinatorClient, notebookManager: Not
       SearchItem(
         id = ULID.newULIDString,
         kind = "query",
-        title = "Account Names"
+        title = "Account list"
       )
     )
 

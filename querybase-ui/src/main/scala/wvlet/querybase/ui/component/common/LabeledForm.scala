@@ -34,8 +34,10 @@ case class LabeledForm(
   }
 
   def focus: Unit = {
-    findHTMLElement(formId).foreach { el =>
-      el.focus()
+    dom.document.getElementById(formId) match {
+      case el: HTMLInputElement =>
+        el.focus()
+        el.select()
     }
   }
 
