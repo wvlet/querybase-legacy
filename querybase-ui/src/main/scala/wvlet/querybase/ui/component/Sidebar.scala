@@ -78,7 +78,8 @@ class Sidebar(router: RxRouter) extends RxElement {
         style -> "height: calc(100vh - 60px);",
         navFrame(
           navItem("Home", "fa-home", "/home"),
-          navItem("Explore", "fas fa-book-open", "/explore"),
+          navItem("Explore", "fas fa-route", "/explore"),
+          navItem("Notebook", "fas fa-book-open", "/notebook"),
           navItem("Jobs", "fas fa-list", "/jobs"),
           navItem("Services", "fa-project-diagram", "/services"),
           navItem("System", "fa-server", "/system")

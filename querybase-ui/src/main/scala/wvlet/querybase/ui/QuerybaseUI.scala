@@ -8,7 +8,17 @@ import wvlet.airframe.rx.html.DOMRenderer
 import wvlet.airframe.rx.html.widget.auth.{GoogleAuth, GoogleAuthConfig, GoogleAuthProfile}
 import wvlet.airframe.surface.Surface
 import wvlet.log.{LogLevel, LogSupport, Logger}
-import wvlet.querybase.ui.component.page.{ExplorePage, HomePage, JobsPage, MainPage, ServicePage, SystemPage, TestPage}
+import wvlet.querybase.api.frontend.code.NotebookApi.Notebook
+import wvlet.querybase.ui.component.page.{
+  ExplorePage,
+  HomePage,
+  JobsPage,
+  MainPage,
+  NotebookPage,
+  ServicePage,
+  SystemPage,
+  TestPage
+}
 import wvlet.querybase.ui.component.{QueryListPanel, RxRoute, RxRouter}
 
 import scala.scalajs.js.annotation.JSExport
@@ -21,6 +31,7 @@ object QuerybaseUI extends LogSupport {
     routes = Seq(
       //RxRoute(path = "/home", title = "Home - Querybase", Surface.of[HomePage]),
       RxRoute(path = "/explore", title = "Explore - Querybase", Surface.of[ExplorePage]),
+      RxRoute(path = "/notebook", title = "Notebook - Querybase", Surface.of[NotebookPage]),
       RxRoute(path = "/jobs", title = "Jobs - Querybase", Surface.of[JobsPage]),
       RxRoute(path = "/services", title = "Services - Querybase", Surface.of[ServicePage]),
       RxRoute(path = "/system", title = "System - Querybase", Surface.of[SystemPage]),
