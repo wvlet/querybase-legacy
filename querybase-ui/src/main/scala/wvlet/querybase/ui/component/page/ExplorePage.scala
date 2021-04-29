@@ -10,7 +10,7 @@ import wvlet.airframe.ulid.ULID
 import wvlet.log.LogSupport
 import wvlet.querybase.api.frontend.FrontendApi.{SearchItem, SearchRequest, SearchResponse}
 import wvlet.querybase.ui.component.{Navbar, findHTMLElement}
-import wvlet.querybase.ui.component.common.VStack
+import wvlet.querybase.ui.component.common.{LabeledForm, VStack}
 import wvlet.querybase.ui.component.notebook.NotebookEditor
 import wvlet.querybase.api.frontend.{ServiceJSClient, ServiceJSClientRx}
 import wvlet.querybase.ui.{RPCQueue, RPCService}
@@ -45,11 +45,7 @@ class ExplorePage(notebookEditor: NotebookEditor, serviceJSClient: ServiceJSClie
       VStack(
         searchForm,
         searchResults.map { x =>
-          VStack(
-            x.results.map { item =>
-              SearchItemCard(item)
-            }
-          )
+          SearchCandidates(x.results)
         }
       )
     )
@@ -76,6 +72,21 @@ case class SearchForm(onChangeHandler: String => Unit = { e: String => }) extend
   }
 }
 
+case class SearchCandidates(list: Seq[SearchItem]) extends RxElement {
+  override def render: RxElement = div(
+    cls -> "dropdown",
+    div(
+      cls -> "dropdown-menu show",
+      list.map { x =>
+        a(
+          cls -> "dropdown-item",
+          x.title
+        )
+      }
+    ).unless(list.isEmpty)
+  )
+}
+
 case class SearchItemCard(result: SearchItem) extends RxElement {
   override def render: RxElement = div(
     cls   -> "card",
@@ -90,56 +101,6 @@ case class SearchItemCard(result: SearchItem) extends RxElement {
         cls -> "card-text",
         "SQL ..."
       )
-    )
-  )
-}
-
-case class LabeledForm(
-    elementId: String = ULID.newULIDString,
-    formId: String = ULID.newULIDString,
-    labelElement: RxElement = span(),
-    placeholderText: String = "input...",
-    onChangeHandler: String => Unit = { e: String => }
-) extends RxElement
-    with LogSupport {
-
-  def withLabel(newLabel: RxElement): LabeledForm   = this.copy(labelElement = newLabel)
-  def withPlaceholder(newText: String): LabeledForm = this.copy(placeholderText = newText)
-  def onChange(f: String => Unit): LabeledForm      = this.copy(onChangeHandler = f)
-
-  def getText: String = {
-    dom.document.getElementById(formId) match {
-      case e: HTMLInputElement =>
-        e.value
-      case _ =>
-        ""
-    }
-  }
-
-  def focus: Unit = {
-    findHTMLElement(formId).foreach { el =>
-      el.focus()
-    }
-  }
-
-  override def render: RxElement = div(
-    id  -> elementId,
-    cls -> "input-group m-1",
-    div(
-      cls -> "input-group-prepend",
-      label(
-        cls -> "input-group-text",
-        labelElement
-      )
-    ),
-    input(
-      id -> formId,
-      autofocus,
-      cls         -> "form-control mr-2",
-      tpe         -> "text",
-      placeholder -> placeholderText,
-      aria.label  -> "search input",
-      onkeyup     -> { e: KeyboardEvent => onChangeHandler(getText) }
     )
   )
 }
