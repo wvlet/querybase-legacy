@@ -57,20 +57,40 @@ class FrontendApiImpl(coordinatorClient: CoordinatorClient, notebookManager: Not
   }
 
   override def search(search: SearchRequest): SearchResponse = {
-    SearchResponse(results =
-      // dummy response
-      Seq(
-        SearchItem(
-          id = ULID.newULIDString,
-          kind = "table",
-          title = "query_completion"
-        ),
-        SearchItem(
-          id = ULID.newULIDString,
-          kind = "table",
-          title = "accounts"
-        )
+    // dummy response
+    val services = coordinatorClient.v1.ServiceCatalogApi.listServices().map { x =>
+      SearchItem(id = ULID.newULIDString, kind = "service", title = x.name)
+    }
+
+    val tables = Seq(
+      SearchItem(
+        id = ULID.newULIDString,
+        kind = "table",
+        title = "query_completion"
+      ),
+      SearchItem(
+        id = ULID.newULIDString,
+        kind = "table",
+        title = "accounts"
       )
     )
+
+    val queries = Seq(
+      SearchItem(
+        id = ULID.newULIDString,
+        kind = "query",
+        title = "Account Names"
+      )
+    )
+
+    val notebooks = Seq(
+      SearchItem(
+        id = ULID.newULIDString,
+        kind = "notebook",
+        title = "My Notebook"
+      )
+    )
+
+    SearchResponse(results = services ++ tables ++ queries ++ notebooks)
   }
 }
