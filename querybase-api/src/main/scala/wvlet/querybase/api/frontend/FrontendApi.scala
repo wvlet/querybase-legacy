@@ -30,6 +30,10 @@ trait FrontendApi {
   def getNotebook(request: GetNotebookRequest): Option[NotebookData]
 
   def formatQuery(query: String): String
+
+  // Search API
+  def search(search: SearchRequest): SearchResponse
+
 }
 
 object FrontendApi {
@@ -69,4 +73,18 @@ object FrontendApi {
   case class GetNotebookRequest(
       session: NotebookSession
   )
+
+  // Search API
+  case class SearchRequest(
+      keyword: String
+  )
+  case class SearchResponse(
+      results: Seq[SearchItem]
+  )
+  case class SearchItem(
+      id: String,
+      kind: String,
+      title: String
+  )
+
 }

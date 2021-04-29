@@ -2,6 +2,7 @@ package wvlet.querybase.server.frontend
 
 import wvlet.airframe.sql.model.LogicalPlanPrinter
 import wvlet.airframe.sql.parser.{SQLGenerator, SQLParser}
+import wvlet.airframe.ulid.ULID
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi.{NewQueryRequest, QueryInfo}
 import wvlet.querybase.api.backend.v1.{CoordinatorApi, ServiceCatalogApi}
@@ -53,5 +54,23 @@ class FrontendApiImpl(coordinatorClient: CoordinatorClient, notebookManager: Not
 
   override def formatQuery(query: String): String = {
     com.github.vertical_blank.sqlformatter.SqlFormatter.format(query)
+  }
+
+  override def search(search: SearchRequest): SearchResponse = {
+    SearchResponse(results =
+      // dummy response
+      Seq(
+        SearchItem(
+          id = ULID.newULIDString,
+          kind = "table",
+          title = "query_completion"
+        ),
+        SearchItem(
+          id = ULID.newULIDString,
+          kind = "table",
+          title = "accounts"
+        )
+      )
+    )
   }
 }

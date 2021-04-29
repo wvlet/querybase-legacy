@@ -11,11 +11,14 @@ import java.util.concurrent.TimeUnit
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
-/**
-  */
-trait RPCService extends LogSupport {
+trait RPCQueue {
   protected implicit val queue = scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
+}
+
+/**
+  */
+trait RPCService extends RPCQueue with LogSupport {
   private lazy val rpcClient               = bind[ServiceJSClient]
   protected val jsHttpClient: JSHttpClient = rpcClient.getClient
 
