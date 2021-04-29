@@ -10,7 +10,7 @@ import wvlet.log.LogSupport
 import wvlet.querybase.api.frontend.FrontendApi.{SearchItem, SearchRequest, SearchResponse}
 import wvlet.querybase.api.frontend.ServiceJSClient
 import wvlet.querybase.ui.RPCQueue
-import wvlet.querybase.ui.component.{ShortcutKeyDef, ShortcutKeys}
+import wvlet.querybase.ui.component.{DO_NOTHING, ShortcutKeyDef, ShortcutKeys}
 import wvlet.querybase.ui.component.common.{LabeledForm, VStack}
 import wvlet.querybase.ui.component.notebook.NotebookEditor
 
@@ -27,12 +27,13 @@ class ExploreWindow(notebookEditor: NotebookEditor, serviceJSClient: ServiceJSCl
     .withLabel(i(cls -> "fa fa-search"))
     .withPlaceholder("Search ...")
     .onChange { keyword: String => search(keyword) }
-    .onBlur { () => exitSearch }
     .onEnter { keyword: String =>
       info(s"Start search: ${keyword}")
     }
 
-  private val searchResultList = SearchCandidates(Seq.empty)
+  private val searchResultList = SearchCandidates().onSelect { x: SearchItem =>
+    info(s"Search :${x}")
+  }
 
   private def search(keyword: String): Unit = {
     serviceJSClient.FrontendApi
@@ -42,7 +43,7 @@ class ExploreWindow(notebookEditor: NotebookEditor, serviceJSClient: ServiceJSCl
   }
 
   private def exitSearch: Unit = {
-    searchResultList.setList(Seq.empty)
+    searchResultList.hide
     searchForm.blur
   }
 
@@ -74,20 +75,33 @@ class ExploreWindow(notebookEditor: NotebookEditor, serviceJSClient: ServiceJSCl
     div(
       shortcutKeys,
       VStack(
-        searchForm,
+        div(
+          style -> "width: 500px;",
+          searchForm
+        ),
         searchResultList
       )
     )
   }
 }
 
-case class SearchCandidates(private val initList: Seq[SearchItem]) extends RxElement {
-  private val show  = Rx.variable(initList.nonEmpty)
-  private val items = Rx.variable(initList)
+case class SearchCandidates(private val onSelectHandler: SearchItem => Unit = DO_NOTHING)
+    extends RxElement
+    with LogSupport {
+  private val show  = Rx.variable(false)
+  private val items = Rx.variable(Seq.empty[SearchItem])
+
+  def onSelect(f: SearchItem => Unit) = this.copy(
+    onSelectHandler = f
+  )
 
   def setList(newList: Seq[SearchItem]): Unit = {
     items := newList
     show := newList.nonEmpty
+  }
+
+  def hide: Unit = {
+    show := false
   }
 
   private def iconStyle(kind: String): String = kind match {
@@ -114,8 +128,11 @@ case class SearchCandidates(private val initList: Seq[SearchItem]) extends RxEle
               h6(cls -> "dropdown-header", itemType.capitalize),
               items.map { x =>
                 a(
-                  cls     -> "dropdown-item text-secondary ml-2",
-                  onclick -> { e: MouseEvent => show := false },
+                  cls -> "dropdown-item text-secondary ml-2",
+                  onclick -> { e: MouseEvent =>
+                    onSelectHandler(x)
+                    show := false
+                  },
                   i(cls -> iconStyle(x.kind)),
                   span(
                     cls -> "ml-2",

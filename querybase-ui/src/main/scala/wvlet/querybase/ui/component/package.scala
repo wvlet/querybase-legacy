@@ -10,6 +10,8 @@ import wvlet.airframe.rx.html.RxElement
   */
 package object component {
 
+  def DO_NOTHING[Input]: Input => Unit = { x: Input => }
+
   def findHTMLElement(id: String): Option[HTMLElement] = {
     dom.document.getElementById(id) match {
       case e: HTMLElement => Some(e)
