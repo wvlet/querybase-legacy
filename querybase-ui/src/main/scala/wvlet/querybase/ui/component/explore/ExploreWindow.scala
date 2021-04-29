@@ -7,7 +7,7 @@ import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.airframe.ulid.ULID
 import wvlet.log.LogSupport
-import wvlet.querybase.api.frontend.FrontendApi.{SearchItem, SearchRequest, SearchResponse}
+import wvlet.querybase.api.backend.v1.SearchApi.{SearchItem, SearchRequest, SearchResponse}
 import wvlet.querybase.api.frontend.ServiceJSClient
 import wvlet.querybase.ui.RPCQueue
 import wvlet.querybase.ui.component.{DO_NOTHING, ShortcutKeyDef, ShortcutKeys}

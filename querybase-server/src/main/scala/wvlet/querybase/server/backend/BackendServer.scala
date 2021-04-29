@@ -9,7 +9,13 @@ import wvlet.log.LogSupport
 import wvlet.log.io.IOUtil
 import wvlet.querybase.api.backend.ServiceGrpc
 import wvlet.querybase.api.backend.v1.ServerInfoApi
-import wvlet.querybase.server.backend.api.{CoordinatorApiImpl, ServiceCatalog, ServiceCatalogApiImpl, WorkerApiImpl}
+import wvlet.querybase.server.backend.api.{
+  CoordinatorApiImpl,
+  SearchApiImpl,
+  ServiceCatalog,
+  ServiceCatalogApiImpl,
+  WorkerApiImpl
+}
 import wvlet.querybase.server.backend.query.QueryExecutorConfig
 
 import java.io.File
@@ -44,6 +50,7 @@ object BackendServer extends LogSupport {
     .add[ServerInfoApi]
     .add[CoordinatorApiImpl]
     .add[ServiceCatalogApiImpl]
+    .add[SearchApiImpl]
 
   def workerRouter = Router
     .add[ServerInfoApi]

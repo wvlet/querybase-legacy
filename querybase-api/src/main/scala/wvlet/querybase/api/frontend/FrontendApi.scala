@@ -5,6 +5,7 @@ import wvlet.airframe.metrics.ElapsedTime
 import wvlet.querybase.api.backend.v1.ServiceCatalogApi
 import wvlet.querybase.api.BuildInfo
 import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
+import wvlet.querybase.api.backend.v1.SearchApi.{SearchRequest, SearchResponse}
 
 import java.time.Instant
 import java.util.UUID
@@ -32,7 +33,7 @@ trait FrontendApi {
   def formatQuery(query: String): String
 
   // Search API
-  def search(search: SearchRequest): SearchResponse
+  def search(request: SearchRequest): SearchResponse
 
 }
 
@@ -72,19 +73,6 @@ object FrontendApi {
 
   case class GetNotebookRequest(
       session: NotebookSession
-  )
-
-  // Search API
-  case class SearchRequest(
-      keyword: String
-  )
-  case class SearchResponse(
-      results: Seq[SearchItem]
-  )
-  case class SearchItem(
-      id: String,
-      kind: String,
-      title: String
   )
 
 }

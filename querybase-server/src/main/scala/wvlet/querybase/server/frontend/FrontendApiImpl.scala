@@ -5,6 +5,7 @@ import wvlet.airframe.sql.parser.{SQLGenerator, SQLParser}
 import wvlet.airframe.ulid.ULID
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi.{NewQueryRequest, QueryInfo}
+import wvlet.querybase.api.backend.v1.SearchApi.{SearchRequest, SearchResponse}
 import wvlet.querybase.api.backend.v1.{CoordinatorApi, ServiceCatalogApi}
 import wvlet.querybase.api.frontend.FrontendApi
 import wvlet.querybase.api.frontend.FrontendApi._
@@ -56,53 +57,7 @@ class FrontendApiImpl(coordinatorClient: CoordinatorClient, notebookManager: Not
     com.github.vertical_blank.sqlformatter.SqlFormatter.format(query)
   }
 
-  override def search(search: SearchRequest): SearchResponse = {
-
-    // dummy response
-    val services = coordinatorClient.v1.ServiceCatalogApi.listServices().map { x =>
-      SearchItem(id = ULID.newULIDString, kind = "service", title = x.name)
-    }
-
-    val tables = Seq(
-      SearchItem(
-        id = ULID.newULIDString,
-        kind = "table",
-        title = "query_completion"
-      ),
-      SearchItem(
-        id = ULID.newULIDString,
-        kind = "table",
-        title = "accounts"
-      )
-    )
-
-    val queries = Seq(
-      SearchItem(
-        id = ULID.newULIDString,
-        kind = "query",
-        title = "Account list"
-      )
-    )
-
-    val notebooks = Seq(
-      SearchItem(
-        id = ULID.newULIDString,
-        kind = "notebook",
-        title = "My Notebook"
-      )
-    )
-
-    val list        = services ++ tables ++ queries ++ notebooks
-    val matchedList = list.filter(_.title.toLowerCase.contains(search.keyword))
-
-    val results = Seq.newBuilder[SearchItem]
-    if (search.keyword.nonEmpty) {
-      results += SearchItem(id = ULID.newULIDString, kind = "search", title = search.keyword)
-    }
-    results ++= matchedList
-
-    SearchResponse(
-      results.result()
-    )
+  override def search(request: SearchRequest): SearchResponse = {
+    coordinatorClient.v1.SearchApi.search(request)
   }
 }
