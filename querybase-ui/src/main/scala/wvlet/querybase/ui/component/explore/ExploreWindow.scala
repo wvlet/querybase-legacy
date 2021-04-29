@@ -26,16 +26,21 @@ class ExploreWindow(notebookEditor: NotebookEditor, serviceJSClient: ServiceJSCl
   private val searchForm = LabeledForm()
     .withLabel(i(cls -> "fa fa-search"))
     .withPlaceholder("Search ...")
-    .onChange { keyword: String => search(keyword) }
+    .onChange { keyword: String => searchCandidates(keyword) }
     .onEnter { keyword: String =>
-      info(s"Start search: ${keyword}")
+      searchItems(keyword)
     }
 
   private val searchResultList = SearchCandidates().onSelect { x: SearchItem =>
-    info(s"Search :${x}")
+    info(s"Selected :${x}")
   }
 
-  private def search(keyword: String): Unit = {
+  private def searchItems(keyword: String): Unit = {
+    info(s"Search: ${keyword}")
+    // do nothing for now
+  }
+
+  private def searchCandidates(keyword: String): Unit = {
     serviceJSClient.FrontendApi
       .search(SearchRequest(keyword = keyword)).foreach { resp =>
         searchResultList.setList(resp.results)

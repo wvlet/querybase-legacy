@@ -8,8 +8,8 @@ import wvlet.querybase.server.backend.BackendServer.CoordinatorClient
 /**
   */
 class SearchApiImpl(coordinatorClient: CoordinatorClient) extends SearchApi {
-  override def search(request: SearchApi.SearchRequest): SearchApi.SearchResponse = {
 
+  override def search(request: SearchApi.SearchRequest): SearchApi.SearchResponse = {
     // dummy response
     val services = coordinatorClient.v1.ServiceCatalogApi.listServices().map { x =>
       SearchItem(id = ULID.newULIDString, kind = "service", title = x.name)
