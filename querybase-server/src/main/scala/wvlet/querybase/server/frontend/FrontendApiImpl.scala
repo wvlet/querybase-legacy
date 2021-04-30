@@ -54,7 +54,7 @@ class FrontendApiImpl(coordinatorClient: CoordinatorClient, notebookManager: Not
   }
 
   override def formatQuery(query: String): String = {
-    com.github.vertical_blank.sqlformatter.SqlFormatter.format(query)
+    SQLFormatter.format(query)
   }
 
   override def search(request: SearchRequest): SearchResponse = {
