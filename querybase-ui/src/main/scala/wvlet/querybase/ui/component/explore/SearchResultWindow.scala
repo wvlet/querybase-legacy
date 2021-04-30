@@ -30,15 +30,6 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
     show := false
   }
 
-  private def iconStyle(kind: String): String = kind match {
-    case "service"  => "fa fa-project-diagram"
-    case "table"    => "fa fa-table"
-    case "database" => "fa fa-database"
-    case "query"    => "fa fa-stream"
-    case "notebook" => "fa fa-book-open"
-    case _          => "fa fa-search"
-  }
-
   override def render: RxElement = {
     div(
       cls -> "dropdown px-0",
@@ -60,7 +51,7 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
                     onSelectHandler(x)
                     show := false
                   },
-                  i(cls -> iconStyle(x.kind)),
+                  ItemIcon(x.kind),
                   span(
                     cls -> "ml-2",
                     x.title

@@ -16,6 +16,7 @@ class TimelineView extends RxElement {
   override def render: RxElement = div(
     VStack(
       TimelineItemCard(TimelineItem(ULID.newULID, "query", "My query", "select 1")),
+      TimelineItemCard(TimelineItem(ULID.newULID, "query", "My query", "select 10")),
       TimelineItemCard(TimelineItem(ULID.newULID, "query", "My query", "select 10"))
     )
   )
@@ -46,16 +47,20 @@ case class TimelineItemCard(item: TimelineItem) extends RxElement {
     div(
       cls -> "card-body",
       h6(
-        cls -> "card-title",
-        item.title
+        cls -> "card-title text-secondary",
+        ItemIcon(item.kind),
+        span(
+          cls -> "ml-1",
+          item.title
+        )
       ),
       span(
         cls -> "card-text text-info",
         item.summary
       ),
       div(
-        cls -> "text-secondary",
-        item.createdAt.toString
+        cls -> "text-secondary text-right",
+        small(item.createdAt.toString)
       )
     )
   )
