@@ -8,6 +8,7 @@ import wvlet.querybase.api.backend.v1.SearchApi.{SearchRequest, SearchResponse}
 @RPC
 trait SearchApi {
   def search(request: SearchRequest): SearchResponse
+
 }
 
 object SearchApi {

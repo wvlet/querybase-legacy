@@ -17,6 +17,14 @@ class SearchApiImpl(coordinatorClient: CoordinatorClient) extends SearchApi {
       SearchItem(id = ULID.newULIDString, kind = "service", title = x.name)
     }
 
+    val databases = Seq(
+      SearchItem(
+        id = ULID.newULIDString,
+        kind = "database",
+        title = "summary"
+      )
+    )
+
     val tables = Seq(
       SearchItem(
         id = ULID.newULIDString,
@@ -46,7 +54,7 @@ class SearchApiImpl(coordinatorClient: CoordinatorClient) extends SearchApi {
       )
     )
 
-    val list        = services ++ tables ++ queries ++ notebooks
+    val list        = databases ++ services ++ tables ++ queries ++ notebooks
     val matchedList = list.filter(_.title.toLowerCase.contains(request.keyword))
 
     val results = Seq.newBuilder[SearchItem]

@@ -1,16 +1,14 @@
 package wvlet.querybase.ui
 
 import org.scalajs.dom
-import org.scalajs.dom.{Event, MouseEvent}
+import org.scalajs.dom.Event
 import org.scalajs.dom.raw.HTMLElement
-import wvlet.airframe.rx.Rx
-import wvlet.airframe.rx.html.RxElement
 
 /**
   */
 package object component {
 
-  def DO_NOTHING[Input]: Input => Unit = { x: Input => }
+  def DO_NOTHING[Input]: Input => Unit = { x: Any => }
 
   def findHTMLElement(id: String): Option[HTMLElement] = {
     dom.document.getElementById(id) match {

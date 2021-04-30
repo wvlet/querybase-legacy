@@ -8,6 +8,7 @@ import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.airframe.ulid.ULID
 import wvlet.log.LogSupport
+import wvlet.querybase.ui.component.DO_NOTHING
 
 /**
   */
@@ -16,8 +17,8 @@ case class LabeledForm(
     formId: String = ULID.newULIDString,
     labelElement: RxElement = span(),
     placeholderText: String = "input...",
-    onEnterHandler: String => Unit = { e: String => },
-    onChangeHandler: String => Unit = { e: String => },
+    onEnterHandler: String => Unit = DO_NOTHING,
+    onChangeHandler: String => Unit = DO_NOTHING,
     onBlurHandler: () => Unit = { () => }
 ) extends RxElement
     with LogSupport {
@@ -36,6 +37,9 @@ case class LabeledForm(
   }
 
   def getText: String = getFormInputElement.map(_.value).getOrElse("")
+  def setText(s: String): Unit = getFormInputElement.foreach { el =>
+    el.value = s
+  }
 
   def focus: Unit = getFormInputElement.foreach { el =>
     el.focus()
