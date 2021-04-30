@@ -12,7 +12,7 @@ case class HStack(elems: RxElement*) extends RxElement {
       div(
         cls -> "row",
         elems.map { x =>
-          div(cls -> "col", x)
+          div(cls -> "col px-0", x)
         }
       )
     )

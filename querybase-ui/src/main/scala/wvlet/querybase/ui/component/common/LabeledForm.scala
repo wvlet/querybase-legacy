@@ -17,6 +17,7 @@ case class LabeledForm(
     formId: String = ULID.newULIDString,
     labelElement: RxElement = span(),
     placeholderText: String = "input...",
+    isSmall: Boolean = false,
     onEnterHandler: String => Unit = DO_NOTHING,
     onChangeHandler: String => Unit = DO_NOTHING,
     onBlurHandler: () => Unit = { () => }
@@ -25,6 +26,7 @@ case class LabeledForm(
 
   def withLabel(newLabel: RxElement): LabeledForm   = this.copy(labelElement = newLabel)
   def withPlaceholder(newText: String): LabeledForm = this.copy(placeholderText = newText)
+  def withSmallSize: LabeledForm                    = this.copy(isSmall = true)
   def onEnter(f: String => Unit): LabeledForm       = this.copy(onEnterHandler = f)
   def onChange(f: String => Unit): LabeledForm      = this.copy(onChangeHandler = f)
   def onBlur(f: () => Unit): LabeledForm            = this.copy(onBlurHandler = f)
@@ -52,7 +54,8 @@ case class LabeledForm(
 
   override def render: RxElement = div(
     id  -> elementId,
-    cls -> "input-group m-1",
+    cls -> "input-group",
+    (cls += "input-group-sm").when(isSmall),
     div(
       cls -> "input-group-prepend",
       label(
@@ -63,7 +66,8 @@ case class LabeledForm(
     input(
       id -> formId,
       autofocus,
-      cls         -> "form-control",
+      cls -> s"form-control",
+      (cls += "from-control-sm").when(isSmall),
       tpe         -> "text",
       placeholder -> placeholderText,
       aria.label  -> "search input",
