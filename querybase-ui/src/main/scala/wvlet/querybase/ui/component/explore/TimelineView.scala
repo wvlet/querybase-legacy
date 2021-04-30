@@ -5,21 +5,47 @@ import wvlet.airframe.rx.Rx
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.airframe.ulid.ULID
-import wvlet.querybase.ui.component.common.VStack
+import wvlet.querybase.ui.component.common.{HStack, VStack}
 import wvlet.querybase.ui.component._
+import wvlet.querybase.ui.component.editor.TextEditor
+import wvlet.querybase.ui.component.notebook.{NotebookEditor, QueryResultViewer}
 
 import java.time.Instant
 
 /**
   */
 class TimelineView extends RxElement {
-  override def render: RxElement = div(
-    VStack(
-      TimelineItemCard(TimelineItem(ULID.newULID, "query", "My query", "select 1")),
-      TimelineItemCard(TimelineItem(ULID.newULID, "query", "My query", "select 10")),
-      TimelineItemCard(TimelineItem(ULID.newULID, "query", "My query", "select 10"))
+  override def render: RxElement =
+    div(
+      cls -> "w-100",
+      VStack(
+        TimelineBreadcrumb(),
+        HStack(
+          VStack(
+            div(
+              cls -> "w-100",
+              new TextEditor("select 1")
+            )
+          ),
+          VStack(
+            TimelineItemCard(TimelineItem(ULID.newULID, "query", "My query", "select 1")),
+            TimelineItemCard(TimelineItem(ULID.newULID, "query", "My query", "select 10")),
+            TimelineItemCard(TimelineItem(ULID.newULID, "database", "summary", "---"))
+          )
+        )
+      )
     )
-  )
+}
+
+case class TimelineBreadcrumb() extends RxElement {
+  override def render: RxElement = {
+    div(
+      cls -> "m-2",
+      a(href   -> "#/explore", "Timeline"),
+      span(cls -> "mx-1", "/"),
+      a(href   -> "#/explore/0123456", "Result")
+    )
+  }
 }
 
 case class TimelineItem(
