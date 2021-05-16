@@ -1,6 +1,6 @@
 addDependencyTreePlugin
 
-val AIRFRAME_VERSION = "21.4.1"
+val AIRFRAME_VERSION = "21.5.1"
 addSbtPlugin("org.xerial.sbt"     % "sbt-sonatype"  % "3.9.7")
 addSbtPlugin("com.jsuereth"       % "sbt-pgp"       % "2.1.1")
 addSbtPlugin("org.scoverage"      % "sbt-scoverage" % "1.7.0")
