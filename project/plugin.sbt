@@ -1,9 +1,9 @@
 addDependencyTreePlugin
 
-val AIRFRAME_VERSION = "21.4.1"
+val AIRFRAME_VERSION = "21.5.3"
 addSbtPlugin("org.xerial.sbt"     % "sbt-sonatype"  % "3.9.7")
 addSbtPlugin("com.jsuereth"       % "sbt-pgp"       % "2.1.1")
-addSbtPlugin("org.scoverage"      % "sbt-scoverage" % "1.7.0")
+addSbtPlugin("org.scoverage"      % "sbt-scoverage" % "1.7.3")
 addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo" % "0.10.0")
 addSbtPlugin("org.scalameta"      % "sbt-scalafmt"  % "2.4.2")
 addSbtPlugin("org.wvlet.airframe" % "sbt-airframe"  % AIRFRAME_VERSION)
@@ -22,7 +22,7 @@ addSbtPlugin("org.xerial.sbt" % "sbt-pack" % "0.13")
 // For accessing TD
 addSbtPlugin("org.xerial.sbt" % "sbt-sql-td" % "0.13")
 
-addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.2.20")
+addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.2.21")
 
 scalacOptions ++= Seq("-deprecation", "-feature")
 

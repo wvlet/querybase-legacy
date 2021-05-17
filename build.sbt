@@ -5,7 +5,7 @@ val targetScalaVersions = SCALA_2_13 :: Nil
 val AIRFRAME_VERSION    = "21.4.1-4-49d36e3b-SNAPSHOT"
 val SCALAJS_DOM_VERSION = "1.1.0"
 val SPARK_VERSION       = "3.0.1"
-val TRINO_VERSION       = "355"
+val TRINO_VERSION       = "356"
 
 // Reload build.sbt on changes
 Global / onChangedBuildSource := ReloadOnSourceChanges
@@ -43,7 +43,7 @@ val buildSettings = Seq[Setting[_]](
   // Use AirSpec for testing
   testFrameworks += new TestFramework("wvlet.airspec.Framework"),
   libraryDependencies ++= Seq(
-    "org.scala-lang.modules" %%% "scala-collection-compat" % "2.4.3",
+    "org.scala-lang.modules" %%% "scala-collection-compat" % "2.4.4",
     "org.wvlet.airframe"     %%% "airspec"                 % AIRFRAME_VERSION % Test
   ),
   resolvers ++= Seq(
@@ -158,7 +158,7 @@ lazy val server =
         "org.slf4j"                     % "slf4j-jdk14"          % "1.8.0-beta4",
         "org.xerial.snappy"             % "snappy-java"          % "1.1.8.4",
         "com.google.api-client"         % "google-api-client"    % "1.31.4",
-        "com.github.ben-manes.caffeine" % "caffeine"             % "3.0.1",
+        "com.github.ben-manes.caffeine" % "caffeine"             % "3.0.2",
         // SQL formatter
         "com.github.vertical-blank" % "sql-formatter" % "2.0.0"
       )
