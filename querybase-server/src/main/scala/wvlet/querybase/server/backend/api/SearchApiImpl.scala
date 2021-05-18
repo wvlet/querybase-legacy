@@ -1,19 +1,19 @@
 package wvlet.querybase.server.backend.api
 
 import wvlet.airframe.ulid.ULID
-import wvlet.querybase.api.backend.v1.SearchApi
+import wvlet.querybase.api.backend.v1.{SearchApi, ServiceCatalogApi}
 import wvlet.querybase.api.backend.v1.SearchApi.{SearchItem, SearchResponse}
 import wvlet.querybase.server.backend.BackendServer.CoordinatorClient
 
 /**
   */
-class SearchApiImpl(coordinatorClient: CoordinatorClient) extends SearchApi {
+class SearchApiImpl(serviceCatalogApi: ServiceCatalogApi) extends SearchApi {
 
   private def searchHistory: Unit = {}
 
   override def search(request: SearchApi.SearchRequest): SearchApi.SearchResponse = {
     // dummy response
-    val services = coordinatorClient.v1.ServiceCatalogApi.listServices().map { x =>
+    val services = serviceCatalogApi.listServices.map { x =>
       SearchItem(id = ULID.newULIDString, kind = "service", title = x.name)
     }
 

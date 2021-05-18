@@ -4,10 +4,13 @@ import org.scalajs.dom.raw.MouseEvent
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.log.LogSupport
+import wvlet.querybase.ui.component.DO_NOTHING
 
 /**
   */
-class EditorIcon(name: String, iconClass: String, onClick: MouseEvent => Unit) extends RxElement with LogSupport {
+class EditorIcon(name: String, iconClass: String, onClick: MouseEvent => Unit = DO_NOTHING)
+    extends RxElement
+    with LogSupport {
   import wvlet.querybase.ui.component._
 
   private val baseCls = s"fa ${iconClass} p-1"
