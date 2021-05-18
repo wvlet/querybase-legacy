@@ -2,7 +2,7 @@ val SCALA_2_12          = "2.12.12"
 val SCALA_2_13          = "2.13.4"
 val targetScalaVersions = SCALA_2_13 :: Nil
 
-val AIRFRAME_VERSION    = "21.4.1-4-49d36e3b-SNAPSHOT"
+val AIRFRAME_VERSION    = "21.5.4"
 val SCALAJS_DOM_VERSION = "1.1.0"
 val SPARK_VERSION       = "3.0.1"
 val TRINO_VERSION       = "356"
@@ -135,6 +135,8 @@ lazy val ui =
       Compile / webpackBundlingMode := BundlingMode.LibraryOnly()
     )
     .dependsOn(frontendClientJS, apiJS)
+
+ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-parser-combinators" % "always"
 
 lazy val server =
   project
