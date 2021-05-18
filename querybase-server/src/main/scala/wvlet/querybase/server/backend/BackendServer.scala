@@ -8,7 +8,7 @@ import wvlet.airframe.{Design, Session, newDesign}
 import wvlet.log.LogSupport
 import wvlet.log.io.IOUtil
 import wvlet.querybase.api.backend.ServiceGrpc
-import wvlet.querybase.api.backend.v1.ServerInfoApi
+import wvlet.querybase.api.backend.v1.{ServerInfoApi, ServiceCatalogApi}
 import wvlet.querybase.server.backend.api.{
   CoordinatorApiImpl,
   SearchApiImpl,
@@ -60,20 +60,19 @@ object BackendServer extends LogSupport {
     gRPC.server
       .withName(config.name)
       .withPort(config.port)
-      .withExecutorServiceProvider { config => Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors()) }
       .withRouter(coordinatorRouter)
 
   private def workerServer(config: WorkerConfig): GrpcServerConfig =
     gRPC.server
       .withName(config.name)
       .withPort(config.port)
-      .withExecutorServiceProvider { config => Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors()) }
       .withRouter(workerRouter)
 
   def coordinatorDesign(config: CoordinatorConfig): Design = {
     newDesign
       .bind[CoordinatorConfig].toInstance(config)
       .bind[CoordinatorServer].toProvider { session: Session => coordinatorServer(config).newServer(session) }
+      .bind[ServiceCatalogApi].to[ServiceCatalogApiImpl]
       .bind[ServiceCatalog].toInstance {
         val file = new File(".querybase/services.json")
         if (!file.exists) {
@@ -121,6 +120,5 @@ object BackendServer extends LogSupport {
         ServiceGrpc.newSyncClient(channel)
       }
       .bind[WorkerService].toEagerSingleton
-
   }
 }
