@@ -110,6 +110,7 @@ lazy val ui =
       name := "querybase-ui",
       description := "UI for Querybase",
       libraryDependencies ++= Seq(
+        "org.wvlet.airframe" %%% "airframe"           % AIRFRAME_VERSION,
         "org.wvlet.airframe" %%% "airframe-rx-html"   % AIRFRAME_VERSION,
         "org.wvlet.airframe" %%% "airframe-rx-widget" % AIRFRAME_VERSION,
         "org.scala-js"       %%% "scalajs-dom"        % SCALAJS_DOM_VERSION
