@@ -57,9 +57,13 @@ $ ./sbt
 > ~server/reStart standalone 
 ```
 
-
 Build Scala.js UI:
 ```
+// Set up Node.js and jsdom
+$ brew install nodde
+$ npm install jsdom
+
+// Build UI (Scala.js -> JavaScript)
 $ ./sbt
 > ~ui/fastOptJS/webpack
 ```
