@@ -157,11 +157,11 @@ lazy val server =
         "io.trino"            % "trino-jdbc"            % TRINO_VERSION,
         "io.trino"            % "trino-spi"             % TRINO_VERSION,
         // Trino / Finagle uses different versions of Jackson.
-        "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.12.3",
+        "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.12.4",
         "org.slf4j"                     % "slf4j-jdk14"          % "1.8.0-beta4",
         "org.xerial.snappy"             % "snappy-java"          % "1.1.8.4",
-        "com.google.api-client"         % "google-api-client"    % "1.32.1",
-        "com.github.ben-manes.caffeine" % "caffeine"             % "3.0.2",
+        "com.google.api-client"         % "google-api-client"    % "1.31.5",
+        "com.github.ben-manes.caffeine" % "caffeine"             % "3.0.3",
         // SQL formatter
         "com.github.vertical-blank" % "sql-formatter" % "2.0.1"
       )
