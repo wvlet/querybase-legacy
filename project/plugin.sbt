@@ -24,7 +24,7 @@ addSbtPlugin("org.xerial.sbt" % "sbt-pack" % "0.14")
 // For accessing TD
 addSbtPlugin("org.xerial.sbt" % "sbt-sql-td" % "0.13")
 
-addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.2.21")
+addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.2.22")
 
 scalacOptions ++= Seq("-deprecation", "-feature")
 
