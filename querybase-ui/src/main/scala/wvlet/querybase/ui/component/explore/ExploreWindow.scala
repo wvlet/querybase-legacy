@@ -52,6 +52,7 @@ class ExploreWindow(notebookEditor: NotebookEditor, serviceJSClient: ServiceJSCl
   private def shortcutKeys = new ShortcutKeys(
     Seq(
       ShortcutKeyDef(
+        // '/'
         keyCode = 191,
         description = "Enter search box",
         handler = { e: Event =>
