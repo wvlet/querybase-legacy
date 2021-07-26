@@ -10,13 +10,7 @@ import wvlet.querybase.ui.component.editor.TextEditor
   */
 trait HomePage extends RxElement with RPCService {
 
-  override def render: RxElement = new VerticalSplitPanel(
-    top = div(
-      "Hello Querybase!"
-    ),
-    bottom = div(
-      "Information panel"
-    ),
-    ratio = 0.6
+  override def render: RxElement = div(
+    "Hello Querybase!"
   )
 }
