@@ -37,6 +37,7 @@ class ExploreSearchBox(serviceJSClient: ServiceJSClient) extends RxElement with 
   private val searchForm = LabeledForm()
     .withLabel(i(cls -> "fa fa-search"))
     .withPlaceholder("Search ...")
+    .withSmallSize
     .onChange { keyword: String => searchCandidates(keyword) }
     .onEnter { keyword: String =>
       searchItems(keyword)

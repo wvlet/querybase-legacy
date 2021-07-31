@@ -7,13 +7,12 @@ import wvlet.airframe.rx.html.all.{div, onmouseout, onmouseover}
 
 /**
   */
-case class MouseOverToggle(toggleOnHover: RxVar[Boolean], elem: RxElement) extends RxElement {
+object MouseOverToggle {
 
-  override def render: RxElement = {
-    div(
+  def apply(toggleOnHover: RxVar[Boolean]): RxElement = {
+    Seq(
       onmouseover -> { e: MouseEvent => toggleOnHover := true },
-      onmouseout  -> { e: MouseEvent => toggleOnHover := false },
-      elem
+      onmouseout  -> { e: MouseEvent => toggleOnHover := false }
     )
   }
 }

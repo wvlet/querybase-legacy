@@ -11,22 +11,25 @@ import wvlet.querybase.ui.component.notebook.EditorIcon
   */
 class QueryEditor extends RxElement {
 
-  private val isIconVisible = Rx.variable(false)
+  private val focusOnEditor = Rx.variable(false)
 
-  override def render: RxElement = MouseOverToggle(
-    isIconVisible,
+  override def render: RxElement = {
     table(
+      cls -> "w-100",
       tr(
+        MouseOverToggle(focusOnEditor),
         td(
+          // Put the icon at the top of the cell
+          cls -> "align-top text-center bg-light",
+          HiddenElem(focusOnEditor, new EditorIcon("Add new cell", "fa-plus"))
         ),
         td(
-          div(
-            cls   -> "w-100",
-            style -> "min-width: 500px;",
-            new TextEditor("select 1")
-          )
+          cls   -> "align-middle",
+          style -> "display: flex; flex-direction: column; position: relative; ",
+          new TextEditor("select 1")
         )
       )
     )
-  )
+  }
+
 }

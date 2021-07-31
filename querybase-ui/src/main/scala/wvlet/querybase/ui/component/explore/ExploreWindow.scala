@@ -1,23 +1,23 @@
 package wvlet.querybase.ui.component.explore
 
 import wvlet.airframe.rx.html.RxElement
-import wvlet.airframe.rx.html.all._
 import wvlet.log.LogSupport
-import wvlet.querybase.ui.component.common.VStack
+import wvlet.querybase.ui.component.ServiceSelector
+import wvlet.querybase.ui.component.common.{HStack, VStack}
 
 /**
   */
-class ExploreWindow(searchBox: ExploreSearchBox) extends RxElement with LogSupport {
+class ExploreWindow(searchBox: ExploreSearchBox, serviceSelector: ServiceSelector) extends RxElement with LogSupport {
+
+  private val queryEditor = new QueryEditor()
 
   override def render: RxElement = {
     VStack(
-      div(
-        cls -> "p-1",
+      HStack(
+        serviceSelector,
         searchBox
       ),
-      div(
-        "editor"
-      )
+      queryEditor
     )
   }
 }

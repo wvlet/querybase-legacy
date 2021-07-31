@@ -7,7 +7,7 @@ import wvlet.airframe.rx.html.{RxComponent, RxElement}
 import wvlet.airframe.rx.html.all.{id, _}
 
 object Sidebar {
-  val sidebarWidth = 180;
+  val sidebarWidth = 180 // 240
 }
 
 /**

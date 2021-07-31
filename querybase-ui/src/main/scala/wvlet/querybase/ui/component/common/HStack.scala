@@ -8,11 +8,11 @@ import wvlet.airframe.rx.html.all.{cls, div}
 case class HStack(elems: RxElement*) extends RxElement {
   override def render: RxElement = {
     div(
-      cls -> "container-fluid",
+      cls -> "container-fluid pl-0 pt-1",
       div(
-        cls -> "row",
+        cls -> "d-flex flex-row justify-content-start",
         elems.map { x =>
-          div(cls -> "col px-0", x)
+          div(cls -> "pl-1", x)
         }
       )
     )
