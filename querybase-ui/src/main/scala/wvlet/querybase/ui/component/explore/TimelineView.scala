@@ -12,18 +12,12 @@ import java.time.Instant
 /**
   */
 class TimelineView extends RxElement {
-
-  private val queryEditor = new QueryEditor()
-
   override def render: RxElement =
     div(
       cls -> "w-100",
       VStack(
         TimelineBreadcrumb(),
         VStack(
-          VStack(
-            queryEditor
-          ),
           VStack(
             TimelineItemCard(TimelineItem(ULID.newULID, "query", "My query", "select 1")),
             TimelineItemCard(TimelineItem(ULID.newULID, "query", "My query", "select 10")),

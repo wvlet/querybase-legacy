@@ -2,7 +2,7 @@ package wvlet.querybase.ui.component.page
 
 import wvlet.airframe.rx.html.RxElement
 import wvlet.querybase.ui.RPCQueue
-import wvlet.querybase.ui.component.common.FixedHeightFrame
+import wvlet.querybase.ui.component.common.{FixedHeightFrame, VStack}
 import wvlet.querybase.ui.component.explore.ExploreWindow
 
 /**
