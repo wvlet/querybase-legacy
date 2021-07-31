@@ -11,21 +11,11 @@ import wvlet.querybase.ui.component.notebook.EditorIcon
   */
 class QueryEditor extends RxElement {
 
-  private val form = LabeledForm().withLabel("$var").withPlaceholder("value").withSmallSize
-
   private val isIconVisible = Rx.variable(false)
 
   override def render: RxElement = MouseOverToggle(
     isIconVisible,
     table(
-      tr(
-        td(
-          HiddenElem(isIconVisible, new EditorIcon("New variable", "fa-plus"))
-        ),
-        td(
-          form
-        )
-      ),
       tr(
         td(
         ),

@@ -5,10 +5,7 @@ import wvlet.airframe.rx.Rx
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.airframe.ulid.ULID
-import wvlet.querybase.ui.component.common.{HStack, VStack}
-import wvlet.querybase.ui.component._
-import wvlet.querybase.ui.component.editor.TextEditor
-import wvlet.querybase.ui.component.notebook.{NotebookEditor, QueryResultViewer}
+import wvlet.querybase.ui.component.common.VStack
 
 import java.time.Instant
 
@@ -23,7 +20,7 @@ class TimelineView extends RxElement {
       cls -> "w-100",
       VStack(
         TimelineBreadcrumb(),
-        HStack(
+        VStack(
           VStack(
             queryEditor
           ),

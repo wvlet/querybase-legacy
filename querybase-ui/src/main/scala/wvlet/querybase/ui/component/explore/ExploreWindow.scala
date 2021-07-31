@@ -8,7 +8,7 @@ import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.SearchApi.{SearchItem, SearchRequest}
 import wvlet.querybase.api.frontend.ServiceJSClient
 import wvlet.querybase.ui.RPCQueue
-import wvlet.querybase.ui.component.common.{LabeledForm, VStack}
+import wvlet.querybase.ui.component.common.{HStack, LabeledForm, VStack}
 import wvlet.querybase.ui.component.notebook.NotebookEditor
 import wvlet.querybase.ui.component.{ShortcutKeyDef, ShortcutKeys}
 
@@ -18,6 +18,37 @@ class ExploreWindow(notebookEditor: NotebookEditor, serviceJSClient: ServiceJSCl
     extends RxElement
     with RPCQueue
     with LogSupport {
+
+  private val searchBox = new ExploreSearchBox(serviceJSClient)
+
+  override def render: RxElement = {
+    VStack(
+      searchBox,
+      new TimelineView
+    )
+  }
+}
+
+class ExploreSearchBox(serviceJSClient: ServiceJSClient) extends RxElement with RPCQueue with LogSupport {
+  private def shortcutKeys = new ShortcutKeys(
+    Seq(
+      ShortcutKeyDef(
+        // '/'
+        keyCode = 191,
+        description = "Enter search box",
+        handler = { e: Event =>
+          searchForm.focus
+        }
+      ),
+      ShortcutKeyDef(
+        keyCode = KeyCode.Escape,
+        description = "Exit from search",
+        handler = { e: Event =>
+          exitSearch
+        }
+      )
+    )
+  )
 
   private val searchForm = LabeledForm()
     .withLabel(i(cls -> "fa fa-search"))
@@ -49,26 +80,6 @@ class ExploreWindow(notebookEditor: NotebookEditor, serviceJSClient: ServiceJSCl
     searchForm.blur
   }
 
-  private def shortcutKeys = new ShortcutKeys(
-    Seq(
-      ShortcutKeyDef(
-        // '/'
-        keyCode = 191,
-        description = "Enter search box",
-        handler = { e: Event =>
-          searchForm.focus
-        }
-      ),
-      ShortcutKeyDef(
-        keyCode = KeyCode.Escape,
-        description = "Exit from search",
-        handler = { e: Event =>
-          exitSearch
-        }
-      )
-    )
-  )
-
   override def render: RxElement = {
     // TODO Support onDidMount in RxElement
     scalajs.js.timers.setTimeout(10) {
@@ -82,8 +93,7 @@ class ExploreWindow(notebookEditor: NotebookEditor, serviceJSClient: ServiceJSCl
           style -> "width: 500px;",
           searchForm
         ),
-        searchResultList,
-        new TimelineView
+        searchResultList
       )
     )
   }
