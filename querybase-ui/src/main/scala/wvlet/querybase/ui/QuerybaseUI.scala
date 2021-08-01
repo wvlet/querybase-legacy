@@ -30,7 +30,14 @@ object QuerybaseUI extends LogSupport {
     prefix = "/ui/#",
     routes = Seq(
       //RxRoute(path = "/home", title = "Home - Querybase", Surface.of[HomePage]),
-      RxRoute(path = "/explore", title = "Explore - Querybase", Surface.of[ExplorePage]),
+      RxRoute(
+        path = "/explore",
+        title = "Explore - Querybase",
+        Surface.of[ExplorePage],
+        children = Seq(
+          RxRoute(path = "/:page_id", title = "Explore - Querybase", Surface.of[ExplorePage])
+        )
+      ),
       RxRoute(path = "/notebook", title = "Notebook - Querybase", Surface.of[NotebookPage]),
       RxRoute(path = "/jobs", title = "Jobs - Querybase", Surface.of[JobsPage]),
       RxRoute(path = "/services", title = "Services - Querybase", Surface.of[ServicePage]),
@@ -94,6 +101,11 @@ object QuerybaseUI extends LogSupport {
     val session = design.noLifeCycleLogging.newSession
     val panel   = session.build[MainPage]
     session.start
-    DOMRenderer.renderTo(mainNode, panel)
+    try {
+      DOMRenderer.renderTo(mainNode, panel)
+    } catch {
+      case e: Throwable =>
+        warn(e)
+    }
   }
 }

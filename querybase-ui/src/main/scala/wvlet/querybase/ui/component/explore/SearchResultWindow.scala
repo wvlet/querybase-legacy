@@ -18,6 +18,8 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
   private val focus = Rx.variable(false)
   private val items = Rx.variable(Seq.empty[SearchItem])
 
+  private var selectedIndex: Int = 0
+
   def onSelect(f: SearchItem => Unit) = this.copy(
     onSelectHandler = f
   )
@@ -25,6 +27,7 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
   def setList(newList: Seq[SearchItem]): Unit = {
     items := newList
     show := newList.nonEmpty
+    selectedIndex = 0
   }
 
   def hide: Unit = {
@@ -33,6 +36,13 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
 
   def hasFocus: Boolean = {
     focus.get
+  }
+
+  def up: Unit = {
+    selectedIndex += 1
+  }
+  def down: Unit = {
+    selectedIndex += 1
   }
 
   override def render: RxElement = {

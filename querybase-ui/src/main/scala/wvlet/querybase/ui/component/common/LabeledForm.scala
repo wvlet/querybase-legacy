@@ -20,7 +20,8 @@ case class LabeledForm(
     isSmall: Boolean = false,
     onEnterHandler: String => Unit = DO_NOTHING,
     onChangeHandler: String => Unit = DO_NOTHING,
-    onBlurHandler: () => Unit = { () => }
+    onBlurHandler: () => Unit = { () => },
+    onKeyEvent: KeyboardEvent => Unit = DO_NOTHING
 ) extends RxElement
     with LogSupport {
 
@@ -30,6 +31,7 @@ case class LabeledForm(
   def onEnter(f: String => Unit): LabeledForm       = this.copy(onEnterHandler = f)
   def onChange(f: String => Unit): LabeledForm      = this.copy(onChangeHandler = f)
   def onBlur(f: () => Unit): LabeledForm            = this.copy(onBlurHandler = f)
+  def onKeyEvent(f: KeyboardEvent => Unit)          = this.copy(onKeyEvent = f)
 
   private def getFormInputElement: Option[HTMLInputElement] = {
     dom.document.getElementById(formId) match {
@@ -72,6 +74,7 @@ case class LabeledForm(
       placeholder -> placeholderText,
       aria.label  -> "search input",
       onkeyup -> { e: KeyboardEvent =>
+        onKeyEvent(e)
         if (e.keyCode == KeyCode.Enter) {
           onEnterHandler(getText)
         } else {

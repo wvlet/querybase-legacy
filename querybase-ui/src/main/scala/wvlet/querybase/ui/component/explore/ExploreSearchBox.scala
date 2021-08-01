@@ -1,6 +1,6 @@
 package wvlet.querybase.ui.component.explore
 
-import org.scalajs.dom.Event
+import org.scalajs.dom.{Event, KeyboardEvent}
 import org.scalajs.dom.ext.KeyCode
 import org.scalajs.dom.raw.MouseEvent
 import wvlet.airframe.rx.html.RxElement
@@ -47,6 +47,9 @@ class ExploreSearchBox(serviceJSClient: ServiceJSClient) extends RxElement with 
     }
     .onEnter { keyword: String =>
       searchItems(keyword)
+    }
+    .onKeyEvent { (e: KeyboardEvent) =>
+      if (e.keyCode == KeyCode.Down) {}
     }
 
   private lazy val searchResultList = SearchResultWindow().onSelect { x: SearchItem =>

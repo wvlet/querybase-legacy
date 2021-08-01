@@ -27,7 +27,7 @@ class QueryEditor extends RxElement {
           HiddenElem(focusOnEditor, new EditorIcon("Add new cell", "fa-plus"))
         ),
         td(
-          ///cls   -> "align-middle",
+          cls -> "align-middle",
           //style -> "display: flex; flex-direction: column; position: relative; ",
           textEditor
         )

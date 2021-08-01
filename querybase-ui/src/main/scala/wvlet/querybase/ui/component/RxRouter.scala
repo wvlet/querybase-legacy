@@ -23,6 +23,7 @@ class RxRouter(prefix: String, routes: Seq[RxRoute]) extends LogSupport {
     val matchedRoute: Option[RouteMatch] = routes.flatMap(_.matches(subpath)).headOption
     matchedRoute match {
       case Some(m) =>
+        debug(s"Matched route: ${m}")
         if (updateHistory) {
           pushState(m)
         }
@@ -75,7 +76,7 @@ case class RxRoute(
     pageSurface: Surface,
     children: Seq[RxRoute] = Seq.empty,
     redirect: Option[RxRoute] = None
-) {
+) extends LogSupport {
   private val pathComponents = path.split("/")
 
   def matches(inputPath: String): Option[RouteMatch] = {
@@ -86,7 +87,20 @@ case class RxRoute(
       @tailrec
       def loop(i: Int, params: Map[String, String]): Option[RouteMatch] = {
         if (i == pathComponents.length) {
-          Some(RouteMatch(inputPath, this, params))
+          val defaultMatch = RouteMatch(inputPath, this, params)
+          if (children.isEmpty) {
+            Some(defaultMatch)
+          } else {
+            // Find a match from children
+            val subpath = s"/${pc.drop(i).mkString("/")}"
+            children
+              .map { childRoute =>
+                childRoute.matches(subpath)
+              }
+              .find(_.isDefined)
+              .map(_.get)
+              .orElse(Some(defaultMatch))
+          }
         } else {
           val expected = pathComponents(i)
           if (expected.startsWith(":")) {
@@ -100,7 +114,6 @@ case class RxRoute(
           }
         }
       }
-      // TODO Find a match from children
       loop(0, Map.empty)
     }
   }
