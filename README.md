@@ -69,3 +69,13 @@ $ ./sbt
 ```
 
 Open http://localhost:8080/ui/
+
+
+If you use [Browsersync](https://browsersync.io/), the UI will be reloaded automatically upon Scala.js change:
+```
+# Install Browsersync
+$ npm -g install browser-sync
+
+# Start a proxy server at http://localhost:3000/ui/ that watches Scala.js code change. 
+$ browser-sync start --proxy http://localhost:8080/ui/ --files querybase-ui/target/scala-2.13/scalajs-bundler/main
+```
