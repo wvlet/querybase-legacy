@@ -7,7 +7,7 @@ import wvlet.airframe.rx.html.all._
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.SearchApi.SearchItem
 import wvlet.querybase.ui.component.DO_NOTHING
-import wvlet.querybase.ui.component.common.VStack
+import wvlet.querybase.ui.component.common.{MouseOverToggle, VStack}
 
 /**
   */
@@ -15,6 +15,7 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
     extends RxElement
     with LogSupport {
   private val show  = Rx.variable(false)
+  private val focus = Rx.variable(false)
   private val items = Rx.variable(Seq.empty[SearchItem])
 
   def onSelect(f: SearchItem => Unit) = this.copy(
@@ -30,8 +31,13 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
     show := false
   }
 
+  def hasFocus: Boolean = {
+    focus.get
+  }
+
   override def render: RxElement = {
     div(
+      id  -> "search-result-window",
       cls -> "dropdown px-0",
       div(
         show.map {
@@ -40,6 +46,7 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
           case false =>
             cls -> "dropdown-menu"
         },
+        MouseOverToggle(focus),
         items.map { list =>
           for ((itemType, items) <- list.groupBy(_.kind) if items.nonEmpty) yield {
             VStack(

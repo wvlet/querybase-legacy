@@ -12,8 +12,11 @@ import wvlet.querybase.ui.component.notebook.EditorIcon
 class QueryEditor extends RxElement {
 
   private val focusOnEditor = Rx.variable(false)
-
+  private val textEditor    = new TextEditor("select 1")
   override def render: RxElement = {
+    scala.scalajs.js.timers.setTimeout(100) {
+      textEditor.focus
+    }
     table(
       cls -> "w-100",
       tr(
@@ -24,9 +27,9 @@ class QueryEditor extends RxElement {
           HiddenElem(focusOnEditor, new EditorIcon("Add new cell", "fa-plus"))
         ),
         td(
-          cls   -> "align-middle",
-          style -> "display: flex; flex-direction: column; position: relative; ",
-          new TextEditor("select 1")
+          ///cls   -> "align-middle",
+          //style -> "display: flex; flex-direction: column; position: relative; ",
+          textEditor
         )
       )
     )

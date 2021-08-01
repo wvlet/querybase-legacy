@@ -14,7 +14,6 @@ class ExploreWindow(searchBox: ExploreSearchBox, serviceSelector: ServiceSelecto
   override def render: RxElement = {
     VStack(
       HStack(
-        serviceSelector,
         searchBox
       ),
       queryEditor

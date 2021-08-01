@@ -2,14 +2,15 @@ package wvlet.querybase.ui.component.explore
 
 import org.scalajs.dom.Event
 import org.scalajs.dom.ext.KeyCode
+import org.scalajs.dom.raw.MouseEvent
 import wvlet.airframe.rx.html.RxElement
-import wvlet.airframe.rx.html.all.{cls, div, i, style}
+import wvlet.airframe.rx.html.all.{cls, div, i, onblur, style}
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.SearchApi.{SearchItem, SearchRequest}
 import wvlet.querybase.api.frontend.ServiceJSClient
 import wvlet.querybase.ui.RPCQueue
 import wvlet.querybase.ui.component.common.{LabeledForm, VStack}
-import wvlet.querybase.ui.component.{ShortcutKeyDef, ShortcutKeys}
+import wvlet.querybase.ui.component.{RichEvent, ShortcutKeyDef, ShortcutKeys}
 
 /**
   */
@@ -34,16 +35,21 @@ class ExploreSearchBox(serviceJSClient: ServiceJSClient) extends RxElement with 
     )
   )
 
-  private val searchForm = LabeledForm()
+  private val searchForm: LabeledForm = LabeledForm()
     .withLabel(i(cls -> "fa fa-search"))
     .withPlaceholder("Search ...")
     .withSmallSize
     .onChange { keyword: String => searchCandidates(keyword) }
+    .onBlur { () =>
+      if (!searchResultList.hasFocus) {
+        exitSearch
+      }
+    }
     .onEnter { keyword: String =>
       searchItems(keyword)
     }
 
-  private val searchResultList = SearchResultWindow().onSelect { x: SearchItem =>
+  private lazy val searchResultList = SearchResultWindow().onSelect { x: SearchItem =>
     info(s"Selected :${x}")
     searchForm.setText(x.title)
   }
@@ -66,10 +72,10 @@ class ExploreSearchBox(serviceJSClient: ServiceJSClient) extends RxElement with 
   }
 
   override def render: RxElement = {
-    // TODO Support onDidMount in RxElement
-    scalajs.js.timers.setTimeout(10) {
-      searchForm.focus
-    }
+//    // TODO Support onDidMount in RxElement
+//    scalajs.js.timers.setTimeout(10) {
+//      searchForm.focus
+//    }
 
     div(
       shortcutKeys,

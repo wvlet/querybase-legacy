@@ -199,6 +199,7 @@ class NotebookEditor(
       if (c eq cell) {
         c.focus
 
+        // Scroll to the cell position
         document.getElementById(notebookId) match {
           case e: HTMLElement =>
             Option(e.parentElement).foreach { parent =>
