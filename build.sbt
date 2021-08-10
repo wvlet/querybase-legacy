@@ -163,7 +163,7 @@ lazy val server =
         "com.google.api-client"         % "google-api-client"    % "1.32.1",
         "com.github.ben-manes.caffeine" % "caffeine"             % "3.0.3",
         // SQL formatter
-        "com.github.vertical-blank" % "sql-formatter" % "2.0.1"
+        "com.github.vertical-blank" % "sql-formatter" % "2.0.2"
       )
     )
     .dependsOn(apiJVM, sql, store, apiClient, frontendClientJVM)
