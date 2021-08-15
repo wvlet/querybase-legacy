@@ -2,12 +2,14 @@ package wvlet.querybase.ui.component.explore
 
 import wvlet.airframe.rx.html.RxElement
 import wvlet.log.LogSupport
-import wvlet.querybase.ui.component.ServiceSelector
+import wvlet.querybase.ui.component.{RxRouter, ServiceSelector}
 import wvlet.querybase.ui.component.common.{HStack, VStack}
 
 /**
   */
-class ExploreWindow(searchBox: ExploreSearchBox, serviceSelector: ServiceSelector) extends RxElement with LogSupport {
+class ExploreWindow(rxRouter: RxRouter, searchBox: ExploreSearchBox, serviceSelector: ServiceSelector)
+    extends RxElement
+    with LogSupport {
 
   private val queryEditor = new QueryEditor()
 
@@ -16,7 +18,13 @@ class ExploreWindow(searchBox: ExploreSearchBox, serviceSelector: ServiceSelecto
       HStack(
         searchBox
       ),
-      queryEditor
+      rxRouter.current.transform {
+        case Some(route) =>
+          queryEditor.setText(s"-- ${route.params.mkString(", ")}")
+          queryEditor
+        case None =>
+          queryEditor
+      }
     )
   }
 }
