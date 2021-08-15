@@ -2,7 +2,7 @@ val SCALA_2_12          = "2.12.12"
 val SCALA_2_13          = "2.13.4"
 val targetScalaVersions = SCALA_2_13 :: Nil
 
-val AIRFRAME_VERSION    = "21.7.0"
+val AIRFRAME_VERSION    = "21.8.0"
 val SCALAJS_DOM_VERSION = "1.1.0"
 val SPARK_VERSION       = "3.0.1"
 val TRINO_VERSION       = "358"
@@ -163,7 +163,7 @@ lazy val server =
         "com.google.api-client"         % "google-api-client"    % "1.32.1",
         "com.github.ben-manes.caffeine" % "caffeine"             % "3.0.3",
         // SQL formatter
-        "com.github.vertical-blank" % "sql-formatter" % "2.0.1"
+        "com.github.vertical-blank" % "sql-formatter" % "2.0.2"
       )
     )
     .dependsOn(apiJVM, sql, store, apiClient, frontendClientJVM)
