@@ -1,5 +1,7 @@
 package wvlet.querybase.server.backend.query
 
+import com.google.common.util.concurrent.Uninterruptibles
+
 import java.time.format.{DateTimeFormatterBuilder, SignStyle}
 import java.time.temporal.ChronoField._
 import java.time.{Instant, ZoneOffset, ZonedDateTime}
@@ -48,8 +50,6 @@ class QueryIdGenerator {
   }
 
   def newQueryId: String = {
-    import org.weakref.jmx.internal.guava.util.concurrent.Uninterruptibles
-
     import java.util.concurrent.TimeUnit
     // only generate 100,000 ids per day
     if (counter > 99_999) { // wait for the second to rollover
