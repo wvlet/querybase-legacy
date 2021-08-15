@@ -13,6 +13,11 @@ class QueryEditor extends RxElement {
 
   private val focusOnEditor = Rx.variable(false)
   private val textEditor    = new TextEditor("select 1")
+
+  def setText(text: String): Unit = {
+    textEditor.setTextValue(text)
+  }
+
   override def render: RxElement = {
     scala.scalajs.js.timers.setTimeout(100) {
       textEditor.focus
