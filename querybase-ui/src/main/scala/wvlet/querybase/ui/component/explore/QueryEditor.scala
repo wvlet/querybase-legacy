@@ -7,8 +7,7 @@ import wvlet.querybase.ui.component.common.{HStack, HiddenElem, LabeledForm, Mou
 import wvlet.querybase.ui.component.editor.TextEditor
 import wvlet.querybase.ui.component.notebook.EditorIcon
 
-/**
-  */
+/** */
 class QueryEditor extends RxElement {
 
   private val focusOnEditor = Rx.variable(false)

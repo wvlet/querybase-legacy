@@ -9,9 +9,7 @@ import wvlet.airframe.jdbc.ConnectionPool
 import wvlet.airframe.surface.{Primitive, Surface}
 import wvlet.log.LogSupport
 
-/**
-  *
-  */
+/** */
 object SQLHelper extends LogSupport {
 
   import scala.reflect.runtime.{universe => ru}
@@ -63,8 +61,9 @@ object SQLHelper extends LogSupport {
     updateColumns[A](tableName, obj, idColumn, columnMask = surface.params.map(_.name).filterNot(_ == idColumn))
   }
 
-  def updateColumns[A: ru.TypeTag](tableName: String, obj: A, idColumn: String, columnMask: Seq[String])(
-      implicit conn: Connection) {
+  def updateColumns[A: ru.TypeTag](tableName: String, obj: A, idColumn: String, columnMask: Seq[String])(implicit
+      conn: Connection
+  ) {
     val surface = Surface.of[A]
     val updateColumns = columnMask
       .map { column =>
@@ -97,8 +96,9 @@ object SQLHelper extends LogSupport {
     }
   }
 
-  def readStreamOf[A: ru.TypeTag, R](tableName: String, sql: String)(streamReader: scala.collection.Iterator[A] => R)(
-      implicit conn: Connection): R = {
+  def readStreamOf[A: ru.TypeTag, R](tableName: String, sql: String)(
+      streamReader: scala.collection.Iterator[A] => R
+  )(implicit conn: Connection): R = {
     val codec = MessageCodec.of[A]
     withResource(conn.createStatement()) { stmt =>
       debug(s"Executing query:\n${sql}")

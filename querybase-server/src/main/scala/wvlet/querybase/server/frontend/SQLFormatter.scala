@@ -2,8 +2,7 @@ package wvlet.querybase.server.frontend
 
 import com.github.vertical_blank.sqlformatter.core.FormatConfig
 
-/**
-  */
+/** */
 object SQLFormatter {
 
   private val formatter = {

@@ -6,8 +6,7 @@ import wvlet.querybase.api.frontend.{ServiceJSClient, ServiceJSClientRx}
 
 import java.util.concurrent.TimeUnit
 
-/**
-  */
+/** */
 class NotebookSaver(notebookEditor: NotebookEditor, rpcClient: ServiceJSClient) {
 
   private var saveTimer: Option[Cancelable]    = None

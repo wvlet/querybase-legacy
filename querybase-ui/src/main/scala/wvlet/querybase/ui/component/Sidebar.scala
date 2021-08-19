@@ -1,7 +1,6 @@
 package wvlet.querybase.ui.component
 
-/**
-  */
+/** */
 import org.scalajs.dom.raw.{HTMLElement, MouseEvent}
 import wvlet.airframe.rx.html.{RxComponent, RxElement}
 import wvlet.airframe.rx.html.all.{id, _}
@@ -10,8 +9,7 @@ object Sidebar {
   val sidebarWidth = 180 // 240
 }
 
-/**
-  */
+/** */
 class Sidebar(router: RxRouter) extends RxElement {
 
   private def layout: RxElement =

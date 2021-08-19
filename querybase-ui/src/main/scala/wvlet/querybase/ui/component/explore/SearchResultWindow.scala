@@ -9,8 +9,7 @@ import wvlet.querybase.api.backend.v1.SearchApi.SearchItem
 import wvlet.querybase.ui.component.DO_NOTHING
 import wvlet.querybase.ui.component.common.{MouseOverToggle, VStack}
 
-/**
-  */
+/** */
 case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = DO_NOTHING)
     extends RxElement
     with LogSupport {
@@ -26,7 +25,7 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
 
   def setList(newList: Seq[SearchItem]): Unit = {
     items := newList
-    show := newList.nonEmpty
+    show  := newList.nonEmpty
     selectedIndex = 0
   }
 

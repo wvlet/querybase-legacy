@@ -2,8 +2,7 @@ package wvlet.querybase.server.frontend
 
 import wvlet.airspec.AirSpec
 
-/**
-  */
+/** */
 class SQLFormatterTest extends AirSpec {
 
   test("format") {

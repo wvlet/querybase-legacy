@@ -4,8 +4,7 @@ import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryId
 
 import java.io.File
 
-/**
-  */
+/** */
 class QueryResultStore(queryExecutorConfig: QueryExecutorConfig) {
 
   init

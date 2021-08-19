@@ -5,8 +5,7 @@ import wvlet.airframe.rx.html.all._
 import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryResult
 import wvlet.querybase.ui.component.Sidebar
 
-/**
-  */
+/** */
 class QueryResultViewer(r: QueryResult) extends RxElement {
   override def render: RxElement = {
     val columnNames: Seq[String] = r.schema.map(_.name)

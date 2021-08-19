@@ -12,8 +12,7 @@ import wvlet.querybase.ui.RPCQueue
 import wvlet.querybase.ui.component.common.{LabeledForm, VStack}
 import wvlet.querybase.ui.component.{RichEvent, ShortcutKeyDef, ShortcutKeys}
 
-/**
-  */
+/** */
 class ExploreSearchBox(serviceJSClient: ServiceJSClient) extends RxElement with RPCQueue with LogSupport {
   private def shortcutKeys = new ShortcutKeys(
     Seq(

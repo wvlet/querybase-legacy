@@ -9,8 +9,7 @@ import wvlet.querybase.ui.component.common.VStack
 
 import java.time.Instant
 
-/**
-  */
+/** */
 class TimelineView extends RxElement {
   override def render: RxElement =
     div(

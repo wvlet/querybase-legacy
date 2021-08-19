@@ -16,8 +16,7 @@ trait RPCQueue {
 
 }
 
-/**
-  */
+/** */
 trait RPCService extends RPCQueue with LogSupport {
   private lazy val rpcClient               = bind[ServiceJSClient]
   protected val jsHttpClient: JSHttpClient = rpcClient.getClient

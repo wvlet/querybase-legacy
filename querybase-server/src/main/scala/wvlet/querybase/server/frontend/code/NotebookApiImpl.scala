@@ -6,8 +6,7 @@ import wvlet.querybase.api.frontend.code.NotebookApi
 import NotebookApi._
 import wvlet.airframe.ulid.ULID
 
-/**
-  */
+/** */
 class NotebookApiImpl extends NotebookApi {
   override def createNotebook(notebook: Notebook, requestId: ULID): Option[Notebook] = None
 

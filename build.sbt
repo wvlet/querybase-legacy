@@ -35,8 +35,8 @@ val buildSettings = Seq[Setting[_]](
   // Exclude compile-time only projects. This is a workaround for bloop,
   // which cannot resolve Optional dependencies nor compile-internal dependencie.
   crossScalaVersions := targetScalaVersions,
-  crossPaths := true,
-  publishMavenStyle := true,
+  crossPaths         := true,
+  publishMavenStyle  := true,
   // Support JDK8 for Spark
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
   scalacOptions ++= Seq("-feature", "-deprecation"),
@@ -55,13 +55,13 @@ ThisBuild / publishTo := sonatypePublishToBundle.value
 
 val jsBuildSettings = Seq[Setting[_]](
   crossScalaVersions := targetScalaVersions,
-  coverageEnabled := false
+  coverageEnabled    := false
 )
 
 val noPublish = Seq(
   publishArtifact := false,
-  publish := {},
-  publishLocal := {}
+  publish         := {},
+  publishLocal    := {}
 )
 
 lazy val jvmProjects = Seq[ProjectReference](apiJVM, server, apiClient, sql, frontendClientJVM)
@@ -85,7 +85,7 @@ lazy val api =
     .enablePlugins(BuildInfoPlugin)
     .settings(buildSettings)
     .settings(
-      name := "querybase-api",
+      name        := "querybase-api",
       description := "Querybase API",
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %%% "airframe-http"    % AIRFRAME_VERSION,
@@ -93,7 +93,7 @@ lazy val api =
         "org.scala-lang"       % "scala-reflect"    % scalaVersion.value
       ),
       buildInfoPackage := "wvlet.querybase.api",
-      buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, scalaBinaryVersion, sbtVersion)
+      buildInfoKeys    := Seq[BuildInfoKey](name, version, scalaVersion, scalaBinaryVersion, sbtVersion)
     )
     .jsSettings(jsBuildSettings)
 
@@ -107,7 +107,7 @@ lazy val ui =
     .settings(buildSettings)
     .settings(jsBuildSettings)
     .settings(
-      name := "querybase-ui",
+      name        := "querybase-ui",
       description := "UI for Querybase",
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %%% "airframe"           % AIRFRAME_VERSION,
@@ -115,12 +115,12 @@ lazy val ui =
         "org.wvlet.airframe" %%% "airframe-rx-widget" % AIRFRAME_VERSION,
         "org.scala-js"       %%% "scalajs-dom"        % SCALAJS_DOM_VERSION
       ),
-      scalaJSUseMainModuleInitializer := true,
-      Test / jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
-      Test / requireJsDomEnv := true,
-      Compile / webpackConfigFile := Some(baseDirectory.value / "webpack.config.js"),
-      Test / webpackConfigFile := Some(baseDirectory.value / "webpack-test.config.js"),
-      startWebpackDevServer / version := "3.11.0",
+      scalaJSUseMainModuleInitializer              := true,
+      Test / jsEnv                                 := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
+      Test / requireJsDomEnv                       := true,
+      Compile / webpackConfigFile                  := Some(baseDirectory.value / "webpack.config.js"),
+      Test / webpackConfigFile                     := Some(baseDirectory.value / "webpack-test.config.js"),
+      startWebpackDevServer / version              := "3.11.0",
       Compile / npmDependencies += "monaco-editor" -> "0.21.3",
       Compile / npmDevDependencies ++= Seq(
         "import-loader"                -> "1.0.1",
@@ -174,7 +174,7 @@ lazy val apiClient =
     .enablePlugins(AirframeHttpPlugin)
     .settings(buildSettings)
     .settings(
-      name := "querybase-api-client",
+      name                := "querybase-api-client",
       airframeHttpClients := Seq("wvlet.querybase.api.backend:grpc"),
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %% "airframe-http-grpc" % AIRFRAME_VERSION
@@ -227,7 +227,7 @@ lazy val store =
     .in(file("querybase-store"))
     .settings(buildSettings)
     .settings(
-      name := "querybase-store",
+      name        := "querybase-store",
       description := "querybase storage engine",
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %% "airframe"      % AIRFRAME_VERSION,
@@ -243,7 +243,7 @@ lazy val td =
     .enablePlugins(SbtSQLTreasureData)
     .settings(buildSettings)
     .settings(
-      name := "querybase-td",
+      name        := "querybase-td",
       description := "querybase log collector for Arm Treasure Data"
     )
     .dependsOn(apiJVM, store)

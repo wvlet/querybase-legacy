@@ -38,8 +38,7 @@ case class WorkerConfig(
   def port: Int = serverAddress.port
 }
 
-/**
-  */
+/** */
 object BackendServer extends LogSupport {
 
   type CoordinatorClient = ServiceGrpc.SyncClient

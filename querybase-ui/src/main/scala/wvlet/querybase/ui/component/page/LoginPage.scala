@@ -5,8 +5,7 @@ import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.airframe.rx.html.widget.auth.GoogleAuth
 
-/**
-  */
+/** */
 class LoginPage(auth: GoogleAuth) extends RxElement {
   override def render: RxElement = {
     div(

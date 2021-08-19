@@ -6,8 +6,7 @@ import wvlet.airframe.rx.html.all._
 import wvlet.log.LogSupport
 import wvlet.querybase.ui.component.DO_NOTHING
 
-/**
-  */
+/** */
 class EditorIcon(name: String, iconClass: String, onClick: MouseEvent => Unit = DO_NOTHING)
     extends RxElement
     with LogSupport {

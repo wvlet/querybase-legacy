@@ -5,8 +5,7 @@ import wvlet.querybase.api.backend.v1.{SearchApi, ServiceCatalogApi}
 import wvlet.querybase.api.backend.v1.SearchApi.{SearchItem, SearchResponse}
 import wvlet.querybase.server.backend.BackendServer.CoordinatorClient
 
-/**
-  */
+/** */
 class SearchApiImpl(serviceCatalogApi: ServiceCatalogApi) extends SearchApi {
 
   private def searchHistory: Unit = {}

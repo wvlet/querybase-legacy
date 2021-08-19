@@ -75,8 +75,7 @@ object TrinoQueryRunner {
 
 }
 
-/**
-  */
+/** */
 class TrinoQueryRunner(okHttpClient: OkHttpClient) {
   def startQuery(r: TrinoQueryRequest): TrinoQueryContext = {
     new TrinoQueryContext(StatementClientFactory.newStatementClient(okHttpClient, r.toClientSession, r.sql))

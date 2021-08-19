@@ -6,8 +6,7 @@ import wvlet.log.LogSupport
 
 import java.util.concurrent.TimeUnit
 
-/**
-  */
+/** */
 object OkHttpClientService extends LogSupport {
   def design: Design =
     Design.newDesign

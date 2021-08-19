@@ -7,8 +7,7 @@ import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryInfo
 import wvlet.querybase.api.backend.v1.query.QueryStatus
 import wvlet.querybase.ui.component.QueryListPanel
 
-/**
-  */
+/** */
 class QueryStatusLine(queryInfo: QueryInfo) extends RxElement with LogSupport {
 
   private def status(s: QueryStatus): RxElement = {

@@ -12,8 +12,7 @@ import java.util.concurrent.TimeUnit
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
 
-/**
-  */
+/** */
 case class ShortcutKeyDef(
     keyCode: Int,
     alt: Boolean = false,

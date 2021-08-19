@@ -3,8 +3,7 @@ package wvlet.querybase.api.backend.v1
 import wvlet.airframe.http.RPC
 import wvlet.querybase.api.backend.v1.SearchApi.{SearchRequest, SearchResponse}
 
-/**
-  */
+/** */
 @RPC
 trait SearchApi {
   def search(request: SearchRequest): SearchResponse

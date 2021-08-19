@@ -14,8 +14,7 @@ case class GoogleAuthConfig(
     clientId: String = "793299428025-n6kmmrmcs4g80kibc7m7qakn6vc656bt.apps.googleusercontent.com"
 )
 
-/**
-  */
+/** */
 class GoogleAuthFilter(config: GoogleAuthConfig) extends AuthFilter with LogSupport {
 
   private val verifier = {

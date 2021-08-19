@@ -6,8 +6,7 @@ import wvlet.querybase.api.backend.v1.CoordinatorApi.NodeId
 
 import java.time.Instant
 
-/**
-  */
+/** */
 @RPC
 trait WorkerApi {
   import WorkerApi._

@@ -9,8 +9,7 @@ import wvlet.querybase.api.backend.ServiceGrpc
 import java.util.concurrent.ConcurrentHashMap
 import scala.annotation.tailrec
 
-/**
-  */
+/** */
 class RPCClientProvider(workerConfig: WorkerConfig) extends LogSupport with AutoCloseable {
 
   import scala.jdk.CollectionConverters._

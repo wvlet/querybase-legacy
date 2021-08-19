@@ -6,8 +6,7 @@ import wvlet.querybase.api.backend.v1.query.QueryStatus
 
 import java.time.Instant
 
-/**
-  */
+/** */
 @RPC
 trait CoordinatorApi {
   import CoordinatorApi._

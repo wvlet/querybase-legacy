@@ -4,8 +4,7 @@ import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.Future
 import wvlet.airframe.http.finagle.FinagleFilter
 
-/**
-  */
+/** */
 trait AuthFilter extends FinagleFilter
 
 object NoAuthFilter extends AuthFilter {

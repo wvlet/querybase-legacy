@@ -5,8 +5,7 @@ import wvlet.airspec.AirSpec
 import wvlet.querybase.api.backend.v1.CoordinatorApi.NewQueryRequest
 import wvlet.querybase.server.backend.BackendServer.CoordinatorClient
 
-/**
-  */
+/** */
 class CoordinatorTest extends AirSpec {
 
   override protected def design: Design = BackendServer.testDesign

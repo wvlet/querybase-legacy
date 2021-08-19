@@ -5,8 +5,7 @@ import wvlet.log.LogSupport
 import wvlet.querybase.ui.component.{RxRouter, ServiceSelector}
 import wvlet.querybase.ui.component.common.{HStack, VStack}
 
-/**
-  */
+/** */
 class ExploreWindow(rxRouter: RxRouter, searchBox: ExploreSearchBox, serviceSelector: ServiceSelector)
     extends RxElement
     with LogSupport {

@@ -5,8 +5,7 @@ import wvlet.airframe.http.Http
 import wvlet.airspec.AirSpec
 import wvlet.querybase.server.frontend.FrontendServer.FrontendClient
 
-/**
-  */
+/** */
 class FrontendServerTest extends AirSpec {
 
   override protected def design: Design = FrontendServer.testDesign

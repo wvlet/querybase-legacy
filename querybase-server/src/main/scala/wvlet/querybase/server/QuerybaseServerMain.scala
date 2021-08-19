@@ -8,8 +8,7 @@ import wvlet.querybase.server.backend.BackendServer.CoordinatorServer
 import wvlet.querybase.server.backend.{BackendServer, CoordinatorConfig, WorkerConfig, WorkerService}
 import wvlet.querybase.server.frontend.{FrontendServer, FrontendServerConfig}
 
-/**
-  */
+/** */
 object QuerybaseServerMain {
   def main(args: Array[String]): Unit = {
     Logger.init

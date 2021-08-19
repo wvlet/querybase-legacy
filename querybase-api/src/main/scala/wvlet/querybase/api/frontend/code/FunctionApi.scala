@@ -4,8 +4,7 @@ import java.time.Instant
 
 import wvlet.airframe.http.RPC
 
-/**
-  */
+/** */
 object FunctionApi {
 
   case class FunctionDef(

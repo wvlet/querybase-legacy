@@ -9,8 +9,7 @@ import java.net.InetAddress
 import java.time.Instant
 import java.util.concurrent.{Executors, ScheduledExecutorService, TimeUnit}
 
-/**
-  */
+/** */
 class WorkerService(
     workerConfig: WorkerConfig,
     // Adding this dependency to start WorkerServer

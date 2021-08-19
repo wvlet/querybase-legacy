@@ -5,8 +5,7 @@ import wvlet.querybase.api.backend.v1.query.QueryLogApi
 import wvlet.querybase.api.backend.v1.query.QueryLogApi._
 import wvlet.querybase.store.{QueryList, QueryStorage}
 
-/**
-  */
+/** */
 trait QueryLogApiImpl extends QueryLogApi {
   private val storage = bind[QueryStorage]
 
