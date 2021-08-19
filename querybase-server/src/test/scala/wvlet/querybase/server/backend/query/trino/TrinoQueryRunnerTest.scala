@@ -3,8 +3,7 @@ package wvlet.querybase.server.backend.query.trino
 import wvlet.airframe.Design
 import wvlet.airspec.AirSpec
 
-/**
-  */
+/** */
 class TrinoQueryRunnerTest extends AirSpec {
 
   if (sys.env.get("TD_API_KEY").isEmpty) {

@@ -1,7 +1,6 @@
 package wvlet.querybase.ui.component
 
-/**
-  */
+/** */
 import org.scalajs.dom
 import org.scalajs.dom.PopStateEvent
 import wvlet.airframe.codec.MessageCodec
@@ -11,8 +10,7 @@ import wvlet.log.LogSupport
 
 import scala.annotation.tailrec
 
-/**
-  */
+/** */
 class RxRouter(prefix: String, routes: Seq[RxRoute]) extends LogSupport {
   private lazy val currentRoute: RxOptionVar[RouteMatch] = Rx.optionVariable(None)
 

@@ -6,8 +6,7 @@ import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.log.LogSupport
 
-/**
-  */
+/** */
 class SchemaForm extends RxElement with LogSupport {
   private var _text: String = ""
 

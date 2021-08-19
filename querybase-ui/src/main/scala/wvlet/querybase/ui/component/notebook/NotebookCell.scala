@@ -12,8 +12,7 @@ import wvlet.querybase.api.frontend.FrontendApi.NotebookCellData
 import wvlet.querybase.ui.component.editor.TextEditor
 import wvlet.querybase.ui.component.findHTMLElement
 
-/**
-  */
+/** */
 class NotebookCell(
     val notebookEditor: NotebookEditor,
     cellId: ULID,
@@ -30,8 +29,8 @@ class NotebookCell(
 
   def runCell: Unit = {
     notebookEditor.submitQuery(editor.getTextValue).foreach { queryId =>
-      currentQueryId := Some(queryId)
-      showResult := true
+      currentQueryId   := Some(queryId)
+      showResult       := true
       currentQueryInfo := None
     }
   }

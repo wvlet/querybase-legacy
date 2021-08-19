@@ -2,8 +2,7 @@ package wvlet.querybase.ui.component.notebook
 
 import wvlet.querybase.api.backend.v1.CoordinatorApi.QueryResult
 
-/**
-  */
+/** */
 object QueryResultPrinter {
 
   def toTable(qi: QueryResult): Seq[Seq[String]] = {

@@ -7,8 +7,7 @@ object Navbar {
   def navbarHeight = 60
 }
 
-/**
-  */
+/** */
 class Navbar(loginProfile: LoginProfileIcon, router: RxRouter) extends RxElement {
 
   override def render: RxElement = {

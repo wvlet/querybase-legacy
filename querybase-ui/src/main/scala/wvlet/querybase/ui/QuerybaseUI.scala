@@ -23,8 +23,7 @@ import wvlet.querybase.ui.component.{QueryListPanel, RxRoute, RxRouter}
 
 import scala.scalajs.js.annotation.JSExport
 
-/**
-  */
+/** */
 object QuerybaseUI extends LogSupport {
   private def router = new RxRouter(
     prefix = "/ui/#",

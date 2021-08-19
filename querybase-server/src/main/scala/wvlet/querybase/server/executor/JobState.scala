@@ -1,7 +1,6 @@
 package wvlet.querybase.server.executor
 
-/**
-  */
+/** */
 sealed trait JobState
 object JobState {
   def all = Seq(QUEUED, RUNNING, FINISHED, FAILED, CANCELLED)

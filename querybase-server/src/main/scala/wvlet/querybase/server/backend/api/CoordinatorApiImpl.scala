@@ -8,8 +8,7 @@ import wvlet.querybase.server.backend.query.{QueryManager, QueryResultFileReader
 
 import java.time.Instant
 
-/**
-  */
+/** */
 class CoordinatorApiImpl(nodeManager: NodeManager, queryManager: QueryManager, queryResultStore: QueryResultStore)
     extends CoordinatorApi
     with LogSupport {

@@ -7,8 +7,7 @@ import wvlet.airframe.rx.html.all._
 import wvlet.querybase.ui.component.common.Clipboard
 import wvlet.querybase.ui.component._
 
-/**
-  */
+/** */
 class NotebookCellToolbar(thisCell: NotebookCell, isToolbarVisible: RxVar[Boolean]) extends RxElement {
   private implicit val queue = scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 

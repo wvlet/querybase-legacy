@@ -6,8 +6,7 @@ import wvlet.airframe.rx.html.all._
 
 case class SelectorItem(name: String, value: String)
 
-/**
-  */
+/** */
 class Selector(name: String, private var items: Seq[SelectorItem], private var _selectedIndex: Int = 0)
     extends RxElement {
 

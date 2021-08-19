@@ -7,8 +7,7 @@ import java.net.InetAddress
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
-/**
-  */
+/** */
 class NodeManager(coordinatorConfig: CoordinatorConfig) extends LogSupport {
   import scala.jdk.CollectionConverters._
 

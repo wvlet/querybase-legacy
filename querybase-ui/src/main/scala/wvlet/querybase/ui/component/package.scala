@@ -4,8 +4,7 @@ import org.scalajs.dom
 import org.scalajs.dom.Event
 import org.scalajs.dom.raw.HTMLElement
 
-/**
-  */
+/** */
 package object component {
 
   def DO_NOTHING[Input]: Input => Unit = { x: Any => }

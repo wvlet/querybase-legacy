@@ -14,8 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.{ConcurrentHashMap, Executors}
 import scala.jdk.CollectionConverters._
 
-/**
-  */
+/** */
 class QueryManager(
     catalog: ServiceCatalog,
     nodeManager: NodeManager,

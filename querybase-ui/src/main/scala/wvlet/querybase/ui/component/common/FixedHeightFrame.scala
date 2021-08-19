@@ -4,8 +4,7 @@ import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all.{div, style}
 import wvlet.querybase.ui.component.Navbar
 
-/**
-  */
+/** */
 object FixedHeightFrame extends RxElement {
   override def render: RxElement = {
     div(

@@ -3,8 +3,7 @@ package wvlet.querybase.api.backend.v1
 import wvlet.airframe.http.RPC
 import wvlet.airframe.metrics.ElapsedTime
 
-/**
-  */
+/** */
 @RPC
 trait ServerInfoApi {
   private val serviceStartTimeMillis = System.currentTimeMillis()

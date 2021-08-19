@@ -6,8 +6,7 @@ import wvlet.airspec.AirSpec
 import wvlet.querybase.server.executor.JobQueue.JobEntry
 import wvlet.querybase.server.backend.query.trino.TrinoJob
 
-/**
-  */
+/** */
 class JobQueueTest extends AirSpec {
 
   override protected def design: Design = {

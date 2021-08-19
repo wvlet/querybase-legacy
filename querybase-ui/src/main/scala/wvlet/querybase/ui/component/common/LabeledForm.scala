@@ -10,8 +10,7 @@ import wvlet.airframe.ulid.ULID
 import wvlet.log.LogSupport
 import wvlet.querybase.ui.component.DO_NOTHING
 
-/**
-  */
+/** */
 case class LabeledForm(
     elementId: String = ULID.newULIDString,
     formId: String = ULID.newULIDString,

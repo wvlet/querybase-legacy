@@ -9,7 +9,8 @@ import java.util.Locale
 import java.util.concurrent.{ThreadLocalRandom, TimeUnit}
 import scala.concurrent.duration.MILLISECONDS
 
-/** A Scala version of https://github.com/trinodb/trino/blob/master/core/trino-main/src/main/java/io/trino/execution/QueryIdGenerator.java
+/** A Scala version of
+  * https://github.com/trinodb/trino/blob/master/core/trino-main/src/main/java/io/trino/execution/QueryIdGenerator.java
   */
 class QueryIdGenerator {
   private val BASE_32 = Array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't',

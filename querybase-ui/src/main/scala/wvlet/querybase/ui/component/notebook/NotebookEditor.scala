@@ -14,8 +14,7 @@ import wvlet.querybase.ui.component._
 
 import scala.concurrent.Future
 
-/**
-  */
+/** */
 class NotebookEditor(
     serviceSelector: ServiceSelector,
     private[ui] val rpcRxClient: ServiceJSClientRx,

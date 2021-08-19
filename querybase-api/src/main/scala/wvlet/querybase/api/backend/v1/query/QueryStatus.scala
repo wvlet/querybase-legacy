@@ -1,7 +1,6 @@
 package wvlet.querybase.api.backend.v1.query
 
-/**
-  */
+/** */
 sealed trait QueryStatus {
   def isFinished: Boolean
 }

@@ -7,8 +7,7 @@ import wvlet.querybase.ui.RPCService
 import wvlet.airframe.rx.html.all._
 import wvlet.querybase.api.frontend.code.ProjectApi.Project
 
-/**
-  */
+/** */
 trait ProjectSelector extends RxElement with RPCService {
 
   private def getProjects = {

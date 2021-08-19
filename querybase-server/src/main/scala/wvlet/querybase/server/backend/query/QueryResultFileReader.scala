@@ -9,8 +9,7 @@ import wvlet.querybase.api.backend.v1.CoordinatorApi.{Column, QueryResult}
 
 import java.io.{File, FileInputStream}
 
-/**
-  */
+/** */
 class QueryResultFileReader(file: File) extends LogSupport {
   assert(file.getName.endsWith(".msgpack.snappy"), s"unsupported file format: ${file}")
 

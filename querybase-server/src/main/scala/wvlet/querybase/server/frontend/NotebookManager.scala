@@ -7,8 +7,7 @@ import wvlet.querybase.api.frontend.FrontendApi.{NotebookData, NotebookSession}
 
 import java.io.{File, FileWriter}
 
-/**
-  */
+/** */
 class NotebookManager extends LogSupport {
 
   private val sessionStorePath = new File(".querybase", "sessions")

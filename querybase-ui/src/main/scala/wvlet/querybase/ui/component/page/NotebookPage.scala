@@ -6,8 +6,7 @@ import wvlet.querybase.ui.component.Navbar
 import wvlet.querybase.ui.component.common.FixedHeightFrame
 import wvlet.querybase.ui.component.notebook.NotebookEditor
 
-/**
-  */
+/** */
 class NotebookPage(notebookEditor: NotebookEditor) extends RxElement {
   override def render: RxElement = {
     FixedHeightFrame(

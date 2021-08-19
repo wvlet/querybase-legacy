@@ -45,8 +45,7 @@ object NotebookApi {
   }
 }
 
-/**
-  */
+/** */
 @RPC
 trait NotebookApi {
   import NotebookApi._

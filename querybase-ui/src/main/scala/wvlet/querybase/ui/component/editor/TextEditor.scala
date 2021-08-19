@@ -40,8 +40,7 @@ import scala.scalajs.js
 import scala.scalajs.js.Dictionary
 import js.JSConverters._
 
-/**
-  */
+/** */
 class TextEditor(
     initialValue: String = "",
     maxHeight: Int = 350,
