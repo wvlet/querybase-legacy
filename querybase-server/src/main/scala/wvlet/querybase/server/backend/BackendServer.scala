@@ -115,7 +115,11 @@ object BackendServer extends LogSupport {
     coordinatorDesign(coordinatorConfig)
       .add(workerDesign(workerConfig))
       .bind[CoordinatorClient].toProvider { (coordinatorServer: CoordinatorServer) =>
-        val channel = ManagedChannelBuilder.forTarget(coordinatorAddress.toString()).usePlaintext().build()
+        val channel = ManagedChannelBuilder
+          .forTarget(coordinatorAddress.toString())
+          .maxInboundMessageSize(32 * 1024 * 1024)
+          .usePlaintext()
+          .build()
         ServiceGrpc.newSyncClient(channel)
       }
       .bind[WorkerService].toEagerSingleton

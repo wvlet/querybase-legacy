@@ -54,7 +54,10 @@ object FrontendServer extends LogSupport {
       .bind[QueryStorage].to[SQLiteQueryStorage]
       .bind[AuthFilter].to[GoogleAuthFilter]
       .bind[CoordinatorClient].toInstance {
-        val channel = ManagedChannelBuilder.forTarget(config.coordinatorAddress.hostAndPort).usePlaintext().build
+        val channel = ManagedChannelBuilder
+          .forTarget(config.coordinatorAddress.hostAndPort)
+          .maxInboundMessageSize(128 * 1024 * 1024)
+          .usePlaintext().build
         ServiceGrpc.newSyncClient(channel)
       }
 
