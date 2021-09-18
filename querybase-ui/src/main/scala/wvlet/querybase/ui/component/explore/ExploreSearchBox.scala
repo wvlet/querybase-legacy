@@ -109,15 +109,15 @@ class ExploreSearchBox(serviceJSClient: ServiceJSClient) extends RxElement with 
 
   override def render: RxElement = {
 //    // TODO Support onDidMount in RxElement
-//    scalajs.js.timers.setTimeout(10) {
-//      searchForm.focus
-//    }
+    scalajs.js.timers.setTimeout(10) {
+      searchForm.focus
+    }
 
     div(
       shortcutKeys,
       VStack(
         div(
-          style -> "width: 500px;",
+          style -> "width: 561px;",
           searchForm
         ),
         searchResultWindow

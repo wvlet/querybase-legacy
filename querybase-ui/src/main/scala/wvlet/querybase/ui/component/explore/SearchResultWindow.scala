@@ -92,7 +92,7 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
     div(
       id    -> "search-result-window",
       cls   -> "dropdown px-0",
-      style -> "width: 500px;",
+      style -> "width: 561px;",
       show.map(x => searchResults(x))
     )
   }
