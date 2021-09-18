@@ -5,12 +5,10 @@ import org.scalajs.dom.ext.KeyCode
 import org.scalajs.dom.raw.{HTMLInputElement, HTMLTextAreaElement, KeyboardEvent}
 import wvlet.airframe.rx.Rx
 import wvlet.airframe.rx.html.RxElement
-import wvlet.airframe.rx.html.all.{div, span}
 import wvlet.log.LogSupport
 
 import java.util.concurrent.TimeUnit
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
 
 /** */
 case class ShortcutKeyDef(
@@ -58,7 +56,7 @@ class ShortcutKeys(name: String, keys: Seq[ShortcutKeyDef] = Seq.empty, ignoreTe
 
   override def render: RxElement =
     keyEvent.throttleLast(200, TimeUnit.MILLISECONDS).map { e =>
-      debug(s"[${name}] Key is pressed: ${e.key}:${e.keyCode}, meta:${e.metaKey}, alt:${e.altKey}, ${e.ctrlKey}")
+      trace(s"[${name}] Key is pressed: ${e.key}:${e.keyCode}, meta:${e.metaKey}, alt:${e.altKey}, ${e.ctrlKey}")
       if (e.keyCode == KeyCode.Escape || !(ignoreTextArea && isTextArea(e))) {
         keys.find(key => key.hasMatch(e)).foreach { keyDef =>
           debug(s"Found a match: ${keyDef}")

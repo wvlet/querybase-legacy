@@ -5,6 +5,7 @@ import org.scalajs.dom.ext.KeyCode
 import org.scalajs.dom.raw.MouseEvent
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all.{cls, div, i, onblur, style}
+import wvlet.airframe.ulid.ULID
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.SearchApi.{SearchItem, SearchRequest}
 import wvlet.querybase.api.frontend.ServiceJSClient
@@ -37,20 +38,6 @@ class ExploreSearchBox(serviceJSClient: ServiceJSClient) extends RxElement with 
 
   private var inSearchResults: Boolean = false
 
-  private def moveDown: Unit = {
-    if (inSearchResults) {
-      searchResultWindow.down
-    } else {
-      inSearchResults = true
-      searchResultWindow.enter
-    }
-  }
-  private def moveUp: Unit = {
-    if (inSearchResults) {
-      searchResultWindow.up
-    }
-  }
-
   private val searchForm: LabeledForm = LabeledForm()
     .withLabel(i(cls -> "fa fa-search"))
     .withPlaceholder("Search ...")
@@ -62,7 +49,11 @@ class ExploreSearchBox(serviceJSClient: ServiceJSClient) extends RxElement with 
       }
     }
     .onEnter { keyword: String =>
-      searchItems(keyword)
+      val searchItem = searchResultWindow.getSelected.getOrElse(
+        SearchItem(id = ULID.newULIDString, kind = "", title = keyword)
+      )
+      searchForm.setText(searchItem.title)
+      selectItem(searchItem)
     }
     .onKeyEvent { (e: KeyboardEvent) =>
       e.getSourceElement.foreach { el =>
@@ -89,8 +80,9 @@ class ExploreSearchBox(serviceJSClient: ServiceJSClient) extends RxElement with 
     searchForm.setText(x.title)
   }
 
-  private def searchItems(keyword: String): Unit = {
-    info(s"Search: ${keyword}")
+  private def selectItem(item: SearchItem): Unit = {
+    info(s"Search: ${item}")
+    searchResultWindow.hide
     // do nothing for now
   }
 
@@ -105,6 +97,20 @@ class ExploreSearchBox(serviceJSClient: ServiceJSClient) extends RxElement with 
     searchResultWindow.hide
     inSearchResults = false
     searchForm.blur
+  }
+
+  private def moveDown: Unit = {
+    if (inSearchResults) {
+      searchResultWindow.down
+    } else {
+      inSearchResults = true
+      searchResultWindow.select(0)
+    }
+  }
+  private def moveUp: Unit = {
+    if (inSearchResults) {
+      searchResultWindow.up
+    }
   }
 
   override def render: RxElement = {

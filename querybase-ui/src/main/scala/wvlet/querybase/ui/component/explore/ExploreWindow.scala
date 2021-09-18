@@ -22,13 +22,13 @@ class ExploreWindow(rxRouter: RxRouter, searchBox: ExploreSearchBox, serviceSele
       cls -> "my-1",
       VStack(
         searchBox,
-        rxRouter.current.transform {
-          case Some(route) =>
-            queryEditor.setText(s"-- ${route.params.mkString(", ")}")
-            queryEditor
-          case None =>
-            queryEditor
-        }
+//        rxRouter.current.transform {
+//          case Some(route) =>
+//            queryEditor.setText(s"-- ${route.params.mkString(", ")}")
+//            queryEditor
+//          case None =>
+//            queryEditor
+//        }
       )
     )
   }

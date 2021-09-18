@@ -26,8 +26,11 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
   )
 
   def setList(newList: Seq[SearchItem]): Unit = {
-    items := newList
-    show  := newList.nonEmpty
+    val updatedList = (for ((itemType, items) <- newList.groupBy(_.kind) if items.nonEmpty) yield {
+      items
+    }).flatten.toSeq
+    items := updatedList
+    show  := updatedList.nonEmpty
   }
 
   def hide: Unit = {
@@ -38,8 +41,8 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
     _focus.get
   }
 
-  def enter: Unit = {
-    selectedIndex := 0
+  def select(index:Int): Unit = {
+    selectedIndex := index
   }
 
   def up: Int = {
@@ -51,6 +54,17 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
     selectedIndex.get
   }
 
+  def getSelected: Option[SearchItem] = {
+    val lst = items.get
+    val index = selectedIndex.get
+    if(index >= 0 && index < lst.length) {
+      Some(lst(index))
+    }
+    else {
+      None
+    }
+  }
+
   override def render: RxElement = {
     def searchResults(visible: Boolean): RxElement = {
       div(
@@ -58,11 +72,8 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
         (cls += "mt-0 show").when(visible),
         MouseOverToggle(_focus),
         items.map { list =>
-          val itemList = for ((itemType, items) <- list.groupBy(_.kind) if items.nonEmpty) yield {
-            items
-          }
           VStack(
-            itemList.flatten.zipWithIndex.map { case (x, index) =>
+            list.zipWithIndex.map { case (x, index) =>
               //h6(cls -> "dropdown-header", itemType.capitalize),
               selectedIndex.map { i =>
                 a(
