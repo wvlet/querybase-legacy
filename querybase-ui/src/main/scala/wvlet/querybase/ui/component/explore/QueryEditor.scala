@@ -18,9 +18,6 @@ class QueryEditor extends RxElement {
   }
 
   override def render: RxElement = {
-    scala.scalajs.js.timers.setTimeout(100) {
-      textEditor.focus
-    }
     table(
       cls -> "w-100",
       tr(

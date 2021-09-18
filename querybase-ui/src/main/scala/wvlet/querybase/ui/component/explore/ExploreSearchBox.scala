@@ -15,6 +15,7 @@ import wvlet.querybase.ui.component.{RichEvent, ShortcutKeyDef, ShortcutKeys}
 /** */
 class ExploreSearchBox(serviceJSClient: ServiceJSClient) extends RxElement with RPCQueue with LogSupport {
   private def shortcutKeys = new ShortcutKeys(
+    name = "search box",
     Seq(
       ShortcutKeyDef(
         // '/'
@@ -34,13 +35,29 @@ class ExploreSearchBox(serviceJSClient: ServiceJSClient) extends RxElement with 
     )
   )
 
+  private var inSearchResults: Boolean = false
+
+  private def moveDown: Unit = {
+    if (inSearchResults) {
+      searchResultWindow.down
+    } else {
+      inSearchResults = true
+      searchResultWindow.enter
+    }
+  }
+  private def moveUp: Unit = {
+    if (inSearchResults) {
+      searchResultWindow.up
+    }
+  }
+
   private val searchForm: LabeledForm = LabeledForm()
     .withLabel(i(cls -> "fa fa-search"))
     .withPlaceholder("Search ...")
     .withSmallSize
     .onChange { keyword: String => searchCandidates(keyword) }
     .onBlur { () =>
-      if (!searchResultList.hasFocus) {
+      if (!searchResultWindow.hasFocus) {
         exitSearch
       }
     }
@@ -48,10 +65,26 @@ class ExploreSearchBox(serviceJSClient: ServiceJSClient) extends RxElement with 
       searchItems(keyword)
     }
     .onKeyEvent { (e: KeyboardEvent) =>
-      if (e.keyCode == KeyCode.Down) {}
+      e.getSourceElement.foreach { el =>
+        e.keyCode match {
+          case KeyCode.Down =>
+            moveDown
+          case KeyCode.N if e.ctrlKey == true =>
+            moveDown
+          case KeyCode.Up =>
+            moveUp
+          case KeyCode.P if e.ctrlKey == true =>
+            moveUp
+          case _ =>
+        }
+      }
     }
 
-  private lazy val searchResultList = SearchResultWindow().onSelect { x: SearchItem =>
+  def focus: Unit = {
+    searchForm.focus
+  }
+
+  private lazy val searchResultWindow = SearchResultWindow().onSelect { x: SearchItem =>
     info(s"Selected :${x}")
     searchForm.setText(x.title)
   }
@@ -64,12 +97,13 @@ class ExploreSearchBox(serviceJSClient: ServiceJSClient) extends RxElement with 
   private def searchCandidates(keyword: String): Unit = {
     serviceJSClient.FrontendApi
       .search(SearchRequest(keyword = keyword)).foreach { resp =>
-        searchResultList.setList(resp.results)
+        searchResultWindow.setList(resp.results)
       }
   }
 
   private def exitSearch: Unit = {
-    searchResultList.hide
+    searchResultWindow.hide
+    inSearchResults = false
     searchForm.blur
   }
 
@@ -86,7 +120,7 @@ class ExploreSearchBox(serviceJSClient: ServiceJSClient) extends RxElement with 
           style -> "width: 500px;",
           searchForm
         ),
-        searchResultList
+        searchResultWindow
       )
     )
   }

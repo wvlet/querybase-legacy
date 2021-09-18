@@ -77,6 +77,7 @@ class NotebookEditor(
   }
 
   private val shortcutKeys = new ShortcutKeys(
+    "notebook",
     Seq(
       ShortcutKeyDef(
         keyCode = KeyCode.Escape,

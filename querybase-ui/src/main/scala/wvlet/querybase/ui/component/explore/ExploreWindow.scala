@@ -13,6 +13,10 @@ class ExploreWindow(rxRouter: RxRouter, searchBox: ExploreSearchBox, serviceSele
   private val queryEditor = new QueryEditor()
 
   override def render: RxElement = {
+    scala.scalajs.js.timers.setTimeout(100) {
+      searchBox.focus
+    }
+
     VStack(
       HStack(
         searchBox

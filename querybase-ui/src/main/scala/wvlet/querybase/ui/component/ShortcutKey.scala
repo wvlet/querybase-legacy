@@ -27,7 +27,9 @@ case class ShortcutKeyDef(
   }
 }
 
-class ShortcutKeys(keys: Seq[ShortcutKeyDef] = Seq.empty) extends RxElement with LogSupport {
+class ShortcutKeys(name: String, keys: Seq[ShortcutKeyDef] = Seq.empty, ignoreTextArea: Boolean = true)
+    extends RxElement
+    with LogSupport {
 
   private val keyEvent = Rx.variable[KeyboardEvent](new KeyboardEvent(""))
   // We need to explicitly create js.Function1 object to have a stable pointer to the function.
@@ -37,12 +39,12 @@ class ShortcutKeys(keys: Seq[ShortcutKeyDef] = Seq.empty) extends RxElement with
   }
 
   override def beforeRender: Unit = {
-    info(s"Add shortcuts")
+    info(s"[${name}] Add shortcuts")
     dom.document.addEventListener("keydown", onKeyDown, false)
   }
 
   override def beforeUnmount: Unit = {
-    info(s"Remove shortcuts")
+    info(s"[${name}] Remove shortcuts")
     dom.document.removeEventListener("keydown", onKeyDown, false)
   }
 
@@ -56,10 +58,10 @@ class ShortcutKeys(keys: Seq[ShortcutKeyDef] = Seq.empty) extends RxElement with
 
   override def render: RxElement =
     keyEvent.throttleLast(200, TimeUnit.MILLISECONDS).map { e =>
-      //info(s"Key is pressed: ${e.key}:${e.keyCode}, meta:${e.metaKey}, alt:${e.altKey}, ${e.ctrlKey}")
-      if (e.keyCode == KeyCode.Escape || !isTextArea(e)) {
+      debug(s"[${name}] Key is pressed: ${e.key}:${e.keyCode}, meta:${e.metaKey}, alt:${e.altKey}, ${e.ctrlKey}")
+      if (e.keyCode == KeyCode.Escape || !(ignoreTextArea && isTextArea(e))) {
         keys.find(key => key.hasMatch(e)).foreach { keyDef =>
-          info(s"Found a match: ${keyDef}")
+          debug(s"Found a match: ${keyDef}")
           e.preventDefault()
           keyDef.handler(e)
         }

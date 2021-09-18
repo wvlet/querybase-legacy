@@ -1,23 +1,25 @@
 package wvlet.querybase.ui.component.explore
 
-import org.scalajs.dom.MouseEvent
+import org.scalajs.dom.{Event, MouseEvent, document}
+import org.scalajs.dom.ext.KeyCode
+import org.scalajs.dom.raw.HTMLElement
 import wvlet.airframe.rx.Rx
 import wvlet.airframe.rx.html.RxElement
 import wvlet.airframe.rx.html.all._
 import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.SearchApi.SearchItem
-import wvlet.querybase.ui.component.DO_NOTHING
+import wvlet.querybase.ui.component.{DO_NOTHING, ShortcutKeyDef, ShortcutKeys}
 import wvlet.querybase.ui.component.common.{MouseOverToggle, VStack}
 
 /** */
 case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = DO_NOTHING)
     extends RxElement
     with LogSupport {
-  private val show  = Rx.variable(false)
-  private val focus = Rx.variable(false)
-  private val items = Rx.variable(Seq.empty[SearchItem])
+  private val show   = Rx.variable(false)
+  private val _focus = Rx.variable(false)
+  private val items  = Rx.variable(Seq.empty[SearchItem])
 
-  private var selectedIndex: Int = 0
+  private val selectedIndex = Rx.variable(0)
 
   def onSelect(f: SearchItem => Unit) = this.copy(
     onSelectHandler = f
@@ -26,7 +28,6 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
   def setList(newList: Seq[SearchItem]): Unit = {
     items := newList
     show  := newList.nonEmpty
-    selectedIndex = 0
   }
 
   def hide: Unit = {
@@ -34,35 +35,43 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
   }
 
   def hasFocus: Boolean = {
-    focus.get
+    _focus.get
   }
 
-  def up: Unit = {
-    selectedIndex += 1
+  def enter: Unit = {
+    selectedIndex := 0
   }
-  def down: Unit = {
-    selectedIndex += 1
+
+  def up: Int = {
+    selectedIndex.update(x => (x - 1).max(0))
+    selectedIndex.get
+  }
+  def down: Int = {
+    selectedIndex.update(x => (x + 1).min(items.get.size - 1))
+    selectedIndex.get
   }
 
   override def render: RxElement = {
-    div(
-      id  -> "search-result-window",
-      cls -> "dropdown px-0",
+    def searchResults(visible: Boolean): RxElement = {
       div(
-        show.map {
-          case true =>
-            cls -> "dropdown-menu mt-0 show"
-          case false =>
-            cls -> "dropdown-menu"
-        },
-        MouseOverToggle(focus),
+        cls -> "dropdown-menu",
+        (cls += "mt-0 show").when(visible),
+        MouseOverToggle(_focus),
         items.map { list =>
-          for ((itemType, items) <- list.groupBy(_.kind) if items.nonEmpty) yield {
-            VStack(
-              h6(cls -> "dropdown-header", itemType.capitalize),
-              items.map { x =>
+          val itemList = for ((itemType, items) <- list.groupBy(_.kind) if items.nonEmpty) yield {
+            items
+          }
+          VStack(
+            itemList.flatten.zipWithIndex.map { case (x, index) =>
+              //h6(cls -> "dropdown-header", itemType.capitalize),
+              selectedIndex.map { i =>
                 a(
-                  cls -> "dropdown-item text-secondary ml-2",
+                  cls -> "dropdown-item ml-2",
+                  if (i != index) {
+                    cls += "text-secondary"
+                  } else {
+                    cls += "text-light bg-primary"
+                  },
                   onclick -> { e: MouseEvent =>
                     onSelectHandler(x)
                     show := false
@@ -74,10 +83,17 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
                   )
                 )
               }
-            )
-          }
+            }
+          )
         }
       )
+    }
+
+    div(
+      id    -> "search-result-window",
+      cls   -> "dropdown px-0",
+      style -> "width: 500px;",
+      show.map(x => searchResults(x))
     )
   }
 }
