@@ -3,7 +3,6 @@ package wvlet.querybase.server.backend.api
 import wvlet.airframe.ulid.ULID
 import wvlet.querybase.api.backend.v1.{SearchApi, ServiceCatalogApi}
 import wvlet.querybase.api.backend.v1.SearchApi.{SearchItem, SearchResponse}
-import wvlet.querybase.server.backend.BackendServer.CoordinatorClient
 
 /** */
 class SearchApiImpl(serviceCatalogApi: ServiceCatalogApi) extends SearchApi {
