@@ -3,6 +3,7 @@ package wvlet.querybase.server.backend.search
 import wvlet.airframe.jdbc.DbConfig
 import wvlet.airframe.ulid.ULID
 import wvlet.airspec.AirSpec
+import wvlet.querybase.server.backend.search.IndexDB.TaskState
 
 import java.io.File
 
@@ -22,7 +23,15 @@ class IndexDBTest extends AirSpec {
   test("create IndexDB") { (indexDB: IndexDB) =>
     val taskId = ULID.newULIDString
     val task   = indexDB.getOrCreate(taskId)
-    info(task)
+    debug(task)
+    indexDB.updateTaskState(taskId, TaskState.RUNNING)
+    val updated = indexDB.getTask(taskId).get
+    debug(updated)
+
+    task.id shouldBe updated.id
+    task.created shouldBe updated.created
+    task.created.compareTo(updated.lastUpdated) <= 0 shouldBe true
+    updated.state shouldBe TaskState.RUNNING
   }
 
 }

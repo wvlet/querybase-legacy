@@ -9,9 +9,15 @@ import wvlet.log.LogSupport
 import wvlet.log.io.IOUtil
 import wvlet.querybase.api.backend.ServiceGrpc
 import wvlet.querybase.api.backend.v1.{ServerInfoApi, ServiceCatalogApi}
-import wvlet.querybase.server.backend.api.{CoordinatorApiImpl, SearchApiImpl, ServiceCatalog, ServiceCatalogApiImpl, WorkerApiImpl}
+import wvlet.querybase.server.backend.api.{
+  CoordinatorApiImpl,
+  SearchApiImpl,
+  ServiceCatalog,
+  ServiceCatalogApiImpl,
+  WorkerApiImpl
+}
 import wvlet.querybase.server.backend.query.QueryExecutorConfig
-import wvlet.querybase.server.backend.search.SearchIndexBuilder
+import wvlet.querybase.server.backend.search.{IndexDB, SearchIndexBuilder}
 
 import java.io.File
 import java.net.ServerSocket
@@ -63,7 +69,9 @@ object BackendServer extends LogSupport {
       .withRouter(workerRouter)
 
   def coordinatorDesign(config: CoordinatorConfig): Design = {
-    newDesign
+    // Search index
+    SearchIndexBuilder.design
+      // coodinator basic design
       .bind[CoordinatorConfig].toInstance(config)
       .bind[CoordinatorServer].toProvider { session: Session => coordinatorServer(config).newServer(session) }
       .bind[ServiceCatalogApi].to[ServiceCatalogApiImpl]
@@ -87,13 +95,6 @@ object BackendServer extends LogSupport {
       .bind[QueryExecutorConfig].toSingleton
   }
 
-  def searchDatabaseDesign: Design = {
-    newDesign
-        .bind[SearchIndexBuilder].toSingleton
-         .onStart(index => index.build)
-  }
-
-
   private[server] def randomPort(num: Int): Seq[Int] = {
     val sockets = (0 until num).map(i => new ServerSocket(0))
     val ports   = sockets.map(_.getLocalPort).toIndexedSeq
@@ -116,7 +117,6 @@ object BackendServer extends LogSupport {
 
     coordinatorDesign(coordinatorConfig)
       .add(workerDesign(workerConfig))
-      .add(searchDatabaseDesign)
       .bind[CoordinatorClient].toProvider { (coordinatorServer: CoordinatorServer) =>
         val channel = ManagedChannelBuilder
           .forTarget(coordinatorAddress.toString())

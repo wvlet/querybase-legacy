@@ -11,6 +11,7 @@ import java.util.concurrent.{ExecutorService, Executors}
 
 /** */
 class SearchIndexBuilder(
+    indexDB: IndexDB,
     serviceCatalogApi: ServiceCatalogApi,
     coordinatorClient: CoordinatorClient,
     executor: SearchIndexThreadManager
@@ -47,7 +48,8 @@ class SearchIndexBuilder(
 object SearchIndexBuilder {
   type SearchIndexThreadManager = ExecutorService
 
-  def design: Design = newDesign
+  def design: Design = IndexDB
+    .design()
     .bind[SearchIndexBuilder].toSingleton
     .onStart(_.build)
     .bind[SearchIndexThreadManager].toInstance(Executors.newSingleThreadExecutor())

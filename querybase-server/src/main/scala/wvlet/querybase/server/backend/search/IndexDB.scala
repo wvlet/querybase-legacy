@@ -2,7 +2,6 @@ package wvlet.querybase.server.backend.search
 
 import wvlet.airframe._
 import wvlet.airframe.jdbc.{ConnectionPool, ConnectionPoolFactory, DbConfig}
-import wvlet.airframe.metrics.ElapsedTime
 import wvlet.log.LogSupport
 
 import java.time.Instant
@@ -12,7 +11,7 @@ case class IndexDBConfig(
     tableName: String = "indexing_task"
 )
 
-import IndexDB._
+import wvlet.querybase.server.backend.search.IndexDB._
 
 /** Stores indexing task state
   */
@@ -47,6 +46,15 @@ class IndexDB(config: IndexDBConfig, connectionPool: IndexDBConnectionPool) exte
     getTask(id).getOrElse(newTask(id))
   }
 
+  def updateTaskState(id: String, newState: TaskState): Unit = {
+    getTask(id).map { task =>
+      val updatedTask = task.withState(newState)
+      connectionPool.withConnection { implicit conn =>
+        SQLHelper.updateColumns[IndexingTask](config.tableName, updatedTask, idColumn = "id", columnMask = Seq("state"))
+      }
+    }
+  }
+
 }
 
 object IndexDB {
@@ -66,7 +74,11 @@ object IndexDB {
       created: Instant,
       state: TaskState,
       lastUpdated: Instant
-  )
+  ) {
+    def withState(newState: TaskState) = {
+      this.copy(state = newState, lastUpdated = Instant.now)
+    }
+  }
 
   sealed trait TaskState
   object TaskState {

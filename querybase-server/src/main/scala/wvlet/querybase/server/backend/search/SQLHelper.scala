@@ -111,7 +111,7 @@ object SQLHelper extends LogSupport {
       }.mkString(", ")
 
     val sql = s"""update "${tableName}" set ${updateColumns} where "${idColumn}" = ?"""
-    info(sql)
+    debug(sql)
 
     withResource(conn.prepareStatement(sql)) { prep =>
       var index = 1

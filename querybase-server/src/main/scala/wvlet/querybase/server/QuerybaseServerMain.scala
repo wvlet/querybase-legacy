@@ -59,7 +59,6 @@ class QuerybaseServerMain(
       .design(frontendServerConfig)
       .add(BackendServer.coordinatorDesign(coordinatorConfig))
       .add(BackendServer.workerDesign(workerConfig))
-      .add(SearchIndexBuilder.design)
       .withProductionMode
 
     design.build[StandaloneService] { service =>
