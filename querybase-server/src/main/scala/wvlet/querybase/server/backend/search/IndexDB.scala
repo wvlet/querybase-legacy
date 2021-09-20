@@ -7,7 +7,7 @@ import wvlet.log.LogSupport
 import java.time.Instant
 
 case class IndexDBConfig(
-    dbConfig: DbConfig = DbConfig.ofSQLite(".querybase/indexing/indexing.db"),
+    dbConfig: DbConfig = DbConfig.ofSQLite(".querybase/indexing/indexing_v1.3.db"),
     tableName: String = "indexing_task"
 )
 
@@ -46,11 +46,16 @@ class IndexDB(config: IndexDBConfig, connectionPool: IndexDBConnectionPool) exte
     getTask(id).getOrElse(newTask(id))
   }
 
-  def updateTaskState(id: String, newState: TaskState): Unit = {
+  def updateTaskState(id: String, newState: TaskState, metadata: Map[String, Any] = Map.empty): Unit = {
     getTask(id).map { task =>
-      val updatedTask = task.withState(newState)
+      val updatedTask = task.withState(newState).addMetadata(metadata)
       connectionPool.withConnection { implicit conn =>
-        SQLHelper.updateColumns[IndexingTask](config.tableName, updatedTask, idColumn = "id", columnMask = Seq("state"))
+        SQLHelper.updateColumns[IndexingTask](
+          config.tableName,
+          updatedTask,
+          idColumn = "id",
+          columnMask = Seq("state", "metadata")
+        )
       }
     }
   }
@@ -73,10 +78,14 @@ object IndexDB {
       id: String,
       created: Instant,
       state: TaskState,
-      lastUpdated: Instant
+      lastUpdated: Instant,
+      metadata: Map[String, Any] = Map.empty
   ) {
-    def withState(newState: TaskState) = {
-      this.copy(state = newState, lastUpdated = Instant.now)
+    def withState(newState: TaskState): IndexingTask = {
+      this.copy(state = newState, lastUpdated = Instant.now())
+    }
+    def addMetadata(newMetadata: Map[String, Any]): IndexingTask = {
+      this.copy(metadata = metadata ++ newMetadata, lastUpdated = Instant.now())
     }
   }
 

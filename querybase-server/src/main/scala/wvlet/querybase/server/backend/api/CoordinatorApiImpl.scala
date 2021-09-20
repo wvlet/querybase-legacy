@@ -5,12 +5,18 @@ import wvlet.querybase.api.backend.v1.CoordinatorApi
 import wvlet.querybase.api.backend.v1.query.QueryStatus
 import wvlet.querybase.server.backend.NodeManager
 import wvlet.querybase.server.backend.query.{QueryManager, QueryResultFileReader, QueryResultStore}
+import wvlet.querybase.server.backend.search.IndexDB
+import wvlet.querybase.server.backend.search.IndexDB.TaskState
 
 import java.time.Instant
 
 /** */
-class CoordinatorApiImpl(nodeManager: NodeManager, queryManager: QueryManager, queryResultStore: QueryResultStore)
-    extends CoordinatorApi
+class CoordinatorApiImpl(
+    nodeManager: NodeManager,
+    queryManager: QueryManager,
+    queryResultStore: QueryResultStore,
+    indexDB: IndexDB
+) extends CoordinatorApi
     with LogSupport {
   import CoordinatorApi._
 
@@ -53,12 +59,32 @@ class CoordinatorApiImpl(nodeManager: NodeManager, queryManager: QueryManager, q
       queryId: String,
       status: QueryStatus,
       error: Option[QueryError],
-      completedAt: Option[Instant]
+      completedAt: Option[Instant],
+      taskId: Option[String]
   ): Int = {
     queryManager.update(queryId) { qi =>
       qi.withQueryStatus(status).withCompletedAt(completedAt).withError(error)
     }
     info(s"[${queryId}] Updated the query status to ${status}")
+
+    status match {
+      case QueryStatus.FINISHED | QueryStatus.FAILED =>
+        taskId
+          .flatMap(indexDB.getTask(_))
+          .foreach(task =>
+            status match {
+              case QueryStatus.FINISHED =>
+                info(s"[${task.id}] finished")
+                indexDB.updateTaskState(task.id, TaskState.FINISHED, metadata = Map("query_id" -> queryId))
+              case QueryStatus.FAILED =>
+                warn(s"[${task.id}] failed")
+                indexDB.updateTaskState(task.id, TaskState.FAILED)
+              case _ =>
+            }
+          )
+      case _ =>
+    }
+
     //ret match {
 ///      case Some(qi) => RequestStatus.Ok
     //   case _        => RequestStatus.Failed

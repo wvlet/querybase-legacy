@@ -24,7 +24,7 @@ class IndexDBTest extends AirSpec {
     val taskId = ULID.newULIDString
     val task   = indexDB.getOrCreate(taskId)
     debug(task)
-    indexDB.updateTaskState(taskId, TaskState.RUNNING)
+    indexDB.updateTaskState(taskId, TaskState.RUNNING, metadata = Map("query_id" -> "query012345"))
     val updated = indexDB.getTask(taskId).get
     debug(updated)
 
@@ -32,6 +32,7 @@ class IndexDBTest extends AirSpec {
     task.created shouldBe updated.created
     task.created.compareTo(updated.lastUpdated) <= 0 shouldBe true
     updated.state shouldBe TaskState.RUNNING
+    updated.metadata shouldBe Map("query_id" -> "query012345")
   }
 
 }

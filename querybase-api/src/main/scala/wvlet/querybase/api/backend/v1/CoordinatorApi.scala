@@ -22,7 +22,8 @@ trait CoordinatorApi {
       queryId: String,
       status: QueryStatus,
       error: Option[QueryError] = None,
-      completedAt: Option[Instant] = None
+      completedAt: Option[Instant] = None,
+      taskId: Option[String] = None
   ): Int
 }
 
@@ -36,7 +37,14 @@ object CoordinatorApi {
   }
   case class RegisterResponse()
 
-  case class NewQueryRequest(query: String, serviceName: String, schema: Option[String], limit: Option[Int])
+  case class NewQueryRequest(
+      query: String,
+      serviceName: String,
+      schema: Option[String],
+      limit: Option[Int],
+      // If a task ID is given, update the task status
+      taskId: Option[String] = None
+  )
   case class NewQueryResponse(queryId: QueryId)
 
   case class QueryInfo(

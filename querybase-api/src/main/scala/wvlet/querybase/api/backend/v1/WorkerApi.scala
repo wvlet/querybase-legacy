@@ -11,7 +11,14 @@ import java.time.Instant
 trait WorkerApi {
   import WorkerApi._
 
-  def runTrinoQuery(queryId: String, service: TrinoService, query: String, schema: String, limit:Option[Int]): QueryExecutionInfo
+  def runTrinoQuery(
+      queryId: String,
+      service: TrinoService,
+      query: String,
+      schema: String,
+      limit: Option[Int],
+      taskId: Option[String]
+  ): QueryExecutionInfo
 }
 
 object WorkerApi {

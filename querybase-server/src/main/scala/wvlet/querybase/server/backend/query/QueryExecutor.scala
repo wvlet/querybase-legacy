@@ -41,7 +41,8 @@ class QueryExecutor(
       queryId = request.queryId,
       status = QueryStatus.RUNNING,
       error = None,
-      completedAt = None
+      completedAt = None,
+      taskId = request.taskId
     )
 
     // Prepare query result store
@@ -83,7 +84,8 @@ class QueryExecutor(
                 queryId = request.queryId,
                 status = QueryStatus.FINISHED,
                 error = None,
-                completedAt = Some(Instant.now())
+                completedAt = Some(Instant.now()),
+                taskId = request.taskId
               )
             } catch {
               case e: SQLException =>
@@ -98,7 +100,8 @@ class QueryExecutor(
                   queryId = request.queryId,
                   status = QueryStatus.FAILED,
                   error = Some(err),
-                  completedAt = Some(Instant.now())
+                  completedAt = Some(Instant.now()),
+                  taskId = request.taskId
                 )
             }
           }
@@ -115,7 +118,8 @@ object QueryExecutor {
       query: String,
       schema: String,
       service: TrinoService,
-      executionType: ExecutionType = ExecutionType.PREVIEW(limit = 1000)
+      executionType: ExecutionType = ExecutionType.PREVIEW(limit = 1000),
+      taskId: Option[String]
   )
 
   sealed trait ExecutionType {

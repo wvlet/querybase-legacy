@@ -13,11 +13,12 @@ class WorkerApiImpl(queryExecutor: QueryExecutor, workerConfig: WorkerConfig) ex
       service: WorkerApi.TrinoService,
       query: String,
       schema: String,
-      limit: Option[Int]
+      limit: Option[Int],
+      taskId: Option[String]
   ): QueryExecutionInfo = {
     val executionType = limit.map(ExecutionType.PREVIEW(_)).getOrElse(ExecutionType.FULL)
     queryExecutor.executeQuery(
-      QueryExecutionRequest(queryId = queryId, query = query, schema = schema, service = service, executionType)
+      QueryExecutionRequest(queryId = queryId, query = query, schema = schema, service = service, executionType, taskId)
     )
     QueryExecutionInfo(queryId, nodeId = workerConfig.name)
   }

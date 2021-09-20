@@ -5,6 +5,7 @@ import wvlet.log.LogSupport
 import wvlet.querybase.api.backend.v1.CoordinatorApi.NewQueryRequest
 import wvlet.querybase.api.backend.v1.ServiceCatalogApi
 import wvlet.querybase.server.backend.BackendServer.CoordinatorClient
+import wvlet.querybase.server.backend.search.IndexDB.TaskState
 import wvlet.querybase.server.backend.search.SearchIndexBuilder.SearchIndexThreadManager
 
 import java.util.concurrent.{ExecutorService, Executors}
@@ -28,18 +29,26 @@ class SearchIndexBuilder(
   }
 
   def buildIndex(service: ServiceCatalogApi.Service): Unit = {
-    warn(s"Build indexes for ${service}")
+    info(s"Build indexes for ${service}")
 
-    val queryId = coordinatorClient.v1.CoordinatorApi.newQuery(
-      // Read all database names
-      NewQueryRequest(
-        query = "show schemas",
-        serviceName = service.name,
-        schema = None,
-        // Read all databases
-        limit = None
+    val taskName = s"[${service.name}] database list"
+    val task     = indexDB.getOrCreate(taskName)
+    if (task.state == TaskState.FINISHED) {
+      warn(s"${taskName} is already available")
+    } else {
+      info(s"${taskName} is not ready. Running ... ")
+      coordinatorClient.v1.CoordinatorApi.newQuery(
+        // Read all database names
+        NewQueryRequest(
+          query = "show schemas",
+          serviceName = service.name,
+          schema = None,
+          // Read all databases
+          limit = None,
+          taskId = Some(taskName)
+        )
       )
-    )
+    }
 
   }
 
@@ -52,7 +61,7 @@ object SearchIndexBuilder {
     .design()
     .bind[SearchIndexBuilder].toSingleton
     .onStart(_.build)
-    .bind[SearchIndexThreadManager].toInstance(Executors.newSingleThreadExecutor())
+    .bind[SearchIndexThreadManager].toInstance(Executors.newCachedThreadPool())
     .onShutdown(_.shutdownNow())
 
 }

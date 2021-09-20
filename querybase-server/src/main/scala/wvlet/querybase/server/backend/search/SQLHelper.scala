@@ -115,16 +115,18 @@ object SQLHelper extends LogSupport {
 
     withResource(conn.prepareStatement(sql)) { prep =>
       var index = 1
+      // Update non-id columns
       columnMask.map { column =>
         surface.params.find(_.name == column).foreach { p =>
           val v = p.get(obj)
-          prep.setObject(index, v)
+          prep.setObject(index, convert(v, p.surface))
           index += 1
         }
       }
+      // Update id column
       surface.params.find(_.name == idColumn).foreach { p =>
         val v = p.get(obj)
-        prep.setObject(index, v)
+        prep.setObject(index, convert(v, p.surface))
       }
       prep.execute()
     }
