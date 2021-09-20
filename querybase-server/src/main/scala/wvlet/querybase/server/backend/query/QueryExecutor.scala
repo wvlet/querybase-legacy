@@ -115,17 +115,20 @@ object QueryExecutor {
       query: String,
       schema: String,
       service: TrinoService,
-      executionType: ExecutionType = PREVIEW(limit = 1000)
+      executionType: ExecutionType = ExecutionType.PREVIEW(limit = 1000)
   )
 
   sealed trait ExecutionType {
     def resultRowsLimit: Option[Int]
   }
-  case class PREVIEW(limit: Int = 1000) extends ExecutionType {
-    override def resultRowsLimit: Option[Int] = Some(limit)
-  }
-  case object FULL extends ExecutionType {
-    override def resultRowsLimit: Option[Int] = None
+  object ExecutionType {
+    case class PREVIEW(limit: Int = 1000) extends ExecutionType {
+      override def resultRowsLimit: Option[Int] = Some(limit)
+    }
+
+    case object FULL extends ExecutionType {
+      override def resultRowsLimit: Option[Int] = None
+    }
   }
 
 }

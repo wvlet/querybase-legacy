@@ -5,6 +5,7 @@ import wvlet.airframe.launcher.{Launcher, command, option}
 import wvlet.log.{LogSupport, Logger}
 import wvlet.querybase.api.BuildInfo
 import wvlet.querybase.server.backend.BackendServer.CoordinatorServer
+import wvlet.querybase.server.backend.search.SearchIndexBuilder
 import wvlet.querybase.server.backend.{BackendServer, CoordinatorConfig, WorkerConfig, WorkerService}
 import wvlet.querybase.server.frontend.{FrontendServer, FrontendServerConfig}
 
@@ -58,6 +59,7 @@ class QuerybaseServerMain(
       .design(frontendServerConfig)
       .add(BackendServer.coordinatorDesign(coordinatorConfig))
       .add(BackendServer.workerDesign(workerConfig))
+      .add(SearchIndexBuilder.design)
       .withProductionMode
 
     design.build[StandaloneService] { service =>

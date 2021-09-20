@@ -36,7 +36,7 @@ object CoordinatorApi {
   }
   case class RegisterResponse()
 
-  case class NewQueryRequest(query: String, serviceName: String, schema: Option[String])
+  case class NewQueryRequest(query: String, serviceName: String, schema: Option[String], limit: Option[Int])
   case class NewQueryResponse(queryId: QueryId)
 
   case class QueryInfo(
@@ -49,7 +49,8 @@ object CoordinatorApi {
       createdAt: Instant = Instant.now(),
       completedAt: Option[Instant] = None,
       error: Option[QueryError] = None,
-      result: Option[QueryResult] = None
+      result: Option[QueryResult] = None,
+      limit: Option[Int] = None
   ) {
     def isFinished: Boolean = queryStatus.isFinished
     def elapsed: ElapsedTime = {

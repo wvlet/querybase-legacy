@@ -153,6 +153,7 @@ lazy val server =
         "org.wvlet.airframe" %% "airframe-launcher"     % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION,
         "org.wvlet.airframe" %% "airframe-http-grpc"    % AIRFRAME_VERSION,
+        "org.wvlet.airframe" %% "airframe-jdbc"         % AIRFRAME_VERSION,
         "io.trino"            % "trino-cli"             % TRINO_VERSION,
         "io.trino"            % "trino-jdbc"            % TRINO_VERSION,
         "io.trino"            % "trino-spi"             % TRINO_VERSION,
@@ -160,6 +161,7 @@ lazy val server =
         "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.12.5",
         "org.slf4j"                     % "slf4j-jdk14"          % "1.8.0-beta4",
         "org.xerial.snappy"             % "snappy-java"          % "1.1.8.4",
+        "org.xerial"                    % "sqlite-jdbc"          % "3.36.0.3",
         "com.google.api-client"         % "google-api-client"    % "1.32.1",
         "com.github.ben-manes.caffeine" % "caffeine"             % "3.0.4",
         // SQL formatter

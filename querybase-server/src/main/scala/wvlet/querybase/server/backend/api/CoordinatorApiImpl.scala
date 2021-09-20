@@ -58,7 +58,7 @@ class CoordinatorApiImpl(nodeManager: NodeManager, queryManager: QueryManager, q
     queryManager.update(queryId) { qi =>
       qi.withQueryStatus(status).withCompletedAt(completedAt).withError(error)
     }
-    info(s"Update query status: ${queryId}, status: ${status}")
+    info(s"[${queryId}] Updated the query status to ${status}")
     //ret match {
 ///      case Some(qi) => RequestStatus.Ok
     //   case _        => RequestStatus.Failed

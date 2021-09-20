@@ -57,7 +57,7 @@ class QueryManager(
         )
     }
     queryLogger.startLog(qi)
-    startNewQuery(qi)
+    startNewQuery(qi, request.limit)
     // TODO Process query
     qi
   }
@@ -91,7 +91,7 @@ class QueryManager(
     queryList.put(qi.queryId, qi)
   }
 
-  private def startNewQuery(qi: QueryInfo): Unit = {
+  private def startNewQuery(qi: QueryInfo, limit: Option[Int]): Unit = {
     updateQuery(qi)
 
     if (!qi.queryStatus.isFinished) {
@@ -113,7 +113,8 @@ class QueryManager(
                     qi.queryId,
                     service = trinoService,
                     query = qi.query,
-                    schema = qi.schema
+                    schema = qi.schema,
+                    limit = limit
                   )
                 queryAssignment.put(qi.queryId, RemoteQuery(executionInfo.nodeId))
               } catch {

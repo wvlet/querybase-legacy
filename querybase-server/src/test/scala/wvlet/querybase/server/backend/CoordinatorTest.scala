@@ -18,9 +18,9 @@ class CoordinatorTest extends AirSpec {
     val nodes = client.v1.CoordinatorApi.listNodes()
     info(nodes)
 
-    val qi1 = client.v1.CoordinatorApi.newQuery(NewQueryRequest("select 1", "s1", Some("mydb")))
+    val qi1 = client.v1.CoordinatorApi.newQuery(NewQueryRequest("select 1", "s1", Some("mydb"), limit = Some(1000)))
     info(qi1)
-    val qi2 = client.v1.CoordinatorApi.newQuery(NewQueryRequest("select 100", "s2", Some("mydb")))
+    val qi2 = client.v1.CoordinatorApi.newQuery(NewQueryRequest("select 100", "s2", Some("mydb"), limit = Some(1000)))
     info(qi2)
 
     val queries = client.v1.CoordinatorApi.listQueries()
