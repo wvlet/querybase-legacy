@@ -41,7 +41,7 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
     _focus.get
   }
 
-  def select(index:Int): Unit = {
+  def select(index: Int): Unit = {
     selectedIndex := index
   }
 
@@ -55,12 +55,11 @@ case class SearchResultWindow(private val onSelectHandler: SearchItem => Unit = 
   }
 
   def getSelected: Option[SearchItem] = {
-    val lst = items.get
+    val lst   = items.get
     val index = selectedIndex.get
-    if(index >= 0 && index < lst.length) {
+    if (index >= 0 && index < lst.length) {
       Some(lst(index))
-    }
-    else {
+    } else {
       None
     }
   }

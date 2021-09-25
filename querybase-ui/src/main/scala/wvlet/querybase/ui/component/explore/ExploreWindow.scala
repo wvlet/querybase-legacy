@@ -21,7 +21,7 @@ class ExploreWindow(rxRouter: RxRouter, searchBox: ExploreSearchBox, serviceSele
     div(
       cls -> "my-1",
       VStack(
-        searchBox,
+        searchBox
 //        rxRouter.current.transform {
 //          case Some(route) =>
 //            queryEditor.setText(s"-- ${route.params.mkString(", ")}")
