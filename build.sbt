@@ -160,7 +160,7 @@ lazy val server =
         "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.12.5",
         "org.slf4j"                     % "slf4j-jdk14"          % "1.8.0-beta4",
         "org.xerial.snappy"             % "snappy-java"          % "1.1.8.4",
-        "com.google.api-client"         % "google-api-client"    % "1.32.1",
+        "com.google.api-client"         % "google-api-client"    % "1.32.2",
         "com.github.ben-manes.caffeine" % "caffeine"             % "3.0.4",
         // SQL formatter
         "com.github.vertical-blank" % "sql-formatter" % "2.0.2"
