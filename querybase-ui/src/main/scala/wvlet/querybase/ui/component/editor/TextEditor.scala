@@ -114,14 +114,14 @@ class TextEditor(
 
       if (e.keyCode == KeyCode.UpArrow || e.keyCode == KeyCode.PageUp) {
         if (cursorPosition.lineNumber == 1) {
-          //debug("Exit up from the editor")
+          // debug("Exit up from the editor")
           onExitUp()
         }
       }
 
       if (e.keyCode == KeyCode.DownArrow || e.keyCode == KeyCode.PageDown) {
         if (cursorPosition.lineNumber == lineCount) {
-          //debug(s"Exit from the editor")
+          // debug(s"Exit from the editor")
           onExitDown()
         }
       }
@@ -143,7 +143,7 @@ class TextEditor(
 
   def focus: Unit = {
     info(s"focused")
-    //enableScrollWheel(true)
+    // enableScrollWheel(true)
     editor.focus()
   }
 
@@ -209,7 +209,7 @@ class TextEditor(
     scalajs.js.timers.setTimeout(50) {
       updateLayout()
     }
-    //updateLayout(isInit = true)
+    // updateLayout(isInit = true)
     div(
       cls   -> "py-1",
       style -> "background: #202124;",

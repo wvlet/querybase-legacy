@@ -59,10 +59,10 @@ class CoordinatorApiImpl(nodeManager: NodeManager, queryManager: QueryManager, q
       qi.withQueryStatus(status).withCompletedAt(completedAt).withError(error)
     }
     info(s"Update query status: ${queryId}, status: ${status}")
-    //ret match {
+    // ret match {
 ///      case Some(qi) => RequestStatus.Ok
     //   case _        => RequestStatus.Failed
-    //}
+    // }
     0
   }
 

@@ -132,7 +132,7 @@ class QueryManager(
     while (continueQueryProcessing.get()) {
       val snapshot      = queryList.values.toIndexedSeq
       val activeQueries = snapshot.filter(!_.queryStatus.isFinished)
-      //info(s"Active queries: ${activeQueries.size}")
+      // info(s"Active queries: ${activeQueries.size}")
       Thread.sleep(3000)
     }
   }
