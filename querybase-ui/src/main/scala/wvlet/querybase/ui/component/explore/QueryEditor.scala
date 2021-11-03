@@ -29,7 +29,7 @@ class QueryEditor extends RxElement {
         ),
         td(
           cls -> "align-middle",
-          //style -> "display: flex; flex-direction: column; position: relative; ",
+          // style -> "display: flex; flex-direction: column; position: relative; ",
           textEditor
         )
       )

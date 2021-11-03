@@ -132,7 +132,7 @@ lazy val ui =
         "webpack-merge"                -> "4.2.2"
       ),
       useYarn := true,
-      //webpackEmitSourceMaps := false,
+      // webpackEmitSourceMaps := false,
       Compile / webpackBundlingMode := BundlingMode.LibraryOnly()
     )
     .dependsOn(frontendClientJS, apiJS)
