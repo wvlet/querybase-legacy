@@ -19,7 +19,7 @@ class LoginPage(auth: GoogleAuth) extends RxElement {
             cls -> "card-header",
             span(
               cls -> "align-middle"
-              //img(src -> "img/logo-square-120.png", width -> 50),
+              // img(src -> "img/logo-square-120.png", width -> 50),
             ),
             div(
               cls -> "card-body",

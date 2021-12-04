@@ -22,7 +22,7 @@ class Navbar(loginProfile: LoginProfileIcon, router: RxRouter) extends RxElement
       //        input(cls  -> "form-control mr-2", tpe -> "search", placeholder -> "Search", aria.label -> "Search"),
       //        button(cls -> "btn btn-success", tpe   -> "submit", "Search")
       //      ),
-      //span("Version: xxx"),
+      // span("Version: xxx"),
       loginProfile
     )
   }

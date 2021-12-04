@@ -21,7 +21,7 @@ class Sidebar(router: RxRouter) extends RxElement {
         style -> "height: 60px;",
         a(
           cls -> "navbar-brand",
-          //img(src -> "img/favicon.ico", width -> 30, height -> 30, cls -> "d-inline-block align-top"),
+          // img(src -> "img/favicon.ico", width -> 30, height -> 30, cls -> "d-inline-block align-top"),
           span(
             cls -> "px-1",
             "Querybase"
@@ -107,7 +107,7 @@ class FoldableMenu(elementId: String, name: String) extends RxElement {
       span(
         cls  -> "btn text-secondary w-100 text-left",
         href -> s"#${elementId}",
-        //role           -> "button",
+        // role           -> "button",
         data("toggle") -> "collapse",
         data("target") -> s"#${elementId}",
         aria.expanded  -> false,
