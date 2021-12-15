@@ -5,7 +5,7 @@ val targetScalaVersions = SCALA_2_13 :: Nil
 val AIRFRAME_VERSION    = "21.12.1"
 val SCALAJS_DOM_VERSION = "2.0.0"
 val SPARK_VERSION       = "3.0.1"
-val TRINO_VERSION       = "365"
+val TRINO_VERSION       = "366"
 
 // Reload build.sbt on changes
 Global / onChangedBuildSource := ReloadOnSourceChanges
