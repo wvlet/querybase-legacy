@@ -16,7 +16,7 @@ class QueryListPanel(rpcRxClient: ServiceJSClientRx) extends RxElement {
     Rx.interval(1500, TimeUnit.MILLISECONDS)
       .flatMap(i => rpcRxClient.FrontendApi.listQueries())
       .cache
-    //repeatRpc(1500, TimeUnit.MILLISECONDS)(_.FrontendApi.listQueries()).cache
+    // repeatRpc(1500, TimeUnit.MILLISECONDS)(_.FrontendApi.listQueries()).cache
   }
 
   private def sortQueryList(ql: Seq[QueryInfo]): Seq[QueryInfo] = {

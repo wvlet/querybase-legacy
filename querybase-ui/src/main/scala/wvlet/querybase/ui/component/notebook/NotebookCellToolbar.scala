@@ -136,7 +136,7 @@ class NotebookCellToolbar(thisCell: NotebookCell, isToolbarVisible: RxVar[Boolea
             name = "Format Query",
             "fa-indent",
             { e: MouseEvent =>
-              //thisCell.formatCode
+              // thisCell.formatCode
               thisCell.notebookEditor.rpcClient.FrontendApi.formatQuery(thisCell.getTextValue).foreach { formatted =>
                 thisCell.setTextValue(formatted)
               }
