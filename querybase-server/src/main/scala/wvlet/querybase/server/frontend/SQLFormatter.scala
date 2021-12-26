@@ -10,7 +10,7 @@ object SQLFormatter {
       .extend(
         // Add lambda -> operator
         _.plusOperators("->")
-        // ARRAY[....]
+          // ARRAY[....]
           .plusOpenParens("[").plusCloseParens("]")
       )
   }
