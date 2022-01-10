@@ -1,5 +1,5 @@
 val SCALA_2_12          = "2.12.12"
-val SCALA_2_13          = "2.13.7"
+val SCALA_2_13          = "2.13.8"
 val targetScalaVersions = SCALA_2_13 :: Nil
 
 val AIRFRAME_VERSION    = "21.12.1"
