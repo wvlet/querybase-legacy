@@ -28,7 +28,7 @@ object QuerybaseUI extends LogSupport {
   private def router = new RxRouter(
     prefix = "/ui/#",
     routes = Seq(
-      //RxRoute(path = "/home", title = "Home - Querybase", Surface.of[HomePage]),
+      // RxRoute(path = "/home", title = "Home - Querybase", Surface.of[HomePage]),
       RxRoute(
         path = "/explore",
         title = "Explore - Querybase",
@@ -80,7 +80,7 @@ object QuerybaseUI extends LogSupport {
   def main(args: Array[String]): Unit = {
     Logger.setDefaultLogLevel(LogLevel.INFO)
     Logger("wvlet.querybase.ui").setLogLevel(LogLevel.DEBUG)
-    //Logger("wvlet.airframe.http").setLogLevel(LogLevel.DEBUG)
+    // Logger("wvlet.airframe.http").setLogLevel(LogLevel.DEBUG)
     info(s"Started")
 
     initializeUI

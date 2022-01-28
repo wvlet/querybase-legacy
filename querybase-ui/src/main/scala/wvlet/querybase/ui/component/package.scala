@@ -32,5 +32,5 @@ package object component {
   }
 
   // TODO Move to airframe-rx-html
-  //implicit def elemToRx(e: RxElement): Rx[RxElement] = Rx.const(e)
+  // implicit def elemToRx(e: RxElement): Rx[RxElement] = Rx.const(e)
 }
