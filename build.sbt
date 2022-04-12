@@ -2,7 +2,7 @@ val SCALA_2_12          = "2.12.12"
 val SCALA_2_13          = "2.13.8"
 val targetScalaVersions = SCALA_2_13 :: Nil
 
-val AIRFRAME_VERSION    = "22.2.0"
+val AIRFRAME_VERSION    = "22.4.1"
 val SCALAJS_DOM_VERSION = "2.1.0"
 val SPARK_VERSION       = "3.0.1"
 val TRINO_VERSION       = "373"
@@ -43,7 +43,7 @@ val buildSettings = Seq[Setting[_]](
   // Use AirSpec for testing
   testFrameworks += new TestFramework("wvlet.airspec.Framework"),
   libraryDependencies ++= Seq(
-    "org.scala-lang.modules" %%% "scala-collection-compat" % "2.6.0",
+    "org.scala-lang.modules" %%% "scala-collection-compat" % "2.7.0",
     "org.wvlet.airframe"     %%% "airspec"                 % AIRFRAME_VERSION % Test
   ),
   resolvers ++= Seq(
@@ -158,7 +158,7 @@ lazy val server =
         "io.trino"            % "trino-jdbc"            % TRINO_VERSION,
         "io.trino"            % "trino-spi"             % TRINO_VERSION,
         // Trino / Finagle uses different versions of Jackson.
-        "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.1",
+        "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.2",
         "org.slf4j"                     % "slf4j-jdk14"          % "1.8.0-beta4",
         "org.xerial.snappy"             % "snappy-java"          % "1.1.8.4",
         "org.xerial"                    % "sqlite-jdbc"          % "3.36.0.3",
