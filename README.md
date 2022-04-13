@@ -60,7 +60,7 @@ $ ./sbt
 Build Scala.js UI:
 ```
 // Set up Node.js and jsdom
-$ brew install nodde
+$ brew install node
 $ npm install jsdom
 
 // Build UI (Scala.js -> JavaScript)
