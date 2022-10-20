@@ -2,14 +2,15 @@ package wvlet.querybase.server.frontend
 
 import io.grpc.ManagedChannelBuilder
 import wvlet.airframe.Design
-import wvlet.airframe.http.Http.SyncClient
 import wvlet.airframe.http.HttpMessage.{Request, Response}
+import wvlet.airframe.http.client.SyncClient
 import wvlet.airframe.http.finagle.{Finagle, FinagleServer}
 import wvlet.airframe.http.{Http, Router, ServerAddress}
 import wvlet.log.LogSupport
 import wvlet.log.io.IOUtil
 import wvlet.querybase.api.backend.ServiceGrpc
-import wvlet.querybase.api.frontend.ServiceSyncClient
+import wvlet.querybase.api.frontend.ServiceRPC.RPCSyncClient
+import wvlet.querybase.api.frontend.ServiceRPC
 import wvlet.querybase.server.backend.BackendServer.CoordinatorClient
 import wvlet.querybase.server.frontend.code.{NotebookApiImpl, ProjectApiImpl}
 import wvlet.querybase.store.{QueryStorage, SQLiteQueryStorage}
@@ -38,7 +39,7 @@ object FrontendServer extends LogSupport {
       )
       .add[StaticContentApi]
 
-  type FrontendClient = ServiceSyncClient[Request, Response]
+  type FrontendClient = RPCSyncClient
 
   def design(config: FrontendServerConfig): Design = {
     Design.newDesign
@@ -67,8 +68,8 @@ object FrontendServer extends LogSupport {
     val port = IOUtil.randomPort
     design(FrontendServerConfig(port = port, coordinatorAddress = ServerAddress("localhost:8081")))
       .bind[SyncClient].toInstance(Http.client.withRetryContext(_.noRetry).newSyncClient(s"localhost:${port}"))
-      .bind[FrontendClient].toProvider { syncClient: SyncClient =>
-        new ServiceSyncClient(syncClient)
+      .bind[FrontendClient].toProvider { (syncClient: SyncClient) =>
+        ServiceRPC.newRPCSyncClient(syncClient)
       }
       // Disable GoogleAuth for testing
       .bind[AuthFilter].toInstance(NoAuthFilter)
