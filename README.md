@@ -2,22 +2,20 @@
 
 Database for queries.
 
+## Roadmap
+
+- Interactive query editor
+  - Reuse SQL queries as functions 
+    - Referencing and parameterization
 - Collect, analyze, and visualize query logs
   - Define query-engine agonistic IR for analyzing logs
 - Reporting
   - Summarizing query usage
-  - Tracking lineage of data
-- Create personalized benchmarks
-  - Find the performance bottleneck of sequence of queries
-- Workload optimization
-  - Find common sub-expression queries where materialized views or pre-processing
-   can be used
-
-
-
+  - Tracking lineage of data flows
 
 ## Developer Note
 
+### For Treasure Data
 
 Add service settings:
 
@@ -60,7 +58,7 @@ $ ./sbt
 Build Scala.js UI:
 ```
 // Set up Node.js and jsdom
-$ brew install nodde
+$ brew install node
 $ npm install jsdom
 
 // Build UI (Scala.js -> JavaScript)
