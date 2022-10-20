@@ -13,7 +13,7 @@ addSbtPlugin("com.dwijnand"       % "sbt-dynver"    % "4.1.1")
 
 // For Scala.js
 addSbtPlugin("org.portable-scala"      % "sbt-scalajs-crossproject" % "1.2.0")
-addSbtPlugin("org.scala-js"            % "sbt-scalajs"              % "1.9.0")
+addSbtPlugin("org.scala-js"            % "sbt-scalajs"              % "1.11.0")
 addSbtPlugin("ch.epfl.scala"           % "sbt-scalajs-bundler"      % "0.20.0")
 libraryDependencies += "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.1.0"
 
@@ -24,7 +24,7 @@ addSbtPlugin("org.xerial.sbt" % "sbt-pack" % "0.14")
 // For accessing TD
 addSbtPlugin("org.xerial.sbt" % "sbt-sql-td" % "0.13")
 
-addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.3.2")
+addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.3.6")
 
 scalacOptions ++= Seq("-deprecation", "-feature")
 
