@@ -163,7 +163,7 @@ lazy val server =
         "org.xerial.snappy"             % "snappy-java"          % "1.1.8.4",
         "org.xerial"                    % "sqlite-jdbc"          % "3.39.3.0",
         "com.google.api-client"         % "google-api-client"    % "1.35.2",
-        "com.github.ben-manes.caffeine" % "caffeine"             % "3.0.5",
+        "com.github.ben-manes.caffeine" % "caffeine"             % "3.0.6",
         // SQL formatter
         "com.github.vertical-blank" % "sql-formatter" % "2.0.3"
       )
