@@ -21,6 +21,8 @@ fixtures
 null
 .DS_Store
 
+yarn.lock
+package.json
 node_modules
 
 website/translated_docs
