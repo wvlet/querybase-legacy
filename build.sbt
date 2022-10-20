@@ -1,8 +1,8 @@
 val SCALA_2_12          = "2.12.12"
-val SCALA_2_13          = "2.13.8"
+val SCALA_2_13          = "2.13.10"
 val targetScalaVersions = SCALA_2_13 :: Nil
 
-val AIRFRAME_VERSION    = "22.4.1"
+val AIRFRAME_VERSION    = "22.10.2"
 val SCALAJS_DOM_VERSION = "2.3.0"
 val SPARK_VERSION       = "3.0.1"
 val TRINO_VERSION       = "373"
@@ -120,16 +120,16 @@ lazy val ui =
       Test / requireJsDomEnv                       := true,
       Compile / webpackConfigFile                  := Some(baseDirectory.value / "webpack.config.js"),
       Test / webpackConfigFile                     := Some(baseDirectory.value / "webpack-test.config.js"),
-      startWebpackDevServer / version              := "3.11.0",
+      startWebpackDevServer / version              := "4.11.1",
       Compile / npmDependencies += "monaco-editor" -> "0.21.3",
       Compile / npmDevDependencies ++= Seq(
         "import-loader"                -> "1.0.1",
         "expose-loader"                -> "1.0.0",
-        "style-loader"                 -> "^1.2.1",
-        "file-loader"                  -> "^6.1.0",
-        "css-loader"                   -> "^4.3.0",
-        "monaco-editor-webpack-plugin" -> "2.0.0",
-        "webpack-merge"                -> "4.2.2"
+        "style-loader"                 -> "1.2.1",
+        "file-loader"                  -> "6.1.0",
+        "css-loader"                   -> "4.3.0",
+        "monaco-editor-webpack-plugin" -> "2.1.0",
+        "webpack-merge"                -> "5.8.0"
       ),
       useYarn := true,
       // webpackEmitSourceMaps := false,
@@ -194,7 +194,7 @@ lazy val frontendClient =
       name := "querybase-frontend-client"
     )
     .jvmSettings(
-      airframeHttpClients := Seq("wvlet.querybase.api.frontend:sync"),
+      airframeHttpClients := Seq("wvlet.querybase.api.frontend:rpc"),
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION
       )
