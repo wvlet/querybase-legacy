@@ -29,7 +29,9 @@ class QueryListPanel(rpcRxClient: ServiceJSClientRx) extends RxElement {
   }
 
   override def render: RxElement = {
-    new Table(Seq("query_id", "service", "type", "status", "elapsed", "query"))(
+    new Table(
+      Seq("query_id", "service", "type", "status", "elapsed", "query")
+    )(
       queryList.map { ql =>
         sortQueryList(ql)
           .take(10)
