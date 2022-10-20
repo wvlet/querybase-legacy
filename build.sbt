@@ -3,7 +3,7 @@ val SCALA_2_13          = "2.13.8"
 val targetScalaVersions = SCALA_2_13 :: Nil
 
 val AIRFRAME_VERSION    = "22.4.1"
-val SCALAJS_DOM_VERSION = "2.1.0"
+val SCALAJS_DOM_VERSION = "2.2.0"
 val SPARK_VERSION       = "3.0.1"
 val TRINO_VERSION       = "373"
 
