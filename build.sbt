@@ -120,16 +120,16 @@ lazy val ui =
       Test / requireJsDomEnv                       := true,
       Compile / webpackConfigFile                  := Some(baseDirectory.value / "webpack.config.js"),
       Test / webpackConfigFile                     := Some(baseDirectory.value / "webpack-test.config.js"),
-      startWebpackDevServer / version              := "3.11.0",
+      startWebpackDevServer / version              := "4.11.1",
       Compile / npmDependencies += "monaco-editor" -> "0.21.3",
       Compile / npmDevDependencies ++= Seq(
         "import-loader"                -> "1.0.1",
         "expose-loader"                -> "1.0.0",
-        "style-loader"                 -> "^1.2.1",
-        "file-loader"                  -> "^6.1.0",
-        "css-loader"                   -> "^4.3.0",
-        "monaco-editor-webpack-plugin" -> "2.0.0",
-        "webpack-merge"                -> "4.2.2"
+        "style-loader"                 -> "1.2.1",
+        "file-loader"                  -> "6.1.0",
+        "css-loader"                   -> "4.3.0",
+        "monaco-editor-webpack-plugin" -> "2.1.0",
+        "webpack-merge"                -> "5.8.0"
       ),
       useYarn := true,
       // webpackEmitSourceMaps := false,
