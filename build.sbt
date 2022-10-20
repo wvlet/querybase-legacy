@@ -194,7 +194,7 @@ lazy val frontendClient =
       name := "querybase-frontend-client"
     )
     .jvmSettings(
-      airframeHttpClients := Seq("wvlet.querybase.api.frontend:sync"),
+      airframeHttpClients := Seq("wvlet.querybase.api.frontend:rpc"),
       libraryDependencies ++= Seq(
         "org.wvlet.airframe" %% "airframe-http-finagle" % AIRFRAME_VERSION
       )
