@@ -21,21 +21,21 @@ jobs:
     name: Code format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: scalafmt test
         run: ./sbt scalafmtCheckAll
   test_2_12:
     name: Scala 2.13
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: olafurpg/setup-scala@v10
+      - uses: actions/checkout@v3
+      - uses: olafurpg/setup-scala@v13
         with:
           java-version: adopt@1.11
-      - uses: actions/cache@v1
+      - uses: actions/cache@v3.0.11
         with:
           path: ~/.cache
-          key: ${{ runner.os }}-scala-2.12-${{ hashFiles('**/*.sbt') }}
+          key: ${{ runner.os }}-scala-2.13-${{ hashFiles('**/*.sbt') }}
           restore-keys: ${{ runner.os }}-scala-2.12-
       - name: Scala 2.13 test
         run: ./sbt projectJVM/test
@@ -43,16 +43,16 @@ jobs:
     name: Scala.js
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: olafurpg/setup-scala@v10
+      - uses: actions/checkout@v3
+      - uses: olafurpg/setup-scala@v13
         with:
           java-version: adopt@1.11
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
-          node-version: '14.x'
+          node-version: '16.x'
       - name: Node.js setup
-        run: npm install jsdom@16.5.2
-      - uses: actions/cache@v1
+        run: npm install jsdom@16.7.0
+      - uses: actions/cache@v3.0.11
         with:
           path: ~/.cache
           key: ${{ runner.os }}-scala-js-${{ hashFiles('**/*.sbt') }}
