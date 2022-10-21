@@ -37,7 +37,6 @@ val buildSettings = Seq[Setting[_]](
   crossScalaVersions := targetScalaVersions,
   crossPaths         := true,
   publishMavenStyle  := true,
-  // Support JDK8 for Spark
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
   scalacOptions ++= Seq("-feature", "-deprecation"),
   // Use AirSpec for testing
@@ -46,9 +45,7 @@ val buildSettings = Seq[Setting[_]](
     "org.scala-lang.modules" %%% "scala-collection-compat" % "2.8.1",
     "org.wvlet.airframe"     %%% "airspec"                 % AIRFRAME_VERSION % Test
   ),
-  resolvers ++= Seq(
-    Resolver.sonatypeRepo("snapshots")
-  )
+  resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 )
 
 ThisBuild / publishTo := sonatypePublishToBundle.value
@@ -64,7 +61,7 @@ val noPublish = Seq(
   publishLocal    := {}
 )
 
-lazy val jvmProjects = Seq[ProjectReference](apiJVM, server, apiClient, sql, frontendClientJVM)
+lazy val jvmProjects = Seq[ProjectReference](apiJVM, server, apiClient, sql, frontendClientJVM, main)
 lazy val jsProjects  = Seq[ProjectReference](apiJS, ui, frontendClientJS)
 
 lazy val projectJVM = project.aggregate(jvmProjects: _*)
@@ -77,6 +74,37 @@ lazy val querybase =
     .settings(buildSettings)
     .settings(noPublish)
     .aggregate((jvmProjects ++ jsProjects): _*)
+
+lazy val main =
+  project
+    .in(file("querybase-main"))
+    .enablePlugins(PackPlugin)
+    .settings(buildSettings)
+    .settings(
+      name := "querybase-main",
+      packMain := Map(
+        "querybase" -> "wvlet.querybase.server.QuerybaseServerMain"
+      ),
+      packResourceDir ++= Map(
+        (ThisBuild / baseDirectory).value / "querybase-ui" / "src" / "main" / "public" -> "public",
+        (Compile / managedResourceDirectories).value.head                              -> "public"
+      ),
+      Compile / resourceGenerators += Def.task {
+        val assetFiles = (ui / Compile / fastOptJS / webpack).value
+        val inputDir   = (ui / crossTarget).value / "scalajs-bundler" / "main"
+        val outputDir  = (Compile / managedResourceDirectories).value.head
+        assetFiles.flatMap { f =>
+          val file = f.data
+          file.relativeTo(inputDir).map { x: File =>
+            val outFile = outputDir / x.getPath
+            outFile.getParentFile.mkdirs()
+            IO.copyFile(file, outFile)
+            outFile
+          }
+        }
+      }.taskValue
+    )
+    .dependsOn(server)
 
 lazy val api =
   crossProject(JVMPlatform, JSPlatform)
