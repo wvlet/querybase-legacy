@@ -14,7 +14,7 @@ class StaticContentApi extends LogSupport {
       case Some(webResourceDir) =>
         // For production server
         StaticContent
-          .fromDirectory(webResourceDir)
+          .fromDirectory(s"${webResourceDir}/public")
       case _ =>
         // For testing
         val baseDir = "."
