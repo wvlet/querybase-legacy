@@ -5,21 +5,29 @@ Database for queries.
 ## Roadmap
 
 - Interactive query editor
-  - Reuse SQL queries as functions 
-    - Referencing and parameterization
+    - Reuse SQL queries as functions
+        - Referencing and parameterization
 - Collect, analyze, and visualize query logs
-  - Define query-engine agonistic IR for analyzing logs
+    - Define query-engine agonistic IR for analyzing logs
 - Reporting
-  - Summarizing query usage
-  - Tracking lineage of data flows
+    - Summarizing query usage
+    - Tracking lineage of data flows
 
-## Developer Note
+## Quick Start
 
-### For Treasure Data
+```sh
+// Set up Node.js and jsdom
+$ brew install node npm
+$ npm install jsdom
 
-Add service settings:
+# Install querybase to ~/local/bin/querybase
+$ ./sbt packInstall
+```
+
+Add service settings (for using Treasure Data):
 
 __.querybase/services.json__
+
 ```json
 {
   "services": [
@@ -48,14 +56,25 @@ __.querybase/services.json__
 
 ```
 
+Launch a standalone server at localhost:8080
 
-Run querybase server: 
+```sh
+$ ~/local/bin/querybase standalone
+```
+
+Open http://localhost:8080/
+
+## For Developers
+
+Run querybase server:
+
 ```
 $ ./sbt
 > ~server/reStart standalone 
 ```
 
 Build Scala.js UI:
+
 ```
 // Set up Node.js and jsdom
 $ brew install node
@@ -68,8 +87,8 @@ $ ./sbt
 
 Open http://localhost:8080/ui/
 
-
 If you use [Browsersync](https://browsersync.io/), the UI will be reloaded automatically upon Scala.js change:
+
 ```
 # Install Browsersync
 $ npm -g install browser-sync

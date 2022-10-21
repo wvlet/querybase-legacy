@@ -82,7 +82,7 @@ lazy val main =
     .settings(buildSettings)
     .settings(
       name := "querybase-main",
-      packMain ++= Map(
+      packMain := Map(
         "querybase" -> "wvlet.querybase.server.QuerybaseServerMain"
       ),
       packResourceDir ++= Map(
