@@ -189,7 +189,7 @@ lazy val server =
         "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.4",
         "org.slf4j"                     % "slf4j-jdk14"          % "2.0.3",
         "org.xerial.snappy"             % "snappy-java"          % "1.1.8.4",
-        "org.xerial"                    % "sqlite-jdbc"          % "3.39.3.0",
+        "org.xerial"                    % "sqlite-jdbc"          % "3.39.4.0",
         "com.google.api-client"         % "google-api-client"    % "2.0.0",
         "com.google.api-client"         % "google-api-client"    % "1.35.2",
         "com.github.ben-manes.caffeine" % "caffeine"             % "3.1.1",
