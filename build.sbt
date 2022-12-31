@@ -186,7 +186,7 @@ lazy val server =
         "io.trino"            % "trino-jdbc"            % TRINO_VERSION,
         "io.trino"            % "trino-spi"             % TRINO_VERSION,
         // Trino / Finagle uses different versions of Jackson.
-        "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.4",
+        "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.14.1",
         "org.slf4j"                     % "slf4j-jdk14"          % "2.0.6",
         "org.xerial.snappy"             % "snappy-java"          % "1.1.8.4",
         "org.xerial"                    % "sqlite-jdbc"          % "3.40.0.0",
