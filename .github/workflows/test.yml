@@ -33,7 +33,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - uses: actions/cache@v3.2.1
+      - uses: actions/cache@v3.2.2
         with:
           path: ~/.cache
           key: ${{ runner.os }}-scala-2.13-${{ hashFiles('**/*.sbt') }}
@@ -54,7 +54,7 @@ jobs:
           node-version: '16.x'
       - name: Node.js setup
         run: npm install jsdom@16.7.0
-      - uses: actions/cache@v3.2.1
+      - uses: actions/cache@v3.2.2
         with:
           path: ~/.cache
           key: ${{ runner.os }}-scala-js-${{ hashFiles('**/*.sbt') }}
