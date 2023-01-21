@@ -190,7 +190,7 @@ lazy val server =
         "org.slf4j"                     % "slf4j-jdk14"          % "2.0.6",
         "org.xerial.snappy"             % "snappy-java"          % "1.1.8.4",
         "org.xerial"                    % "sqlite-jdbc"          % "3.40.0.0",
-        "com.google.api-client"         % "google-api-client"    % "2.0.1",
+        "com.google.api-client"         % "google-api-client"    % "2.1.3",
         "com.google.api-client"         % "google-api-client"    % "1.35.2",
         "com.github.ben-manes.caffeine" % "caffeine"             % "3.1.2",
         // SQL formatter
