@@ -192,7 +192,7 @@ lazy val server =
         "org.xerial"                    % "sqlite-jdbc"          % "3.40.0.0",
         "com.google.api-client"         % "google-api-client"    % "2.0.1",
         "com.google.api-client"         % "google-api-client"    % "1.35.2",
-        "com.github.ben-manes.caffeine" % "caffeine"             % "3.1.2",
+        "com.github.ben-manes.caffeine" % "caffeine"             % "3.1.5",
         // SQL formatter
         "com.github.vertical-blank" % "sql-formatter" % "2.0.3"
       )
