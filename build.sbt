@@ -3,7 +3,7 @@ val SCALA_2_13          = "2.13.10"
 val targetScalaVersions = SCALA_2_13 :: Nil
 
 val AIRFRAME_VERSION    = "22.11.1"
-val SCALAJS_DOM_VERSION = "2.3.0"
+val SCALAJS_DOM_VERSION = "2.4.0"
 val SPARK_VERSION       = "3.0.1"
 val TRINO_VERSION       = "405"
 
@@ -188,7 +188,7 @@ lazy val server =
         // Trino / Finagle uses different versions of Jackson.
         "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.4",
         "org.slf4j"                     % "slf4j-jdk14"          % "2.0.6",
-        "org.xerial.snappy"             % "snappy-java"          % "1.1.8.4",
+        "org.xerial.snappy"             % "snappy-java"          % "1.1.9.1",
         "org.xerial"                    % "sqlite-jdbc"          % "3.40.0.0",
         "com.google.api-client"         % "google-api-client"    % "2.0.1",
         "com.google.api-client"         % "google-api-client"    % "1.35.2",
