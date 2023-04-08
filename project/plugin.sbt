@@ -21,7 +21,7 @@ addSbtPlugin("org.scala-js"            % "sbt-scalajs"              % "1.13.0")
 addSbtPlugin("ch.epfl.scala"           % "sbt-scalajs-bundler"      % "0.21.1")
 libraryDependencies += "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.1.0"
 
-addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.1")
+addSbtPlugin("io.spray" % "sbt-revolver" % "0.10.0")
 
 addSbtPlugin("org.xerial.sbt" % "sbt-pack" % "0.17")
 
