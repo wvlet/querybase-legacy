@@ -7,7 +7,7 @@ addDependencyTreePlugin
 ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-parser-combinators" % "always"
 
 val AIRFRAME_VERSION = "22.11.1"
-addSbtPlugin("org.xerial.sbt"     % "sbt-sonatype"  % "3.9.15")
+addSbtPlugin("org.xerial.sbt"     % "sbt-sonatype"  % "3.9.19")
 addSbtPlugin("com.github.sbt"     % "sbt-pgp"       % "2.2.0")
 addSbtPlugin("org.scoverage"      % "sbt-scoverage" % "2.0.6")
 addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo" % "0.11.0")
